@@ -1,0 +1,237 @@
+body {
+    display: flex;
+}
+
+.produit {
+    margin: 15px;
+    width: 512px;
+    height: 512px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input {
+    display: block;
+    margin: auto;
+    text-align: center;
+}
+
+.mdl-textfield {
+    margin:auto;
+}
+
+legend {
+    text-align: center;
+}
+
+h5 {
+    text-align: center;
+}
+
+.flex { display: flex;}
+
+.users{
+    margin: 15px auto;
+}
+
+
+.snackbar{
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    cursor: default;
+    background-color: #323232;
+    z-index: 3;
+    display: flex;
+    justify-content: space-between;
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    border-radius: 2px;
+    animation-delay: 2s;
+    animation-duration: 1s;
+    animation-name:disapear;
+    animation-fill-mode:forwards;
+}
+
+@keyframes disapear {
+    from {
+        opacity: 100;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.snackbar__text {
+    padding: 14px 22px;
+    color: #fff;
+    float: left;
+    text-align: center;
+}
+.detail {
+    margin:auto;
+    margin-top: 15px;
+}
+
+.mdl-layout {
+    height:100%;
+}
+
+/*.mdl-layout__content {
+    min-height: fit-content;
+}*/
+
+button {
+    margin-bottom: 15px;
+}
+
+h1 {
+    text-align: center;
+}
+
+.bouton {
+    display: block;
+    margin: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.achat {
+    margin:auto;
+    display: flex;
+    align-items:center;
+}
+
+.list-prod {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.save {
+    margin:auto;
+    margin-bottom:15px;
+}
+
+.taille {
+    width:300px;
+}
+
+.list {
+    margin:auto;
+    margin-top: 15px;
+    text-align: center;
+}
+
+a.titre {
+    color: white;
+    text-decoration: none;
+}
+
+/* Nouveau css */
+
+a {
+    text-decoration: none;
+}
+
+
+.import {
+    margin: 15px auto;
+    min-height: auto;
+}
+
+/* Formulaire */
+
+.text_input {
+    display: flex;
+    align-items: flex-start;
+}
+
+.text_input > i {
+    margin:auto;
+    margin-right: 10px;
+}
+
+.userupdate {
+    width: auto;
+}
+
+/* Detail Batiment */
+
+.detailBatiment1 {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.detailBatiment2 {
+    margin: 15px 0px;
+    margin-left: 15px;
+    min-height: auto;
+    /*height: 60px;*/
+}
+
+.detailBatiment3 {
+    margin: 0px;
+    margin-top: 15px;
+    margin-left: 15px
+}
+
+.detaildiplome {
+    margin: 15px 0px;
+    margin-left: 15px;
+    min-height: auto;
+    height: 110px;
+}
+
+table{
+    width: auto;
+}
+
+/* Bouton New */
+
+.new {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    z-index: 100;
+}
+
+.select {
+    color:rgb(0,188,212);
+}
+
+main.mdl-layout__content {
+    overflow-x: auto;
+}
+
+/* Importation de fichier material design
+   Source : https://codepen.io/alexandergaziev/pen/JdVQQm
+*/
+
+body {
+    display: flex;
+}
+
+.file_input_div {
+    margin: auto;
+    width: 250px;
+    height: 40px;
+}
+
+.file_input {
+    float: left;
+}
+
+#file_input_text_div {
+    width: 200px;
+    margin-top: -8px;
+    margin-left: 5px;
+}
+
+.none {
+    display: none;
+}
+
