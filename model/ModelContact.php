@@ -1,76 +1,99 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
-require_once File::build_path(array('model', 'ModelParticipation.php'));
+require_once File::build_path(array('model', 'ModelEntite.php'));
+require_once File::build_path(array('model', 'ModelDepartement.php'));
 
-class ModelParticipant extends Model
+class ModelContact extends Model
 {
 
-    protected static $object = 'Participant';
-    protected static $primary = 'codeParticipant';
+    protected static $object = 'Contact';
+    protected static $primary = 'codeContact';
 
-    private $codeParticipant;
-    /**
-     * @var $codeStatut ModelStatutEnseignant
-     */
-    private $nomParticipant;
-    private $nationalite;
+    private $codeContact;
+    private $nomContact;
+    private $prenomContact;
+    private $mail;
     private $affiliation;
 
+    /**
+     * @var $codeEntite ModelEntite
+     */
+    private $codeEntite;
+    /**
+     * @var $codeDepartement ModelDepartement
+     */
+    private $codeDepartement;
 
     /**
      * @return mixed
      */
-    public function getNationalite()
+    public function getCodeDepartement()
     {
-        return $this->nationalite;
+        return $this->codeDepartement;
     }
 
     /**
      * @param mixed $codeDepartement
      */
-    public function setNomParticipant($nomParticipant)
+    public function setCodeDepartement($codeDepartement)
     {
-        $this->nomParticipant = $nomParticipant;
+        $this->codeDepartement = $codeDepartement;
     }
 
     /**
      * @return mixed
      */
-    public function getCodeParticipant()
+    public function getCodeContact()
     {
-        return $this->codeParticipant;
-    }
-
-    /**
-     * @param mixed $codeStatut
-     */
-    public function setNationalite($nationalite)
-    {
-        $this->nationalite = $nationalite;
+        return $this->codeContact;
     }
 
     /**
      * @return mixed
      */
-    public function getNomParticipant()
+    public function getCodeEntite()
     {
-        return $this->nomParticipant;
+        return $this->codeEntite;
     }
 
     /**
-     * @param mixed $codeStatut
+     * @param mixed $codeEntite
      */
-    public function setAffiliation($affiliation)
+    public function setCodeEntite($codeEntite)
     {
-        $this->affiliation = $affiliation;
+        $this->codeEntite = $codeEntite;
     }
 
     /**
      * @return mixed
      */
-    public function getAffiliation()
+    public function getMail()
     {
-        return $this->affiliation;
+        return $this->mail;
+    }
+
+    /**
+     * @param mixed $codeEntite
+     */
+    public function setMail($mail)
+    {
+        $this->mail = $mail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNomContact()
+    {
+        return $this->nomContact;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrenomContact()
+    {
+        return $this->prenomContact;
     }
 
     /**
@@ -85,8 +108,8 @@ class ModelParticipant extends Model
     {
         $retourne = parent::select($primary_value);
         if (!$retourne) return false;
-        $retourne->setCodeStatut(ModelStatutEnseignant::select($retourne->getCodeStatut()));
-        $retourne->setCodeDepartement(ModelDepartement::select($retourne->getCodeDepartement()));
+        //$retourne->setCodeStatut(ModelStatutEnseignant::select($retourne->getCodeStatut()));
+        //$retourne->setCodeDepartement(ModelDepartement::select($retourne->getCodeDepartement()));
         return $retourne;
     }
 
@@ -102,6 +125,10 @@ class ModelParticipant extends Model
     public static function selectAll()
     {
         $retourne = parent::selectAll();
+        foreach ($retourne as $cle => $item) {
+            //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+            //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+        }
         return $retourne;
     }
 
@@ -111,35 +138,54 @@ class ModelParticipant extends Model
      * @param $codeDepartement string(1)
      * @return bool|array(ModelEnseignant)
      */
-    public static function selectAllByConsortium($codeConsortium)
+    public static function selectAllEDF()
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' P
-            JOIN Participation C ON C.codeContact = P.codeParticipant
-            WHERE C.codeConsortium=:codeConsortium';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite IS NOT NULL';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeConsortium' => $codeConsortium);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipant');
+            $rep->execute();
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
             $retourne = $rep->fetchAll();
+            foreach ($retourne as $cle => $item) {
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+            }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }
 
+    public static function selectAllHorsEDF()
+    {
+        try {
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite IS NULL';
+            $rep = Model::$pdo->prepare($sql);
+            $rep->execute();
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
+            $retourne = $rep->fetchAll();
+            foreach ($retourne as $cle => $item) {
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+            }
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }    
+
     /**
      * Renvoie tous les enseignant appartenant à un statut, false s'il y a une erreur
      *
-     * @param $codeStatut string (techniquement c'est un string mais c'est un nombre)
+     * @param $codeEntite string (techniquement c'est un string mais c'est un nombre)
      * @return bool|array(ModelEnseigant)
      */
-    public static function selectAllByStatut($codeStatut)
+    public static function selectAllByStatut($codeEntite)
     {
         try {
             $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeStatut=:codeStatut';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeStatut' => $codeStatut);
+            $values = array('codeStatut' => $codeEntite);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelEnseignant');
             $retourne = $rep->fetchAll();

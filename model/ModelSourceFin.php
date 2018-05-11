@@ -1,89 +1,49 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
-require_once File::build_path(array('model', 'ModelStatutEnseignant.php'));
-require_once File::build_path(array('model', 'ModelDepartement.php'));
+require_once File::build_path(array('model', 'ModelProjet.php'));
 
-class ModelEnseignant extends Model
+class ModelSourceFin extends Model
 {
 
-    protected static $object = 'Enseignant';
-    protected static $primary = 'codeEns';
+    protected static $object = 'SourceFin';
+    protected static $primary = 'codeSourceFin';
 
-    private $codeEns;
+    private $codeSourceFin;
     /**
      * @var $codeStatut ModelStatutEnseignant
      */
-    private $codeStatut;
-    private $nomEns;
-    private $etatService;
-    /**
-     * @var $codeDepartement ModelDepartement
-     */
-    private $codeDepartement;
-    private $remarque;
+    private $nomSourceFin;
 
     /**
      * @return mixed
      */
-    public function getRemarque()
+    public function getCodeSourceFin()
     {
-        return $this->remarque;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeDepartement()
-    {
-        return $this->codeDepartement;
-    }
-
-    /**
-     * @param mixed $codeDepartement
-     */
-    public function setCodeDepartement($codeDepartement)
-    {
-        $this->codeDepartement = $codeDepartement;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeEns()
-    {
-        return $this->codeEns;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeStatut()
-    {
-        return $this->codeStatut;
+        return $this->codeSourceFin;
     }
 
     /**
      * @param mixed $codeStatut
      */
-    public function setCodeStatut($codeStatut)
+    public function setCodeSourceFin($codeSourceFin)
     {
-        $this->codeStatut = $codeStatut;
+        $this->codeSourceFin = $codeSourceFin;
     }
 
     /**
      * @return mixed
      */
-    public function getNomEns()
+    public function getNomSourceFin()
     {
-        return $this->nomEns;
+        return $this->nomSourceFin;
     }
 
     /**
      * @return mixed
      */
-    public function getEtatService()
+    public function setNomSourceFin($nomSourceFin)
     {
-        return $this->etatService;
+        $this->nomSourceFin = $nomSourceFin;
     }
 
     /**
@@ -98,8 +58,6 @@ class ModelEnseignant extends Model
     {
         $retourne = parent::select($primary_value);
         if (!$retourne) return false;
-        $retourne->setCodeStatut(ModelStatutEnseignant::select($retourne->getCodeStatut()));
-        $retourne->setCodeDepartement(ModelDepartement::select($retourne->getCodeDepartement()));
         return $retourne;
     }
 
@@ -115,10 +73,6 @@ class ModelEnseignant extends Model
     public static function selectAll()
     {
         $retourne = parent::selectAll();
-        foreach ($retourne as $cle => $item) {
-            $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-            $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-        }
         return $retourne;
     }
 
@@ -128,7 +82,7 @@ class ModelEnseignant extends Model
      * @param $codeDepartement string(1)
      * @return bool|array(ModelEnseignant)
      */
-    public static function selectAllByDepartement($codeDepartement)
+    /*public static function selectAllByDepartement($codeDepartement)
     {
         try {
             $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeDepartement=:codeDepartement';
@@ -153,7 +107,7 @@ class ModelEnseignant extends Model
      * @param $codeStatut string (techniquement c'est un string mais c'est un nombre)
      * @return bool|array(ModelEnseigant)
      */
-    public static function selectAllByStatut($codeStatut)
+    /*public static function selectAllByStatut($codeStatut)
     {
         try {
             $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeStatut=:codeStatut';
@@ -179,7 +133,7 @@ class ModelEnseignant extends Model
      * @param $npEns string nom/prenom d'un enseigant
      * @return bool|array(ModelEnseignant)
      */
-    public static function selectAllByName($npEns)
+    /*public static function selectAllByName($npEns)
     {
         try {
             $sql = 'SELECT * FROM ' . self::$object . ' WHERE nomEns LIKE CONCAT(\'%\',:npEns,\'%\')';
@@ -201,7 +155,7 @@ class ModelEnseignant extends Model
     /**
      * Retourne un tableau avec les statuts et le nombre de professeurs par statuts
      */
-    public static function statStatutEtEnseignant()
+    /*public static function statStatutEtEnseignant()
     {
         try {
             $sql = 'SELECT
@@ -222,7 +176,7 @@ class ModelEnseignant extends Model
     /**
      * @return float : nombres d'heures équivalent TD réalisés par un professeur
      */
-    public function getNbHeuresReal()
+    /*public function getNbHeuresReal()
     {
         $Tcours = ModelCours::selectAllByEns($this->getCodeEns());
         if (!$Tcours) {
@@ -247,7 +201,7 @@ class ModelEnseignant extends Model
     /**
      * @return int : nombres d'heures de TD réalisés par le professeur
      */
-    public function getHeuresTD($codeModule)
+    /*public function getHeuresTD($codeModule)
     {
         $sql = 'SELECT sum(duree) AS heuresTD
                 FROM Cours
@@ -265,7 +219,7 @@ class ModelEnseignant extends Model
     /**
      * @return int : nombres d'heures de TP réalisés par le professeur
      */
-    public function getHeuresTP($codeModule)
+    /*public function getHeuresTP($codeModule)
     {
         $sql = 'SELECT sum(duree) AS heuresTP
                 FROM Cours
@@ -283,7 +237,7 @@ class ModelEnseignant extends Model
     /**
      * @return int : nombres d'heures de CM réalisés par le professeur
      */
-    public function getHeuresCM($codeModule)
+    /*public function getHeuresCM($codeModule)
     {
         $sql = 'SELECT sum(duree) AS heuresCM
                 FROM Cours
@@ -301,7 +255,7 @@ class ModelEnseignant extends Model
     /**
      * @return int : nombres d'heures hors TD/TP/CM réalisés par le professeur
      */
-    public function getHeuresAutres($codeModule)
+    /*public function getHeuresAutres($codeModule)
     {
         $sql = 'SELECT sum(duree) AS heuresAutres
                 FROM Cours
@@ -316,6 +270,6 @@ class ModelEnseignant extends Model
             'codeModule' => $codeModule));
         $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
         return intval($retourne[0]['heuresAutres']);
-    }
+    }*/
 
 }

@@ -41,13 +41,8 @@ class ControllerConsortium
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $departementsXdiplome = ModelDiplome::selectAllOrganizedByDep();
+            $tabProjet = ModelProjet::selectAll();
             $consortium = new ModelConsortium();
-            if (isset($_GET['codeDiplome'])) {
-                $diplome = ModelDiplome::select($_GET['codeDiplome']);
-                if ($diplome) $consortium->setCodeDiplome($diplome);
-                else $consortium->setCodeDiplome(new ModelDiplome());
-            } else $consortium->setCodeDiplome(new ModelDiplome());
             $view = 'update';
             $pagetitle = 'Création d\'un consortium';
             require_once File::build_path(array('view', 'view.php'));

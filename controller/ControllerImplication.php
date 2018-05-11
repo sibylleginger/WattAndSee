@@ -1,6 +1,7 @@
 <?php
 require_once File::build_path(array('model', 'ModelImplication.php'));
-require_once File::build_path(array('model', 'ModelModule.php'));
+require_once File::build_path(array('model', 'ModelProjet.php'));
+require_once File::build_path(array('model', 'ModelContact.php'));
 
 class ControllerImplication
 {
@@ -144,6 +145,24 @@ class ControllerImplication
                         require_once File::build_path(array('view', 'view.php'));
                     }
                 } else ControllerMain::erreur("Cette implication existe déjà");
+            } else ControllerMain::erreur("Il manque des informations");
+        } else ControllerUser::connect();
+    }
+    
+    public static function delete()
+    {
+        if (isset($_SESSION['login'])) {
+            if (isset($_POST['codeProjet'])) {
+                if (!ModelImplication::delete($_POST['codeProjet'], $_POST['codeContact'])) ControllerMain::erreur("Impossible de supprime le contact");
+            } else ControllerMain::erreur("Il manque des informations");
+        } else ControllerUser::connect();
+    }
+
+    public static function add()
+    {
+        if (isset($_SESSION['login'])) {
+            if (isset($_POST['codeProjet'])) {
+                if (!ModelImplication::add($_POST['codeProjet'], $_POST['codeContact'])) ControllerMain::erreur("Impossible d'ajouter le contact");
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }

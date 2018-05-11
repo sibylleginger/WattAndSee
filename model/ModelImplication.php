@@ -1,31 +1,24 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
-require_once File::build_path(array('model', 'ModelStatutEnseignant.php'));
-require_once File::build_path(array('model', 'ModelDepartement.php'));
+require_once File::build_path(array('model', 'ModelImplication.php'));
+require_once File::build_path(array('model', 'ModelProjet.php'));
+require_once File::build_path(array('model', 'ModelContact.php'));
 
-class ModelEnseignant extends Model
+class ModelImplication
 {
 
-    protected static $object = 'Enseignant';
-    protected static $primary = 'codeEns';
+    protected static $object = 'Implication';
 
-    private $codeEns;
+    private $codeProjet;
     /**
      * @var $codeStatut ModelStatutEnseignant
      */
-    private $codeStatut;
-    private $nomEns;
-    private $etatService;
-    /**
-     * @var $codeDepartement ModelDepartement
-     */
-    private $codeDepartement;
-    private $remarque;
-
+    private $codeContact;
+    private $chefProjet;
     /**
      * @return mixed
      */
-    public function getRemarque()
+    public function getChefProjet()
     {
         return $this->remarque;
     }
@@ -33,57 +26,41 @@ class ModelEnseignant extends Model
     /**
      * @return mixed
      */
-    public function getCodeDepartement()
+    public function getCodeContact()
     {
-        return $this->codeDepartement;
+        return $this->codeContact;
     }
 
     /**
      * @param mixed $codeDepartement
      */
-    public function setCodeDepartement($codeDepartement)
+    public function setCodeContact($codeContact)
     {
-        $this->codeDepartement = $codeDepartement;
+        $this->codeContact = $codeContact;
     }
 
     /**
      * @return mixed
      */
-    public function getCodeEns()
+    public function getCodeProjet()
     {
-        return $this->codeEns;
+        return $this->codeProjet;
     }
 
     /**
      * @return mixed
      */
-    public function getCodeStatut()
+    public function setChefProjet($boolean)
     {
-        return $this->codeStatut;
+        $this->chefProjet = $boolean;
     }
 
     /**
      * @param mixed $codeStatut
      */
-    public function setCodeStatut($codeStatut)
+    public function setCodeProjet($codeProjet)
     {
-        $this->codeStatut = $codeStatut;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getNomEns()
-    {
-        return $this->nomEns;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEtatService()
-    {
-        return $this->etatService;
+        $this->codeProjet = $codeProjet;
     }
 
     /**
@@ -128,20 +105,81 @@ class ModelEnseignant extends Model
      * @param $codeDepartement string(1)
      * @return bool|array(ModelEnseignant)
      */
-    public static function selectAllByDepartement($codeDepartement)
+    public static function selectAllByProjet($codeProjet)
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeDepartement=:codeDepartement';
+            $sql = 'SELECT * FROM Contact C
+            JOIN Implication I ON C.codeContact = I.codeContact
+            WHERE I.codeProjet=:codeProjet';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeDepartement' => $codeDepartement);
+            $values = array('codeProjet' => $codeProjet);
             $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelEnseignant');
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
             $retourne = $rep->fetchAll();
             foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
             }
             return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function selectAllByContact($codeContact)
+    {
+        try {
+            $sql = 'SELECT * FROM Projet P
+            JOIN Implication I ON P.codeProjet = I.codeProjet
+            WHERE I.codeContact=:codeContact';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeContact' => $codeContact);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
+            $retourne = $rep->fetchAll();
+            foreach ($retourne as $cle => $item) {
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+            }
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function delete($codeProjet, $codeContact) {
+        try {
+            $sql = 'DELETE FROM Implication WHERE codeProjet=:codeProjet AND codeContact=:codeContact';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeContact' => $codeContact);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelImplication');
+            $result = mysql_query($sql);
+            if(isset($result)) {
+               echo "YES";
+            } else {
+               echo "NO";
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function add($codeProjet, $codeContact) {
+        try {
+            $sql = 'INSERT INTO Implication VALUES (:codeProjet,:codeContact, 0)';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeContact' => $codeContact);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelImplication');
+            $result = mysql_query($sql);
+            if(isset($result)) {
+               echo "YES";
+            } else {
+               echo "NO";
+            }
         } catch (Exception $e) {
             return false;
         }
@@ -217,105 +255,6 @@ class ModelEnseignant extends Model
         } catch (Exception $e) {
             return $e;
         }
-    }
-
-    /**
-     * @return float : nombres d'heures équivalent TD réalisés par un professeur
-     */
-    public function getNbHeuresReal()
-    {
-        $Tcours = ModelCours::selectAllByEns($this->getCodeEns());
-        if (!$Tcours) {
-            return 0;
-        } else {
-            $r = 0;
-            foreach ($Tcours as $cours) {
-                $t = $cours->getTypeCours();
-                if ($t == 'CM') {
-                    $d = floatval($cours->getDuree()) * 2 / 3;
-                } elseif ($t == 'TP') {
-                    $d = floatval($cours->getDuree()) * 1.5;
-                } else {
-                    $d = floatval($cours->getDuree());
-                }
-                $r = $r + $d;
-            }
-            return $r;
-        }
-    }
-
-    /**
-     * @return int : nombres d'heures de TD réalisés par le professeur
-     */
-    public function getHeuresTD($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresTD
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours = "TD"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresTD']);
-    }
-
-    /**
-     * @return int : nombres d'heures de TP réalisés par le professeur
-     */
-    public function getHeuresTP($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresTP
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours = "TP"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresTP']);
-    }
-
-    /**
-     * @return int : nombres d'heures de CM réalisés par le professeur
-     */
-    public function getHeuresCM($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresCM
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours = "CM"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresCM']);
-    }
-
-    /**
-     * @return int : nombres d'heures hors TD/TP/CM réalisés par le professeur
-     */
-    public function getHeuresAutres($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresAutres
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours != "TD" 
-                AND typeCours != "TP" 
-                AND typeCours != "CM"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresAutres']);
     }
 
 }

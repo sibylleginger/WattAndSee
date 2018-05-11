@@ -1,7 +1,8 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
 require_once File::build_path(array('model', 'ModelStatutProjet.php'));
-require_once File::build_path(array('model', 'ModelAAP.php'));
+require_once File::build_path(array('model', 'ModelSourceFin.php'));
+require_once File::build_path(array('model', 'ModelTheme.php'));
 
 class ModelProjet extends Model
 {
@@ -11,59 +12,47 @@ class ModelProjet extends Model
 
     private $codeProjet;
     /**
-     * @var $codeStatut ModelStatutProjet
+     * @var $statut ModelStatutProjet
      */
     private $nomProjet;
-    private $suivi;
-    private $etat;
     private $description;
+    private $dateDepot;
+    private $dateReponse;
+    private $statut; //accepté/refusé/déposé
+    private $role; //coordinateur ou partenaire
+    private $budgetTotal;
+    private $budgetEDF;
+    private $subventionTotal;
+    private $subventionEDF;
+    private $isExceptionnel;
     /**
      * @var $codeAAP ModelAAP
      */
-    private $codeAAP;
-    private $codeStatut;
+    //private $codeAAP;
+    //ou
+    private $codeSourceFin;
+
     //private $codeType;
-    private $codeImplication;
     private $codeConsortium;
-    private $codeReporting;
-    private $codeEnCharge;
-    private $codeChef;
-    private $codeMembreEDF;
-    private $codeReferent;
+    //private $codeContactEDF;
+    //private $codeContactExterne;
     private $codeConsultant;
-    private $codeTemperature;
-    private $motsCles;
+    private $codeTheme;
 
     /**
      * @return mixed
      */
-    public function getmotsCles()
+    public function getCodeTheme()
     {
-        return $this->motsCles;
+        return $this->codeTheme;
     }
 
     /**
      * @param mixed $codeAAP
      */
-    public function setmotsCles($motsCles)
+    public function setCodeTheme($codeTheme)
     {
-        $this->motsCles = $motsCles;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeTemperature()
-    {
-        return $this->codeTemperature;
-    }
-
-    /**
-     * @param mixed $codeTemperature
-     */
-    public function setCodeTemperature($codeTemperature)
-    {
-        $this->codeTemperature = $codeTemperature;
+        $this->codeTheme = $codeTheme;
     }
 
     /**
@@ -85,81 +74,97 @@ class ModelProjet extends Model
     /**
      * @return mixed
      */
-    public function getCodeReferent()
+    public function getBudgetTotal()
     {
-        return $this->codeReferent;
+        return $this->budgetTotal;
     }
 
     /**
-     * @param mixed $codeReferent
+     * @param mixed $codeAAP
      */
-    public function setCodeReferent($codeReferent)
+    public function setBudgetTotal($budgetTotal)
     {
-        $this->codeReferent = $codeReferent;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeMembreEDF()
-    {
-        return $this->codeMembreEDF;
-    }
-
-    /**
-     * @param mixed $codeMembreEDF
-     */
-    public function setCodeMembreEDF($codeMembreEDF)
-    {
-        $this->codeMembreEDF = $codeMembreEDF;
+        $this->budgetTotal = $budgetTotal;
     }
 
     /**
      * @return mixed
      */
-    public function getCodeChef()
+    public function getBudgetEDF()
     {
-        return $this->codeChef;
+        return $this->budgetEDF;
+    }
+
+    /**
+     * @param mixed $codeAAP
+     */
+    public function setBudgetEDF($budgetEDF)
+    {
+        $this->budgetEDF = $budgetEDF;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubventionTotal()
+    {
+        return $this->subventionTotal;
+    }
+
+    /**
+     * @param mixed $codeAAP
+     */
+    public function setSubventionTotal($subventionTotal)
+    {
+        $this->subventionTotal = $subventionTotal;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubventionEDF()
+    {
+        return $this->subventionEDF;
+    }
+
+    /**
+     * @param mixed $codeAAP
+     */
+    public function setSubventionEDF($subventionEDF)
+    {
+        $this->subventionEDF = $subventionEDF;
+    }
+
+    /**
+     * @return mixed
+     
+    public function getContactEDF()
+    {
+        return $this->codeContactEDF;
     }
 
     /**
      * @param mixed $codeChef
-     */
-    public function setCodeChef($codeChef)
+     
+    public function setContactEDF($codeContactEDF)
     {
-        $this->codeChef = $codeChef;
+        $this->codeContactEDF = $codeContactEDF;
     }
 
     /**
      * @return mixed
-     */
-    public function getCodeEnCharge()
+     
+    public function getCodeContactExterne()
     {
-        return $this->codeEnCharge;
-    }
-
-    /**
-     * @param mixed $codeEnCharge
-     */
-    public function setCodeEnCharge($codeEnCharge)
-    {
-        $this->codeEnCharge = $codeEnCharge;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeReporting()
-    {
-        return $this->codeReporting;
+        return $this->codeContactExterne;
     }
 
     /**
      * @param mixed $codeReporting
-     */
-    public function setCodeReporting($codeReporting)
+     
+    public function setCodeContactExterne($codeContactExterne)
     {
-        $this->codeReporting = $codeReporting;
+        $this->codeContactExterne = $codeContactExterne;
     }
 
     /**
@@ -181,33 +186,17 @@ class ModelProjet extends Model
     /**
      * @return mixed
      */
-    public function getSuivi()
+    public function getRole()
     {
-        return $this->suivi;
+        return $this->role;
     }
 
     /**
-     * @param mixed $suivi
+     * @param mixed $role
      */
-    public function setSuivi($suivi)
+    public function setRole($role)
     {
-        $this->suivi = $suivi;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeImplication()
-    {
-        return $this->codeImplication;
-    }
-
-    /**
-     * @param mixed $codeImplication
-     */
-    public function setCodeImplication($codeImplication)
-    {
-        $this->codeImplication = $codeImplication;
+        $this->role = $role;
     }
 
     /**
@@ -221,17 +210,17 @@ class ModelProjet extends Model
     /**
      * @return mixed
      */
-    public function getCodeAAP()
+    public function getCodeSourceFin()
     {
-        return $this->codeAAP;
+        return $this->codeSourceFin;
     }
 
     /**
      * @param mixed $codeAAP
      */
-    public function setCodeAAP($codeAAP)
+    public function setCodeSourceFin($codeSourceFin)
     {
-        $this->codeAAP = $codeAAP;
+        $this->codeSourceFin = $codeSourceFin;
     }
 
     /**
@@ -245,17 +234,17 @@ class ModelProjet extends Model
     /**
      * @return mixed
      */
-    public function getCodeStatut()
+    public function getStatut()
     {
-        return $this->codeStatut;
+        return $this->statut;
     }
 
     /**
-     * @param mixed $codeStatut
+     * @param mixed $statut
      */
-    public function setCodeStatut($codeStatut)
+    public function setStatut($statut)
     {
-        $this->codeStatut = $codeStatut;
+        $this->statut = $statut;
     }
 
     /**
@@ -283,6 +272,38 @@ class ModelProjet extends Model
     }
 
     /**
+     * @return mixed
+     */
+    public function getDateDepot()
+    {
+        return $this->dateDepot;
+    }
+
+    /**
+     * @param mixed $etat
+     */
+    public function setDateDepot($dateDepot)
+    {
+        $this->dateDepot = $dateDepot;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDateReponse()
+    {
+        return $this->dateReponse;
+    }
+
+    /**
+     * @param mixed $etat
+     */
+    public function setDateReponse($dateReponse)
+    {
+        $this->dateReponse = $dateReponse;
+    }
+
+    /**
      * Retourne le projet désigné par son code Projet, false s'il y a une erreur ou qu'il n'existe pas
      *
      * @param $primary_value
@@ -294,17 +315,12 @@ class ModelProjet extends Model
     {
         $retourne = parent::select($primary_value);
         if (!$retourne) return false;
-        $retourne->setCodeStatut(ModelStatutProjet::select($retourne->getCodeStatut()));
-        $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
-        $retourne->setCodeImplication(ModelImplication::select($retourne->getCodeImplication()));
-        $retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
-        $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
-        $retourne->setCodeEnCharge(ModelEnCharge::select($retourne->getCodeEnCharge()));
-        $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
-        $retourne->setCodeMembreEDF(ModelMembreEDF::select($retourne->getCodeMembreEDF()));
-        $retourne->setCodeReferent(ModelReferent::select($retourne->getCodeReferent()));
-        $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
-        $retourne->setCodeTemperature(ModelTemperature::select($retourne->getCodeTemperature()));
+        //$retourne->setCodeSourceFin(ModelSourceFin::select($retourne->getCodeSourceFin()));
+            //$retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
+            //$retourne->setCodeCo(ModelReporting::select($retourne->getCodeReporting()));
+            //$retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
+            //$retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
+            //$retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
         return $retourne;
     }
 
@@ -321,17 +337,12 @@ class ModelProjet extends Model
     {
         $retourne = parent::selectAll();
         foreach ($retourne as $cle => $item) {
-            $retourne[$cle]->setCodeStatut(ModelStatutProjet::select($retourne[$cle]->getCodeStatut()));
-            $retourne[$cle]->setCodeAAP(ModelAAP::select($item->getCodeAAP()));
-            $retourne[$cle]->setCodeImplication(ModelImplication::select($retourne[$cle]->getCodeImplication()));
-            $retourne[$cle]->setCodeConsortium(ModelConsortium::select($retourne[$cle]->getCodeConsortium()));
-            $retourne[$cle]->setCodeReporting(ModelReporting::select($retourne[$cle]->getCodeReporting()));
-            $retourne[$cle]->setCodeEnCharge(ModelEnCharge::select($retourne[$cle]->getCodeEnCharge()));
-            $retourne[$cle]->setCodeChef(ModelChef::select($retourne[$cle]->getCodeChef()));
-            $retourne[$cle]->setCodeMembreEDF(ModelMembreEDF::select($retourne[$cle]->getCodeMembreEDF()));
-            $retourne[$cle]->setCodeReferent(ModelReferent::select($retourne[$cle]->getCodeReferent()));
-            $retourne[$cle]->setCodeConsultant(ModelConsultant::select($retourne[$cle]->getCodeConsultant()));
-            $retourne[$cle]->setCodeTemperature(ModelTemperature::select($retourne[$cle]->getCodeTemperature()));
+            //$retourne->setCodeSourceFin(ModelSourceFin::select($retourne->getCodeSourceFin()));
+            //$retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
+            //$retourne->setCodeCo(ModelReporting::select($retourne->getCodeReporting()));
+            //$retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
+            //$retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
+            //$retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
         }
         return $retourne;
     }
@@ -352,17 +363,12 @@ class ModelProjet extends Model
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
             foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutProjet::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeAAP(ModelAAP::select($item->getCodeAAP()));
-                $retourne[$cle]->setCodeImplication(ModelImplication::select($retourne[$cle]->getCodeImplication()));
-                $retourne[$cle]->setCodeConsortium(ModelConsortium::select($retourne[$cle]->getCodeConsortium()));
-                $retourne[$cle]->setCodeReporting(ModelReporting::select($retourne[$cle]->getCodeReporting()));
-                $retourne[$cle]->setCodeEnCharge(ModelEnCharge::select($retourne[$cle]->getCodeEnCharge()));
-                $retourne[$cle]->setCodeChef(ModelChef::select($retourne[$cle]->getCodeChef()));
-                $retourne[$cle]->setCodeMembreEDF(ModelMembreEDF::select($retourne[$cle]->getCodeMembreEDF()));
-                $retourne[$cle]->setCodeReferent(ModelReferent::select($retourne[$cle]->getCodeReferent()));
-                $retourne[$cle]->setCodeConsultant(ModelConsultant::select($retourne[$cle]->getCodeConsultant()));
-                $retourne[$cle]->setCodeTemperature(ModelTemperature::select($retourne[$cle]->getCodeTemperature()));
+                $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
+                $retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
+                $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
+                $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
+                $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
+                $retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
             }
             return $retourne;
         } catch (Exception $e) {
@@ -376,27 +382,22 @@ class ModelProjet extends Model
      * @param $codeStatut string (techniquement c'est un string mais c'est un nombre)
      * @return bool|array(ModelProjeteigant)
      */
-    public static function selectAllByStatut($codeStatut)
+    public static function selectAllByStatut($statut)
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeStatut=:codeStatut';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE statut=:statut';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeStatut' => $codeStatut);
+            $values = array('statut' => $statut);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
             foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutProjet::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeAAP(ModelAAP::select($item->getCodeAAP()));
-                $retourne[$cle]->setCodeImplication(ModelImplication::select($retourne[$cle]->getCodeImplication()));
-                $retourne[$cle]->setCodeConsortium(ModelConsortium::select($retourne[$cle]->getCodeConsortium()));
-                $retourne[$cle]->setCodeReporting(ModelReporting::select($retourne[$cle]->getCodeReporting()));
-                $retourne[$cle]->setCodeEnCharge(ModelEnCharge::select($retourne[$cle]->getCodeEnCharge()));
-                $retourne[$cle]->setCodeChef(ModelChef::select($retourne[$cle]->getCodeChef()));
-                $retourne[$cle]->setCodeMembreEDF(ModelMembreEDF::select($retourne[$cle]->getCodeMembreEDF()));
-                $retourne[$cle]->setCodeReferent(ModelReferent::select($retourne[$cle]->getCodeReferent()));
-                $retourne[$cle]->setCodeConsultant(ModelConsultant::select($retourne[$cle]->getCodeConsultant()));
-                $retourne[$cle]->setCodeTemperature(ModelTemperature::select($retourne[$cle]->getCodeTemperature()));
+                $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
+                $retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
+                $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
+                $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
+                $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
+                $retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
             }
             return $retourne;
         } catch (Exception $e) {
@@ -421,17 +422,12 @@ class ModelProjet extends Model
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
             foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutProjet::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeAAP(ModelAAP::select($item->getCodeAAP()));
-                $retourne[$cle]->setCodeImplication(ModelImplication::select($retourne[$cle]->getCodeImplication()));
-                $retourne[$cle]->setCodeConsortium(ModelConsortium::select($retourne[$cle]->getCodeConsortium()));
-                $retourne[$cle]->setCodeReporting(ModelReporting::select($retourne[$cle]->getCodeReporting()));
-                $retourne[$cle]->setCodeEnCharge(ModelEnCharge::select($retourne[$cle]->getCodeEnCharge()));
-                $retourne[$cle]->setCodeChef(ModelChef::select($retourne[$cle]->getCodeChef()));
-                $retourne[$cle]->setCodeMembreEDF(ModelMembreEDF::select($retourne[$cle]->getCodeMembreEDF()));
-                $retourne[$cle]->setCodeReferent(ModelReferent::select($retourne[$cle]->getCodeReferent()));
-                $retourne[$cle]->setCodeConsultant(ModelConsultant::select($retourne[$cle]->getCodeConsultant()));
-                $retourne[$cle]->setCodeTemperature(ModelTemperature::select($retourne[$cle]->getCodeTemperature()));
+                $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
+                $retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
+                $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
+                $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
+                $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
+                $retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
             }
             return $retourne;
         } catch (Exception $e) {
@@ -448,9 +444,8 @@ class ModelProjet extends Model
             $sql = 'SELECT
                       statut,
                       count(codeProjet) as quantity
-                    FROM StatutProjet
-                      JOIN Projet P ON StatutProjet.codeStatut = P.codeStatut
-                    GROUP BY P.codeStatut,statut;';
+                    FROM Projet
+                    GROUP BY P.statut,statut;';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute();
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
@@ -461,34 +456,11 @@ class ModelProjet extends Model
     }
 
     //EN COURS
-    /**
-     * @return float : nombres d'heures équivalent TD réalisés par un professeur
-     */
-    public function getNbHeuresReal()
-    {
-        $Tcours = ModelCours::selectAllByProjet($this->getcodeProjet());
-        if (!$Tcours) {
-            return 0;
-        } else {
-            $r = 0;
-            foreach ($Tcours as $cours) {
-                $t = $cours->getTypeCours();
-                if ($t == 'CM') {
-                    $d = floatval($cours->getDuree()) * 2 / 3;
-                } elseif ($t == 'TP') {
-                    $d = floatval($cours->getDuree()) * 1.5;
-                } else {
-                    $d = floatval($cours->getDuree());
-                }
-                $r = $r + $d;
-            }
-            return $r;
-        }
-    }
 
     /**
      * @return date : échéance dépot du projet
-     */
+        DEPENDS IF AAP OR NOT
+     
     public function getDateDepot()
     {
         $sql = 'SELECT dateDepot
@@ -501,57 +473,41 @@ class ModelProjet extends Model
             'codeAAP' => $this->codeAAP));
         $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
         return $retourne;
-    }
-
-    /**
-     * @return string : statut du projet
-     */
-    public function getStatut()
-    {
-        $sql = 'SELECT nomStatut
-                FROM statutProjet, projet P
-                JOIN projet P ON statutProjet.codeStatut = P.codeStatut
-                WHERE P.codeStatut=:codeStatut';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeProjet' => $this->getcodeProjet(),
-            'codeStatut' => $this->codeStatut));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return $retourne;
-    }
+    }*/
 
     /**
      * @return string : nom du statut du projet
-     */
-    public function getTemperature()
+     
+    public function getDateNotification()
     {
-        $sql = 'SELECT nomTemperature
-                FROM temperature
-                JOIN projet P ON temperature.codeTemperature = P.codeTemperature
-                WHERE P.codeTemperature=:codeTemperature';
+        $sql = 'SELECT dateReponse
+                FROM Reporting
+                JOIN Projet P ON Reporting.codeReporting = P.codeReporting
+                WHERE P.codeReporting=:codeReporting';
         $rep = Model::$pdo->prepare($sql);
         $rep->execute(array(
-            'codeProjet' => $this->getcodeProjet(),
-            'codeTemperature' => $this->codeTemperature));
+            'codeProjet' => $this->codeProjet,
+            'codeReporting' => $this->codeReporting));
         $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
         return $retourne;
-    }
+    }*/
 
     /**
      * @return string : implicationde EDF dans le projet
-     */
-    public function getImplication()
+     
+    public function getProgrammeFin()
     {
-        $sql = 'SELECT nomImplication
-                FROM implication
-                JOIN projet P ON implication.codeImplication = P.codeImplication
-                WHERE P.codeImplication=:codeImplication';
+        $sql = 'SELECT nomSource
+                FROM SourceFinancement
+                JOIN Projet P ON SourceFinancement.codeSource = P.codeSourceFin
+                WHERE P.codeSourceFin=:codeSourceFin
+                AND P.codeProjet=:codeProjet';
         $rep = Model::$pdo->prepare($sql);
         $rep->execute(array(
-            'codeProjet' => $this->getcodeProjet(),
-            'codeStatut' => $this->codeStatut));
+            'codeProjet' => $this->codeProjet,
+            'statut' => $this->statut));
         $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
         return $retourne;
-    }
+    }*/
 
 }

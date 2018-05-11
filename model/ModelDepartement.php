@@ -1,6 +1,6 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
-require_once File::build_path(array('model', 'ModelMembreEDF.php'));
+require_once File::build_path(array('model', 'ModelContact.php'));
 
 class ModelDepartement extends Model
 {

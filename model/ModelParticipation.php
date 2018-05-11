@@ -1,9 +1,9 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
-require_once File::build_path(array('model', 'ModelProjet.php'));
+require_once File::build_path(array('model', 'ModelConsortium.php'));
 require_once File::build_path(array('model', 'ModelParticipant.php'));
 
-class ModelParticipation extends Model
+class ModelParticipation
 {
 
     protected static $object = 'Participation';
@@ -68,13 +68,21 @@ class ModelParticipation extends Model
      *
      * @uses  Model::select()
      */
-    public static function select($primary_value)
+    public static function select($codeConsortium, $codeParticipant)
     {
-        $retourne = parent::select($primary_value);
-        if (!$retourne) return false;
-        $retourne->setCodeStatut(ModelStatutEnseignant::select($retourne->getCodeStatut()));
-        $retourne->setCodeDepartement(ModelDepartement::select($retourne->getCodeDepartement()));
-        return $retourne;
+        try {
+            $sql = 'SELECT * FROM Participation
+            WHERE codeConsortium=:codeConsortium AND codeContact=:codeContact';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeConsortium' => $codeConsortium,
+                            'codeContact' => $codeParticipant);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipation');
+            $retourne = $rep->fetchAll();
+            return $retourne[0];
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -102,15 +110,42 @@ class ModelParticipation extends Model
      * @param $codeDepartement string(1)
      * @return bool|array(ModelEnseignant)
      */
-    public static function selectAllByProjet($codeProjet)
+    public static function selectAllByConsortium($codeConsortium)
     {
         try {
-            $sql = 'SELECT codeParticipant FROM ' . self::$object . ' WHERE codeProjet=:codeProjet';
+            $sql = 'SELECT * FROM Participant C
+            JOIN Participation P ON C.codeParticipant = P.codeParticipant
+            WHERE P.codeConsortium=:codeConsortium';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeProjet' => $codeProjet);
+            $values = array('codeConsortium' => $codeConsortium);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipant');
             $retourne = $rep->fetchAll();
+            foreach ($retourne as $cle => $item) {
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+            }
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function selectAllByParticipant($codeParticipant)
+    {
+        try {
+            $sql = 'SELECT * FROM Consortium C
+            JOIN Participation P ON C.codeConsortium = P.codeConsortium
+            WHERE P.codeParticipant=:codeParticipant';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeParticipant' => $codeParticipant);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelConsortium');
+            $retourne = $rep->fetchAll();
+            foreach ($retourne as $cle => $item) {
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+            }
             return $retourne;
         } catch (Exception $e) {
             return false;

@@ -9,12 +9,11 @@ class ModelConsortium extends Model
 {
 
     protected static $object = 'Consortium';
-    protected static $primary = 'idConsortium';
+    protected static $primary = 'codeConsortium';
 
-    private $idConsortium;
+    private $codeConsortium;
+    private $codeProjet;
     private $acronyme;
-    private $nomConsortium;
-    private $remarque;
 
     /**
      * @return int
@@ -56,49 +55,30 @@ class ModelConsortium extends Model
         return $this->nomConsortium;
     }
 
-    /**
-     * @param mixed
-     */
-    public function setNomConsortium($nomConsortium)
-    {
-        $this->nomConsortium = $nomConsortium;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRemarque()
-    {
-        return $this->remarque;
-    }
-
-    /**
-     * @param mixed
-     */
-    public function setRemarque($remarque)
-    {
-        $this->remarque = $remarque;
-    }
-
-    public static function selectAllByParticipant($codeParticipant)
-    {
+    public static function selectByProjet($codeProjet) {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEns=:codeEns';
+            $sql = 'SELECT * FROM Consortium C
+            JOIN Participation P ON P.codeConsortium = C.codeConsortium
+            WHERE P.codeProjet=:codeProjet';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeEns' => $codeEns);
+            $values = array('codeProjet' => $codeProjet);
             $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelCours');
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelConsortium');
             $retourne = $rep->fetchAll();
             foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setNumSalle(ModelSalle::select($item->getNomBatiment(),$item->getNumSalle()));
-                $retourne[$cle]->setCodeEns(ModelEnseignant::select($item->getCodeEns()));
-                $retourne[$cle]->setCodeModule(ModelModule::select($item->getCodeModule()));
-                // Setter objet classe
-                //$retourne[$cle]->setNomClasse(ModelClasse::select($item->getNomClasse()));
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
             }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }
+
+    public static function select($primary_value)
+        {
+            $retourne = parent::select($primary_value);
+            if (!$retourne) return false;
+            return $retourne;
+        }
 }
