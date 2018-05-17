@@ -4,29 +4,29 @@
             <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
         </div>
         <div class="mdl-card__supporting-text">
-            Nom : <?php echo $Contact->getNomContact() ?><br>
-            Prénom : <?php echo $Contact->getPrenomContact() ?><br>
+            Nom : <?php echo $contact->getNomContact() ?><br>
+            Prénom : <?php echo $contact->getPrenomContact() ?><br>
             <?php
                 if ($entite == false) {
-                    echo "Affiliation : ". $Contact->getAffiliation();
+                    echo "Affiliation : ". $sourceFin->getNomSourceFin();
                 }else {
                     echo "Entité EDF : ". $entite->getNomEntite()."<br>";
                     if ($departement != false) {
                         echo "Département : ". $departement->getNomDepartement()."<br>";
                     }
                 }
-                if ($Contact->getMail() != null) {
-                    echo "Adresse mail : ". $Contact->getMail();
+                if ($contact->getMail() != null) {
+                    echo "Adresse mail : ". $contact->getMail();
                 }
             ?>
         </div>
         <div class="mdl-card__menu">
-            <a href="index.php?controller=contact&action=update&codeContact=<?php echo htmlspecialchars($Contact->getCodeContact()) ?>">
+            <a href="index.php?controller=contact&action=update&codeContact=<?php echo htmlspecialchars($contact->getCodeContact()) ?>">
                 <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
                     <i class="material-icons">edit</i>
                 </button>
             </a>
-            <a href="index.php?controller=contact&action=delete&codeContact=<?php echo htmlspecialchars($Contact->getCodeContact()) ?>">
+            <a href="index.php?controller=contact&action=delete&codeContact=<?php echo htmlspecialchars($contact->getCodeContact()) ?>">
                 <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
                     <i class="material-icons">delete</i>
                 </button>

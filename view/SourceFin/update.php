@@ -1,4 +1,4 @@
-<form method="post" action="index.php?controller=participant&action=<?php echo $_GET['action'] . 'd' ?>">
+<form method="post" action="index.php?controller=uniteDEnseignement&action=<?php echo $_GET['action'] . 'd' ?>">
 
     <div class="mdl-card mdl-shadow--2dp import">
         <div class="mdl-card__title">
@@ -63,7 +63,7 @@
             </div>
 
             <?php
-            if ($_GET['action'] == 'update') echo '<input type="hidden" name="codeParticipant" value="' . $_GET['codeParticipant'] . '">'
+            if ($_GET['action'] == 'update') echo '<input type="hidden" name="nUE" value="' . $_GET['nUE'] . '">'
             ?>
 
             <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect bouton" type="submits">

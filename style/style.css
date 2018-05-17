@@ -13,10 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.detailProjet > div.list {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.content {
+  margin: 20px;
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+}
+
+table.scroll tbody,
+table.scroll thead { display: block; }
+
+table.scroll tbody {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 #membreEDF {
   display: none;
 }
-#notMembre {
+
+#idRD {
   display: none;
 }
 
@@ -40,12 +65,11 @@ a {
 
 #descProj {
   border: 1px solid blue;
-  width: 100%;
+  padding: 10px;
 }
 
 div > .projetPres {
   display: block;
-  color: orange;
 }
 
 .detailProjet {

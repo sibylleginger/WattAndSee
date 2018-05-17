@@ -1,37 +1,20 @@
 <?php
 
-require_once File::build_path(array('model', 'ModelDocument.php'));
+require_once File::build_path(array('model', 'ModelNote.php'));
 require_once File::build_path(array('model', 'ModelProjet.php'));
+require_once File::build_path(array('model', 'ModelUser.php'));
 
 /**
  * Class ControllerUser
  */
-class ControllerDocument
+class ControllerNote
 {
 
     /**
      * @var string
      */
-    protected static $object = 'Document';
+    protected static $object = 'Note';
 
-    /**
-     * Affiche tous les utilisateurs
-     */
-    public static function readAll()
-    {
-        if (isset($_SESSION['login'])) {
-            $tab = ModelDocument::selectAll();
-            if ($tab == false) {
-                ControllerMain::erreur("Il n'y a pas de documents");
-            } else {
-                $view = 'list';
-                $pagetitle = 'Liste des documents';
-                require_once File::build_path(array('view', 'view.php'));
-            }
-        } else {
-            ControllerMain::connect();
-        }
-    }
 
     public static function readAllByProjet() {
         if (isset($_SESSION['login'])) {
@@ -41,9 +24,9 @@ class ControllerDocument
                 $projet = ModelProjet::select($_GET['codeProjet']);
             }
             $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
-            $tabDoc = ModelDocument::selectAllByProjet($projet->getCodeProjet());
+            $tabComment = ModelNote::selectAllByProjet($projet->getCodeProjet());
             $view = 'list';
-            $pagetitle = 'Documents du projet';
+            $pagetitle = 'Commentaires du projet';
             require_once File::build_path(array('view', 'view.php'));
         }else ControllerUser::connect();
     }
@@ -95,10 +78,15 @@ class ControllerDocument
     public static function create()
     {
         if (isset($_SESSION['login'])) {
+            $dateNote = date('Y-m-d');
+            $user = ModelUser::select($_SESSION['login']);
             $projet = ModelProjet::select($_GET['codeProjet']);
+            if (!$projet) {
+                ControllerMain::error('Le projet n\'existe pas');
+            }
             $view = 'create';
-            $pagetitle = 'Ajout d\'un nouveau document';
-            $document = new ModelDocument();
+            $pagetitle = 'Ajouter un nouveau commentaire sur le projet';
+            $note = new ModelNote();
             require File::build_path(array('view', 'view.php'));
         } else ControllerUser::connect();
     }
@@ -109,31 +97,21 @@ class ControllerDocument
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            $allDocNames = ModelDocument::selectAllNames();
-            foreach ($allDocNames as $value) {
-                if ($_FILES['namePJ']['name'] == $value) {
-                    ControllerMain::erreur('Un document avec le même nom existe déja');
-                }
-            }if ($_FILES['namePJ']['error'] == 2) {
-                ControllerMain::erreur("Le document dépasse la taille maximale autorisée");
-            }else {
-                //This is the directory where images will be saved
-                $target = "./docs/";
-                $target = $target . basename( $_FILES['namePJ']['name']);
-                if(move_uploaded_file($_FILES['namePJ']['tmp_name'], $target)) {
-                    //This gets all the other information from the form
-                    $data = array('namePJ' => $_FILES['namePJ']['name'],
-                                    'titre' => $_POST['titre'],
-                                    'codeProjet' => $_POST['codeProjet']);
-                    if(ModelDocument::save($data)) {
-                        ControllerNote::readAllByProjet();
-                    }else ControllerMain::erreur('Impossible d\'ajouter un fichier');
-                } else {
-                    //Gives and error if its not
-                    ControllerMain::erreur("Sorry, there was a problem uploading your file.");
-                }
-            }
-        }else ControllerUser::connect();
+            if (isset($_POST['comment']) && isset($_POST['dateNote']) && isset($_POST['codeProjet']) && isset($_POST['mailUser'])) {
+                $data = array('comment' => $_POST['comment'],
+                            'dateNote' => $_POST['dateNote'],
+                            'codeProjet' => $_POST['codeProjet'],
+                            'mailUser' => $_POST['mailUser']);
+                if (ModelNote::save($data)) {
+                    /*$projet = ModelProjet::select($_POST['codeProjet']);
+                    $controller = 'projet';
+                    $view = 'detail';
+                    $pagetitle = 'Projet: '. $projet->getNomProjet();
+                    require_once File::build_path(array('view', 'view.php'));*/
+                    ControllerNote::readAllByProjet();
+                }else ControllerMain::erreur("Impossible d'ajouter un commentaire");
+            }else ControllerMain::erreur('Il manque des informations');
+        }else ControllerMain::connect();
     }
 
     /**

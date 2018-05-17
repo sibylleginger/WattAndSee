@@ -154,6 +154,9 @@ class ControllerImplication
         if (isset($_SESSION['login'])) {
             if (isset($_POST['codeProjet'])) {
                 if (!ModelImplication::delete($_POST['codeProjet'], $_POST['codeContact'])) ControllerMain::erreur("Impossible de supprime le contact");
+                else {
+                    return "YES";
+                }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }
@@ -163,6 +166,9 @@ class ControllerImplication
         if (isset($_SESSION['login'])) {
             if (isset($_POST['codeProjet'])) {
                 if (!ModelImplication::add($_POST['codeProjet'], $_POST['codeContact'])) ControllerMain::erreur("Impossible d'ajouter le contact");
+                else {
+                    return "YES";
+                }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }

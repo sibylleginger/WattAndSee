@@ -1,6 +1,6 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
-require_once File::build_path(array('model', 'ModelConsortium.php'));
+require_once File::build_path(array('model', 'ModelProjet.php'));
 require_once File::build_path(array('model', 'ModelParticipant.php'));
 
 class ModelParticipation
@@ -68,14 +68,14 @@ class ModelParticipation
      *
      * @uses  Model::select()
      */
-    public static function select($codeConsortium, $codeParticipant)
+    public static function select($codeProjet, $codeParticipant)
     {
         try {
             $sql = 'SELECT * FROM Participation
-            WHERE codeConsortium=:codeConsortium AND codeContact=:codeContact';
+            WHERE codeProjet=:codeProjet AND codeParticipant=:codeParticipant';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeConsortium' => $codeConsortium,
-                            'codeContact' => $codeParticipant);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeParticipant' => $codeParticipant);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipation');
             $retourne = $rep->fetchAll();
@@ -85,24 +85,7 @@ class ModelParticipation
         }
     }
 
-    /**
-     * @deprecated
-     * Renvoie la liste des tous les enseignants
-     * TODO implémenter une fonction de page ?
-     *
-     * @return bool|array(ModelEnseigant)
-     *
-     * @uses  Model::selectAll()
-     */
-    public static function selectAll()
-    {
-        $retourne = parent::selectAll();
-        foreach ($retourne as $cle => $item) {
-            $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-            $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-        }
-        return $retourne;
-    }
+
 
     /**
      * Renvoie tous les enseignants appartenant à un département, false s'il y a une erreur
@@ -110,14 +93,14 @@ class ModelParticipation
      * @param $codeDepartement string(1)
      * @return bool|array(ModelEnseignant)
      */
-    public static function selectAllByConsortium($codeConsortium)
+    public static function selectAllByProjet($codeProjet)
     {
         try {
             $sql = 'SELECT * FROM Participant C
             JOIN Participation P ON C.codeParticipant = P.codeParticipant
-            WHERE P.codeConsortium=:codeConsortium';
+            WHERE P.codeProjet=:codeProjet';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeConsortium' => $codeConsortium);
+            $values = array('codeProjet' => $codeProjet);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipant');
             $retourne = $rep->fetchAll();
@@ -134,19 +117,38 @@ class ModelParticipation
     public static function selectAllByParticipant($codeParticipant)
     {
         try {
-            $sql = 'SELECT * FROM Consortium C
-            JOIN Participation P ON C.codeConsortium = P.codeConsortium
+            $sql = 'SELECT * FROM Projet C
+            JOIN Participation P ON C.codeProjet = P.codeProjet
             WHERE P.codeParticipant=:codeParticipant';
             $rep = Model::$pdo->prepare($sql);
             $values = array('codeParticipant' => $codeParticipant);
             $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelConsortium');
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
             foreach ($retourne as $cle => $item) {
                 //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
                 //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
             }
             return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function add($codeProjet, $codeParticipant) {
+        try {
+            $sql = 'INSERT INTO Participation VALUES (:codeProjet,:codeParticipant,0,0)';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeParticipant' => $codeParticipant);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'Participation');
+            $result = mysql_query($sql);
+            if(isset($result)) {
+               echo "YES";
+            } else {
+               return false;
+            }
         } catch (Exception $e) {
             return false;
         }

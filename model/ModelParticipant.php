@@ -111,14 +111,14 @@ class ModelParticipant extends Model
      * @param $codeDepartement string(1)
      * @return bool|array(ModelEnseignant)
      */
-    public static function selectAllByConsortium($codeConsortium)
+    public static function selectAllByProjet($codeProjet)
     {
         try {
             $sql = 'SELECT * FROM ' . self::$object . ' P
             JOIN Participation C ON C.codeContact = P.codeParticipant
-            WHERE C.codeConsortium=:codeConsortium';
+            WHERE C.codeProjet=:codeProjet';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeConsortium' => $codeConsortium);
+            $values = array('codeProjet' => $codeProjet);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipant');
             $retourne = $rep->fetchAll();

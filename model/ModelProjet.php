@@ -1,6 +1,6 @@
 <?php
 require_once File::build_path(array('model', 'Model.php'));
-require_once File::build_path(array('model', 'ModelStatutProjet.php'));
+require_once File::build_path(array('model', 'ModelDocument.php'));
 require_once File::build_path(array('model', 'ModelSourceFin.php'));
 require_once File::build_path(array('model', 'ModelTheme.php'));
 
@@ -33,7 +33,6 @@ class ModelProjet extends Model
     private $codeSourceFin;
 
     //private $codeType;
-    private $codeConsortium;
     //private $codeContactEDF;
     //private $codeContactExterne;
     private $codeConsultant;
@@ -141,46 +140,6 @@ class ModelProjet extends Model
     public function getContactEDF()
     {
         return $this->codeContactEDF;
-    }
-
-    /**
-     * @param mixed $codeChef
-     
-    public function setContactEDF($codeContactEDF)
-    {
-        $this->codeContactEDF = $codeContactEDF;
-    }
-
-    /**
-     * @return mixed
-     
-    public function getCodeContactExterne()
-    {
-        return $this->codeContactExterne;
-    }
-
-    /**
-     * @param mixed $codeReporting
-     
-    public function setCodeContactExterne($codeContactExterne)
-    {
-        $this->codeContactExterne = $codeContactExterne;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeConsortium()
-    {
-        return $this->codeConsortium;
-    }
-
-    /**
-     * @param mixed $CodeConsortium
-     */
-    public function setCodeConsortium($codeConsortium)
-    {
-        $this->codeConsortium = $codeConsortium;
     }
 
     /**
@@ -347,63 +306,72 @@ class ModelProjet extends Model
         return $retourne;
     }
 
-    /**
-     * Renvoie tous les Projets appartenant à un AAP, false s'il y a une erreur
-     *
-     * @param $codeAAP string(1)
-     * @return bool|array(ModelProjet)
-     */
-    public static function selectAllByAAP($codeAAP)
+    public static function countBySource($codeSourceFin) {
+        try {
+            $sql = 'SELECT * FROM Projets WHERE codeSourceFin=:codeSourceFin';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeSourceFin' => $codeSourceFin);
+            $rep->execute($values);
+            var_dump($rep);
+            return $rep->rowCount();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    public static function selectAllBySource($codeSourceFin)
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeAAP=:codeAAP';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin=:codeSourceFin';
             $rep = Model::$pdo->prepare($sql);
-            $values = array('codeAAP' => $codeAAP);
+            $values = array('codeSourceFin' => $codeSourceFin);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
-                $retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
-                $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
-                $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
-                $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
-                $retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }
 
-    /**
-     * Renvoie tous les Projet appartenant à un statut, false s'il y a une erreur
-     *
-     * @param $codeStatut string (techniquement c'est un string mais c'est un nombre)
-     * @return bool|array(ModelProjeteigant)
-     */
-    public static function selectAllByStatut($statut)
-    {
+    public static function searchBy($data, $conditions) {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE statut=:statut';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE ';
+            foreach ($conditions as $key => $value) {
+                if ($key == count($conditions)-1) {
+                    $sql .= $value;
+                }else $sql .= $value . ' AND ';
+            }
             $rep = Model::$pdo->prepare($sql);
-            $values = array('statut' => $statut);
-            $rep->execute($values);
+            $rep->execute($data);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
-                $retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
-                $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
-                $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
-                $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
-                $retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }
+
+    public static function searchByEntite($data, $conditions) {
+        try {
+            $sql = 'SELECT * FROM Projet P
+            JOIN ProjetSearch S ON P.codeProjet = S.codeProjet
+            WHERE ';
+            foreach ($conditions as $key => $value) {
+                if ($key == count($conditions)-1) {
+                    $sql .= $value;
+                }else $sql .= $value . ' AND ';
+            }
+            $rep = Model::$pdo->prepare($sql);
+            $rep->execute($data);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
+            $retourne = $rep->fetchAll();
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
 
     /**
      * Retourne tous les Projets avec un nom/prenom proche de $npProjet
@@ -423,7 +391,7 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll();
             foreach ($retourne as $cle => $item) {
                 $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
-                $retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
+                //$retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
                 $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
                 $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
                 $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
@@ -441,14 +409,13 @@ class ModelProjet extends Model
     public static function statStatutEtProjet()
     {
         try {
-            $sql = 'SELECT
-                      statut,
-                      count(codeProjet) as quantity
-                    FROM Projet
+            $sql = 'SELECT statut, count(codeProjet) as quantity
+                    FROM Projet P
                     GROUP BY P.statut,statut;';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute();
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
+            var_dump($retourne);
             return $retourne;
         } catch (Exception $e) {
             return $e;

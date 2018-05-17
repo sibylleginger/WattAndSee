@@ -90,6 +90,18 @@ class ControllerParticipation
         } else ControllerUser::connect();
     }
 
+    public static function add()
+    {
+        if (isset($_SESSION['login'])) {
+            if (isset($_POST['codeProjet'])) {
+                if (!ModelParticipation::add($_POST['codeProjet'], $_POST['codeParticipant'])) ControllerMain::erreur("Impossible d'ajouter le contact");
+                else {
+                    return "YES";
+                }
+            } else ControllerMain::erreur("Il manque des informations");
+        } else ControllerUser::connect();
+    }
+
     /**
      * Afficher le formulaire de maj d'un UE avec les champs présélectionné/déjà remplit
      *

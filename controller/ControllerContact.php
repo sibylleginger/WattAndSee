@@ -44,14 +44,15 @@ class ControllerContact
     {
         if (isset($_SESSION['login'])) {
             if (isset($_GET['codeContact'])) {
-                $Contact = ModelContact::select($_GET['codeContact']);
-                if ($Contact == false) ControllerMain::erreur("Ce Contact n'existe pas");
+                $contact = ModelContact::select($_GET['codeContact']);
+                if ($contact == false) ControllerMain::erreur("Ce Contact n'existe pas");
                 else {
-                    $entite = ModelEntite::select($Contact->getCodeEntite());
-                    $departement = ModelDepartement::select($Contact->getCodeDepartement());
+                    $sourceFin = ModelSourceFin::select($contact->getCodeSourceFin());
+                    $entite = ModelEntite::select($contact->getCodeEntite());
+                    $departement = ModelDepartement::select($contact->getCodeDepartement());
                     $tabProjet = ModelImplication::selectAllByContact($_GET['codeContact']);
                     //$tabParticipant = ModelParticipation::selectAllByConsortium($Contact->getCodeConsortium());
-                    $pagetitle = 'Contact ' . $Contact->getNomContact();
+                    $pagetitle = 'Contact ' . $contact->getNomContact();
                     $view = 'detail';
                     require_once File::build_path(array('view', 'view.php'));
                     
@@ -68,13 +69,13 @@ class ControllerContact
     public static function update() {
         if (isset($_GET['codeContact'])){
             if(isset($_SESSION['login'])) {
-                $Contact = ModelContact::select($_GET['codeContact']);
-                if (!$Contact) ControllerMain::erreur("Ce contact n'existe pas");
+                $contact = ModelContact::select($_GET['codeContact']);
+                if (!$contact) ControllerMain::erreur("Ce contact n'existe pas");
                 else {
-                    $sourceFin = ModelSourceFin::select($Contact->getCodeSourceFin());
-                    $tabSource = ModelSourceFin::selectAll();
-                    $tabTheme = ModelTheme::selectAll();
-                    $theme = ModelTheme::select($Contact->getCodeTheme());
+                    $entite = ModelEntite::select($contact->getCodeEntite());
+                    $tabEntite = ModelEntite::selectAll();
+                    $tabDepartement = ModelDepartement::selectAll();
+                    $departement = ModelDepartement::select($contact->getCodeDepartement());
                     $view = 'update';
                     $pagetitle = 'Modification du Contact';
                     require_once File::build_path(array('view', 'view.php'));
@@ -88,33 +89,32 @@ class ControllerContact
     {
         if (isset($_SESSION['login'])) {
             if (isset($_POST['codeContact']) &&
-                isset($_POST['nom']) &&
-                isset($_POST['statut']) &&
-                isset($_POST['financement']) &&
-                isset($_POST['dateDepot']) &&
-                isset($_POST['description']) &&
-                isset($_POST['theme']) &&
-                isset($_POST['role'])) {
+                isset($_POST['nomContact']) &&
+                isset($_POST['prenomContact'])) {
                 /**
                  * Vérification existance
                  */
                 $updateContact = ModelContact::select($_POST['codeContact']);
-                if(!$updateContact || (is_a($updateContact,'Contact') && $_POST['codeContact'] == $updateContact->getCodeContact())) {
+                if(!$updateContact || $_POST['codeContact'] == $updateContact->getCodeContact()) {
                     $data = array(
                         'codeContact' => $_POST['codeContact'],
-                        'codeDiplome' => $_POST['codeDiplome'],
-                        'semestre' => $_POST['semestre'],
-                        'idUE' => $_POST['idUE'],
-                        'heuresTD' => $_POST['heuresTD'],
-                        'heuresTP' => $_POST['heuresTP'],
-                        'heuresCM' => $_POST['heuresCM']
+                        'nomContact' => $_POST['nomContact'],
+                        'prenomContact' => $_POST['prenomContact'],
+                        'mail' => $_POST['mail'],
+                        'codeEntite' => $_POST['codeEntite'],
+                        'codeDepartement' => $_POST['codeDepartement']
                     );
-                    if(!ModelUniteDEnseignement::update($data)) ControllerMain::erreur("Impossible de modifier l'unité d'enseignement");
+                    if(!ModelContact::update($data)) ControllerMain::erreur("Impossible de modifier le contact");
                     else {
-                        $ue = ModelUniteDEnseignement::select($_POST['nUE']);
-                        $modules = ModelModule::selectAllByNUE($ue->getNUE());
+                        if ($_POST['codeSourceFin'] != '') {
+                            $updateContact->setCodeSourceFin($_POST['codeSourceFin']);
+                        }
+                        $tabProjet = ModelImplication::selectAllByContact($_POST['codeContact']);
+                        $contact = ModelContact::select($_POST['codeContact']);
+                        $entite = ModelEntite::select($_POST['codeEntite']);
+                        $departement = ModelDepartement::select($_POST['codeDepartement']);
                         $view = 'detail';
-                        $pagetitle = 'UE : ' . $ue->nommer();
+                        $pagetitle = 'Contact : ' . $contact->getPrenomContact(). ' ' .$contact->getPrenomContact();
                         require_once File::build_path(array('view', 'view.php'));
                     }
                 } else ControllerMain::erreur("Cette unité d'enseignement existe déjà");
@@ -125,9 +125,13 @@ class ControllerContact
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $Contact = new ModelContact();
+            $contact = new ModelContact();
+            if (isset($_GET['codeSourceFin'])) {
+                $codeSourceFin = $_GET['codeSourceFin'];
+            }
             //$sourceFin = ModelSourceFin::select($Contact->getCodeSourceFin());
             $tabEntite = ModelEntite::selectAll();
+            $tabSourceFin = ModelSourceFin::selectAll();
             $tabDepartement = ModelDepartement::selectAll();
             $view = 'update';
             $pagetitle = 'Créer un nouveau contact';
@@ -146,9 +150,28 @@ class ControllerContact
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['nomContact'])) {
-                if (ModelContact::save(['nomContact' => $_POST['nomContact']])) ControllerContact::readAll();
-                else ControllerMain::erreur("Impossible de créer le Contact");
+            if (isset($_POST['nomContact']) &&
+                isset($_POST['prenomContact'])) {
+                if ($_POST['codeSourceFin'] != '') {
+                    if (ModelContact::save(['nomContact' => $_POST['nomContact'],
+                                        'prenomContact' => $_POST['prenomContact'],
+                                        'mail' => $_POST['mail'],
+                                        'codeEntite' => $_POST['codeEntite'],
+                                        'codeSourceFin' => $_POST['codeSourceFin']])) {
+                        ControllerContact::readAll();
+                    }else ControllerMain::erreur("Impossible de créer le contact");
+                }else {
+                    if (ModelContact::save(['nomContact' => $_POST['nomContact'],
+                                        'prenomContact' => $_POST['prenomContact'],
+                                        'mail' => $_POST['mail'],
+                                        'codeEntite' => $_POST['codeEntite']])) {
+                        if ($_POST['codeDepartement'] != '') {
+                            ModelContact::update(['codeContact' => $_POST['codeContact'],
+                                                'codeDepartement' => $_POST['codeDepartement']]);
+                        }
+                        ControllerContact::readAll();
+                    }else ControllerMain::erreur("Impossible de créer le contact");
+                }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }
@@ -165,8 +188,8 @@ class ControllerContact
     public static function delete()
     {
         if(isset($_SESSION['login'])) {
-            if(isset($_GET['nomContact'])) {
-                if(ModelContact::delete($_GET['nomContact'])) ControllerContact::readAll();
+            if(isset($_GET['codeContact'])) {
+                if(ModelContact::delete($_GET['codeContact'])) ControllerContact::readAll();
                 else ControllerMain::erreur("Impossible de supprimer le Contact");
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();

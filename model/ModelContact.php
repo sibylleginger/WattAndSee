@@ -13,7 +13,7 @@ class ModelContact extends Model
     private $nomContact;
     private $prenomContact;
     private $mail;
-    private $affiliation;
+    private $codeSourceFin;
 
     /**
      * @var $codeEntite ModelEntite
@@ -97,6 +97,22 @@ class ModelContact extends Model
     }
 
     /**
+     * @param mixed $codeEntite
+     */
+    public function setCodeSourceFin($codeSourceFin)
+    {
+        $this->codeSourceFin = $codeSourceFin;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCodeSourceFin()
+    {
+        return $this->codeSourceFin;
+    }
+
+    /**
      * Retourne l'enseignant désigné par son code Enseignant, false s'il y a une erreur ou qu'il n'existe pas
      *
      * @param $primary_value
@@ -159,7 +175,7 @@ class ModelContact extends Model
     public static function selectAllHorsEDF()
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite IS NULL';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin IS NOT NULL';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute();
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
@@ -172,7 +188,26 @@ class ModelContact extends Model
         } catch (Exception $e) {
             return false;
         }
-    }    
+    }  
+
+    public static function selectAllBySource($codeSourceFin)
+    {
+        try {
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin=:codeSourceFin';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeSourceFin' => $codeSourceFin);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
+            $retourne = $rep->fetchAll();
+            foreach ($retourne as $cle => $item) {
+                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
+                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
+            }
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * Renvoie tous les enseignant appartenant à un statut, false s'il y a une erreur

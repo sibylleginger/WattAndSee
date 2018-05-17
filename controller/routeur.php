@@ -2,7 +2,7 @@
 
 require_once File::build_path(array('controller', 'ControllerMain.php'));
 require_once File::build_path(array('controller', 'ControllerUser.php'));
-require_once File::build_path(array('controller', 'ControllerConsortium.php'));
+require_once File::build_path(array('controller', 'ControllerSourceFin.php'));
 require_once File::build_path(array('controller', 'ControllerDepartement.php'));
 require_once File::build_path(array('controller', 'ControllerEntite.php'));
 require_once File::build_path(array('controller', 'ControllerContact.php'));
@@ -10,6 +10,8 @@ require_once File::build_path(array('controller', 'ControllerParticipant.php'));
 require_once File::build_path(array('controller', 'ControllerParticipation.php'));
 require_once File::build_path(array('controller', 'ControllerImplication.php'));
 require_once File::build_path(array('controller', 'ControllerProjet.php'));
+require_once File::build_path(array('controller', 'ControllerDocument.php'));
+require_once File::build_path(array('controller', 'ControllerNote.php'));
 
 if (isset($_GET['controller'])) {
     $controller_class = 'Controller' . ucfirst($_GET['controller']);

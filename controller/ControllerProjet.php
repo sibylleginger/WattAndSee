@@ -21,6 +21,48 @@ class ControllerProjet
         } else ControllerUser::connect();
     }
 
+    public static function home() {
+        if (isset($_SESSION['login'])) {
+            $statuts = array('Accepté', 'Refusé', 'Déposé');
+            $stats = ModelProjet::statStatutEtProjet();
+            $script = '
+            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+            <script type="text/javascript">
+                google.charts.load(\'current\', {\'packages\': [\'corechart\']});
+                google.charts.setOnLoadCallback(statut);
+
+                function statut() {
+                    var data = google.visualization.arrayToDataTable([ [\'Statut projet\',\'Nombres de projets\'],
+                        ';
+                        $data = '';
+                        foreach ($stats as $stat) {
+                            $stat['statut'] = addslashes($stat['statut']);
+                            $data .= "['" . $stat['statut'] . "', " . $stat['quantity'] . "],";
+                        }
+                        $data = rtrim($data, ',');
+                        $script .= $data;
+                        $script .= '
+                        
+                    ]);';
+                    var_dump($data);
+                    $script .= '
+                    var options = {
+                        title: \'\'
+                    };
+
+                    var chart = new google.visualization.PieChart(document.getElementById(\'statut\'));
+                    chart.draw(data, options);
+                }
+            </script>
+            ';
+            $tabTheme = ModelTheme::selectAll();
+            $tabEntite = ModelEntite::selectAll();
+            $view = 'home';
+            $pagetitle = 'Rechercher un projet';
+            require_once File::build_path(array('view', 'view.php'));
+        }else ControllerUser::connect();
+    }
+
     /**
      * Affiche le details d'un Projet identifié par son nomProjet @var $_GET ['nomProjet']
      *
@@ -42,8 +84,9 @@ class ControllerProjet
                     $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
                     $theme = ModelTheme::select($projet->getCodeTheme());
                     $tabContact = ModelImplication::selectAllByProjet($_GET['codeProjet']);
-                    $consortium = ModelConsortium::select($projet->getCodeConsortium());
-                    $tabParticipant = ModelParticipant::selectAllByConsortium($consortium->getCodeConsortium());
+                    $tabContactProgramme = ModelContact::selectAllBySource($projet->getCodeSourceFin());
+                    $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
+                    $tabDoc = ModelDocument::selectAllByProjet($projet->getCodeProjet());
                     $pagetitle = 'Projet ' . $projet->getNomProjet();
                     $view = 'detail';
                     require_once File::build_path(array('view', 'view.php'));
@@ -83,13 +126,11 @@ class ControllerProjet
                 $projet = ModelProjet::select($_GET['codeProjet']);
                 if (!$projet) ControllerMain::erreur("Ce projet n'existe pas");
                 else {
-                    $allContactEDF = ModelContact::selectAllEDF();
-                    $allContactHorsEDF = ModelContact::selectAllHorsEDF();
                     $tabContact = ModelImplication::selectAllByProjet($_GET['codeProjet']);
-                    $tabParticipant = ModelParticipation::selectAllByConsortium($projet->getCodeConsortium());
+                    $allContactEDF = ModelContact::selectAllEDF();
+                    $allContactHorsEDF = ModelContact::selectAllBySource($projet->getCodeSourceFin());
                     $allParticipant = ModelParticipant::selectAll();
-                    $consortium = ModelConsortium::select($projet->getCodeConsortium());
-                    $tabParticipant = ModelParticipant::selectAllByConsortium($consortium->getCodeConsortium());
+                    $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
                     $view = 'updateContacts';
                     $pagetitle = 'Modifier les contacts du projet';
                     require_once File::build_path(array('view', 'view.php'));
@@ -114,7 +155,7 @@ class ControllerProjet
                  * Vérification existance
                  */
                 $updateProjet = ModelProjet::select($_POST['codeProjet']);
-                if(!$updateProjet || $_POST['codeProjet'] == $updateProjet->getCodeProjet()) {
+                if($updateProjet && $_POST['codeProjet'] == $updateProjet->getCodeProjet()) {
                     $data = array(
                         'codeProjet' => $_POST['codeProjet'],
                         'nomProjet' => $_POST['nom'],
@@ -127,7 +168,6 @@ class ControllerProjet
                         'budgetEDF' => $_POST['budgetEDF'],
                         'subventionTotal' => $_POST['subventionTotal'],
                         'subventionEDF' => $_POST['subventionEDF'],
-                        'isExceptionnel' => $_POST['isExceptionnel'],
                         'codeSourceFin' => $_POST['financement'],
                         'codeTheme' => $_POST['theme'],
                         
@@ -135,15 +175,16 @@ class ControllerProjet
                     if(!ModelProjet::update($data)) ControllerMain::erreur("Impossible de modifier le projet");
                     else {
                         $projet = ModelProjet::select($_POST['codeProjet']);
-                        $tabContact = ModelImplication::selectAllByProjet($_POST['codeProjet']);
-                        $tabParticipant = ModelParticipation::selectAllByConsortium($projet->getCodeConsortium());
-                        $sourceFin = ModelSourceFin::select($_POST['financement']);
-                        $theme = ModelTheme::select($_POST['theme']);
+                        $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
+                        $theme = ModelTheme::select($projet->getCodeTheme());
+                        $tabContact = ModelImplication::selectAllByProjet($projet->getCodeProjet());
+                        $tabContactProgramme = ModelContact::selectAllBySource($projet->getCodeSourceFin());
+                        $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
                         $view = 'detail';
-                        $pagetitle = 'Projet : ' . $updateProjet->getNomProjet();
+                        $pagetitle = 'Projet : ' . $projet->getNomProjet();
                         require_once File::build_path(array('view', 'view.php'));
                     }
-                } else ControllerMain::erreur("Cette unité d'enseignement existe déjà");
+                } else ControllerMain::erreur("Cette unité n'existe pas");
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }
@@ -196,6 +237,76 @@ class ControllerProjet
                 if(ModelProjet::delete($_GET['nomProjet'])) ControllerProjet::readAll();
                 else ControllerMain::erreur("Impossible de supprimer le Projet");
             } else ControllerMain::erreur("Il manque des informations");
+        } else ControllerUser::connect();
+    }
+
+    public static function searchBy() {
+        if (isset($_SESSION['login'])) {
+            $values = array();
+            $conditions = array();
+            if ($_POST['codeEntite'] != null) { 
+                $values['codeEntite'] = $_POST['codeEntite'];
+                $entiteCondition = "S.codeEntite=:codeEntite";
+                array_push($conditions, $entiteCondition);
+                if ($_POST['codeProjet'] != null) {
+                    $values['codeProjet'] = $_POST['codeProjet'];
+                    $codeCondition = 'S.codeProjet LIKE CONCAT(\'%\',:codeProjet,\'%\')';
+                    array_push($conditions, $codeCondition);
+                }
+                if ($_POST['nomProjet'] != null) {
+                    $values['nomProjet'] = $_POST['nomProjet'];
+                    $nomCondition = 'S.nomProjet LIKE CONCAT(\'%\',:nomProjet,\'%\')';
+                    array_push($conditions, $nomCondition);
+                }
+                if ($_POST['dateDepot'] != null) {
+                    $values['dateDepot'] = $_POST['dateDepot'];
+                    $dateCondition = "YEAR(S.dateDepot)=:dateDepot";
+                    array_push($conditions, $dateCondition);
+                }
+                if ($_POST['codeTheme'] != null) {
+                    $values['codeTheme'] = $_POST['codeTheme'];
+                    $themeCondition = "S.codeTheme=:codeTheme";
+                    array_push($conditions, $themeCondition);
+                }
+                if ($_POST['statut'] != null) {
+                    $values['statut'] = $_POST['statut'];
+                    $statutCondition = "S.statut=:statut";
+                    array_push($conditions, $statutCondition);
+                }
+                $tab = ModelProjet::searchByEntite($values, $conditions);
+                $view = 'list';
+                $pagetitle = 'Projet';
+                require_once File::build_path(array('view', 'view.php'));
+            }elseif ($_POST['codeProjet'] != null) {
+                $values['codeProjet'] = $_POST['codeProjet'];
+                $codeCondition = 'codeProjet LIKE CONCAT(\'%\',:codeProjet,\'%\')';
+                array_push($conditions, $codeCondition);
+            }
+            if ($_POST['nomProjet'] != null) {
+                $values['nomProjet'] = $_POST['nomProjet'];
+                $nomCondition = 'nomProjet LIKE CONCAT(\'%\',:nomProjet,\'%\')';
+                array_push($conditions, $nomCondition);
+            }
+            if ($_POST['dateDepot'] != null) {
+                $values['dateDepot'] = $_POST['dateDepot'];
+                $dateCondition = "YEAR(dateDepot)=:dateDepot";
+                array_push($conditions, $dateCondition);
+            }
+            if ($_POST['codeTheme'] != null) {
+                $values['codeTheme'] = $_POST['codeTheme'];
+                $themeCondition = "codeTheme=:codeTheme";
+                array_push($conditions, $themeCondition);
+            }
+            if ($_POST['statut'] != null) {
+                $values['statut'] = $_POST['statut'];
+                $statutCondition = "statut=:statut";
+                array_push($conditions, $statutCondition);
+            }
+            $tab = ModelProjet::searchBy($values, $conditions);
+            var_dump($tab);
+            $view = 'list';
+            $pagetitle = 'Projet';
+            require_once File::build_path(array('view', 'view.php'));
         } else ControllerUser::connect();
     }
 }

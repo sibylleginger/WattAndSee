@@ -1,10 +1,10 @@
 <?php
-require_once File::build_path(array('model', 'ModelEnseignant.php'));
+require_once File::build_path(array('model', 'ModelSourceFin.php'));
 
-class ControllerEnseignant
+class ControllerSourceFin
 {
 
-    protected static $object = 'enseignant';
+    protected static $object = 'sourceFin';
 
     /**
      * Redirige vers le centre de recherche des enseignants
@@ -15,40 +15,9 @@ class ControllerEnseignant
     public static function readAll()
     {
         if (isset($_SESSION['login'])) {
-            $departements = ModelDepartement::selectAll();
-            $statuts = ModelStatutEnseignant::selectAll();
-            $stats = ModelEnseignant::statStatutEtEnseignant();
-            // Script
-            $script = '
-            <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript">
-    google.charts.load(\'current\', {\'packages\': [\'corechart\']});
-    google.charts.setOnLoadCallback(statut);
-
-    function statut() {
-        var data = google.visualization.arrayToDataTable([ [\'Statut Enseignant\',\'Nombres d\\\'enseignants\'],
-            ';
-            $data = '';
-            foreach ($stats as $stat) {
-                $stat['statut'] = addslashes($stat['statut']);
-                $data .= "['" . $stat['statut'] . "', " . $stat['quantity'] . "],";
-            }
-            $data = rtrim($data, ',');
-            $script .= $data;
-            $script .= '
-            
-        ]);
-        var options = {
-            title: \'\'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById(\'statut\'));
-        chart.draw(data, options);
-    }
-</script>
-            ';
-            $view = 'home';
-            $pagetitle = 'Enseignants';
+            $sourcesFin = ModelSourceFin::selectAll();
+            $view = 'list';
+            $pagetitle = 'Programmes de financement';
             require_once File::build_path(array('view', 'view.php'));
         } else ControllerUser::connect();
     }
@@ -63,13 +32,14 @@ class ControllerEnseignant
     public static function read()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeEns'])) {
-                $ens = ModelEnseignant::select($_GET['codeEns']);
-                if (!$ens) ControllerMain::erreur("L'enseignant n'existe pas");
+            if (isset($_GET['codeSourceFin'])) {
+                $sourceFin = ModelSourceFin::select($_GET['codeSourceFin']);
+                if (!$sourceFin) ControllerMain::erreur("Le programme n'existe pas");
                 else {
-                    $modules = ModelModule::selectDepAndModulesByEns($_GET['codeEns']);
+                    $tabProjet = ModelProjet::selectAllBySource($_GET['codeSourceFin']);
+                    $tabContact = ModelContact::selectAllBySource($_GET['codeSourceFin']);
                     $view = 'detail';
-                    $pagetitle = 'Enseignant : ' . $_GET['codeEns'];
+                    $pagetitle = 'Programme : ' . $sourceFin->getNomSourceFin();
                     require_once File::build_path(array('view', 'view.php'));
                 }
             } else ControllerMain::erreur('Il manque des informations');

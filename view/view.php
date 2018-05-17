@@ -1,81 +1,104 @@
-<?php include_once File::build_path(array('model','ModelErreurExport.php'))?>
+<?php //include_once File::build_path(array('model','ModelErreurExport.php'))?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <title><?php echo $pagetitle; ?></title>
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="./style/material.min.css">
+    <link rel="stylesheet" href="./style/material.css">
     <script src="./style/material.min.js"></script>
+    <script src="./jQuery/jquery-3.3.1.min.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <link rel="stylesheet" href="./style/materialize.css">
-    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css">
-    <link rel="stylesheet" href="https://getmdl.io/templates/dashboard/styles.css">
-    <link rel="stylesheet" href="./style/styles.css">
-    <?php
-    if(isset($script)) echo $script;
-    ?>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="./script.js"></script>
+    <link rel="stylesheet" href="./style/style.css">
 </head>
 <body>
-<div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
-    <header class="demo-header mdl-layout__header mdl-color--grey-100 mdl-color-text--grey-600">
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+
+      <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
         <div class="mdl-layout__header-row">
-            <span class="mdl-layout-title">WATT AND SEE</span>
-            <div class="mdl-layout-spacer"></div>
-            <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
-                <i class="material-icons">more_vert</i>
-            </button>
-            <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
-                <li class="mdl-menu__item">Contact</li>
-                <a href="https://github.com/MFrizzy/GestionHeuresEnseignementIUT">
+          <span class="android-title mdl-layout-title watt">WATT AND SEE</span>
+          <!-- Add spacer, to align navigation to the right in desktop -->
+          <div class="android-header-spacer mdl-layout-spacer"></div>
+          <!--<div class="android-search-box mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right mdl-textfield--full-width">
+            <label class="mdl-button mdl-js-button mdl-button--icon" for="search-field">
+              <i class="material-icons">search</i>
+            </label>
+            <div class="mdl-textfield__expandable-holder">
+              <input class="mdl-textfield__input" type="text" id="search-field">
+            </div>
+          </div>-->
+          <!-- Navigation -->
+          <div class="android-navigation-container">
+            <nav class="android-navigation mdl-navigation">
+
+              <a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php">Accueil</a>
+                <?php
+                if (isset($_SESSION['login'])) {
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=readAll">Projets</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=sourcefin&action=readAll">Programmes</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=extract">Statistiques</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=contact&action=readAll">Contacts</a>';
+                    
+                }
+                ?>
+
+                <?php
+                if (isset($_SESSION['login']) && $_SESSION['is_admin']) {
+                    echo '<a class="mdl-navigation__link" href="index.php?controller=user&action=readAll"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">face</i></a>';
+                }
+                ?>           
+              
+              
+              
+              
+            </nav>
+          </div>
+          <span class="android-mobile-title mdl-layout-title">
+            <span class="android-logo-image">WATT AND SEE</span>
+          </span>
+          <button class="android-more-button mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect" id="more-button">
+            <i class="material-icons">more_vert</i>
+          </button>
+          <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="more-button">
+            <a href="index.php?controller=user&action=read"><li class="mdl-menu__item">Voir mon profil</li></a>
+            <a href="index.php?controller=user&action=deconnect"><li class="mdl-menu__item">Se déconnecter</li></a>
+                        <!--<li class="mdl-menu__item"><i class="material-icons">add</i>Add another account...</li>-->
+            <li class="mdl-menu__item">Contact</li>
+                <a href="https://github.com/sibylleginger/WattAndSee">
                     <li class="mdl-menu__item">Github</li>
                 </a>
-            </ul>
+          </ul>
         </div>
-    </header>
-    <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-        <header class="demo-drawer-header">
-            <!--<i class="material-icons demo-avatar">person</i>-->
-            <?php if (isset($_SESSION['login'])) echo '
-            <div class="demo-avatar-dropdown">
-                <span>' . $_SESSION['login'] . '</span>
-                <div class="mdl-layout-spacer"></div>
-                <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
-                    <i class="material-icons" role="presentation">arrow_drop_down</i>
-                    <span class="visuallyhidden">Accounts</span>
-                </button>
-                <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
-                    <a href="index.php?controller=user&action=read"><li class="mdl-menu__item">Voir mon profil</li></a>
-                    <a href="index.php?controller=user&action=deconnect"><li class="mdl-menu__item">Se déconnecter</li></a>
-                    <!--<li class="mdl-menu__item"><i class="material-icons">add</i>Add another account...</li>-->
-                </ul>
-            </div>';
-            ?>
-        </header>
-        <nav class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
-            <a class="mdl-navigation__link" href="index.php"><i class="mdl-color-text--blue-grey-400 material-icons"
-                                                                role="presentation">home</i>Accueil</a>
-            <?php
-            if (isset($_SESSION['login'])) {
-                echo '<a class="mdl-navigation__link" href="index.php?controller=projet&action=readAll"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">school</i>Projets</a>';
-                echo '<a class="mdl-navigation__link" href="index.php?controller=AAP&action=readAll"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">business</i>Appels à projets</a>';
-                echo '<a class="mdl-navigation__link" href="index.php?controller=projet&action=readAll"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">person</i>Tableau de bord</a>';
-                echo '<a class="mdl-navigation__link" href="index.php?controller=projet&action=extract"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">file_upload</i>Statistiques</a>';
-                
-            }
-            ?>
+      </div>
 
-            <?php
-            if (isset($_SESSION['login']) && $_SESSION['is_admin']) {
-                echo '<a class="mdl-navigation__link" href="index.php?controller=user&action=readAll"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">face</i>Utilisateurs</a>';
-            }
-            ?>
-            <div class="mdl-layout-spacer"></div>
-            <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons"
-                                                       role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
+      <div class="android-drawer mdl-layout__drawer">
+        <span class="mdl-layout-title">
+          WATT AND SEE
+        </span>
+        <nav class="mdl-navigation">
+          <a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php">Accueil</a>
+                <?php
+                if (isset($_SESSION['login'])) {
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=readAll">Projets</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=sourcefin&action=readAll">Programmes</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=extract">Statistiques</a>';
+                    
+                }
+                ?>
+
+                <?php
+                if (isset($_SESSION['login']) && $_SESSION['is_admin']) {
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=user&action=readAll">Utilisateurs</a>';
+                }
+                ?>  
+          <div class="android-drawer-separator"></div>
         </nav>
-    </div>
+      </div>
     <main class="mdl-layout__content mdl-color--grey-100">
         <div class="page-content">
             <?php
