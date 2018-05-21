@@ -1,4 +1,6 @@
-<form method="post" action="index.php?controller=contact&action=<?php echo $_GET['action'] . 'd' ?>">
+<form method="post" action="index.php?controller=contact&action=<?php echo $_GET['action'] . 'd';
+    if(isset($_GET['codeSourceFin'])) echo '&codeSourceFin='.$codeSourceFin;
+    elseif(isset($_GET['codeProjet'])) echo '&codeProjet='.$codeProjet ?>">
 
     <div class="mdl-card mdl-shadow--2dp import">
         <div class="mdl-card__title">
@@ -76,7 +78,14 @@
             </div>
 
             <?php
-            if ($_GET['action'] == 'update') echo '<input type="hidden" name="codeContact" value="' . $_GET['codeContact'] . '">'
+            if ($_GET['action'] == 'update') echo '<input type="hidden" name="codeContact" value="' . $_GET['codeContact'] . '">';
+            if (isset($_GET['codeProjet'])) echo '<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="chefProjet">
+                <input type="checkbox" id="chefProjet" name="chefProjet" value="1" class="mdl-checkbox__input">
+                <span class="mdl-checkbox__label">Chef du projet</span>
+            </label>';
+            elseif (isset($_GET['codeSourceFin'])) echo '<input type="hidden" name="codeSourceFin" value="' . $_GET['codeSourceFin'] . '">'; {
+                # code...
+            }
             ?>
 
             <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect bouton" type="submits">

@@ -42,7 +42,7 @@ class ControllerSourceFin
                     $pagetitle = 'Programme : ' . $sourceFin->getNomSourceFin();
                     require_once File::build_path(array('view', 'view.php'));
                 }
-            } else ControllerMain::erreur('Il manque des informations');
+            }else ControllerMain::erreur('Il manque des informations');
         } else ControllerUser::connect();
     }
 
@@ -55,11 +55,9 @@ class ControllerSourceFin
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $ens = new ModelEnseignant();
-            $departements = ModelDepartement::selectAll();
-            $statuts = ModelStatutEnseignant::selectAll();
+            $sourceFin = new ModelSourceFin();
             $view = 'update';
-            $pagetitle = 'Créer un enseignant';
+            $pagetitle = 'Créer un programme de financement';
             require_once File::build_path(array('view', 'view.php'));
         } else ControllerUser::connect();
     }

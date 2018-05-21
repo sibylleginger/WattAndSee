@@ -92,8 +92,11 @@
             //$contact = ModelContact::select($IDContact);
             if ($contact->getCodeEntite() != null) {
                 $entite = ModelEntite::select($contact->getCodeEntite());
-
-                echo '<tr>
+                echo '<tr';
+                if ($chef && $contact->getCodeContact() == $chef->getCodeContact()) {
+                    echo ' style="background-color: #b9e2f7;"';
+                }
+                echo '>
                     <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                     <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
                     <td class="mdl-data-table__cell--non-numeric">'.$entite->getNomEntite().'</td>
@@ -122,7 +125,6 @@
                 echo '<tr>
                     <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                     <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                    <td class="mdl-data-table__cell--non-numeric">'.$contact->getAffiliation().'</td>
                     <td class="mdl-data-table__cell--non-numeric">'.$contact->getMail().'</td>
                 </tr>';
             }

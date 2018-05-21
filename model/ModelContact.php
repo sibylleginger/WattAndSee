@@ -157,7 +157,7 @@ class ModelContact extends Model
     public static function selectAllEDF()
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite IS NOT NULL';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite IS NOT NULL ORDER BY nomContact ASC';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute();
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
@@ -175,7 +175,7 @@ class ModelContact extends Model
     public static function selectAllHorsEDF()
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin IS NOT NULL';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite IS NULL ORDER BY nomContact ASC';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute();
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
@@ -193,7 +193,7 @@ class ModelContact extends Model
     public static function selectAllBySource($codeSourceFin)
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin=:codeSourceFin';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin=:codeSourceFin ORDER BY nomContact ASC';
             $rep = Model::$pdo->prepare($sql);
             $values = array('codeSourceFin' => $codeSourceFin);
             $rep->execute($values);

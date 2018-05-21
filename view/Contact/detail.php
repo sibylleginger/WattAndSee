@@ -1,5 +1,6 @@
 <div class="detailProjet">
     <!--<div class="mdl-card mdl-shadow--2dp detailBatiment2">-->
+        <div>
         <div class="mdl-card__title">
             <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
         </div>
@@ -8,7 +9,11 @@
             Prénom : <?php echo $contact->getPrenomContact() ?><br>
             <?php
                 if ($entite == false) {
-                    echo "Affiliation : ". $sourceFin->getNomSourceFin();
+                    if (!$sourceFin) {
+                        echo 'Pas d\'affiliation';
+                    }else {
+                        echo "Affiliation : ". $sourceFin->getNomSourceFin();
+                    }
                 }else {
                     echo "Entité EDF : ". $entite->getNomEntite()."<br>";
                     if ($departement != false) {
@@ -32,6 +37,7 @@
                 </button>
             </a>
         </div>
+    </div>
     <!--</div>-->
 
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">

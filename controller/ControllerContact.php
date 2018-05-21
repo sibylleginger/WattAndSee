@@ -75,6 +75,7 @@ class ControllerContact
                     $entite = ModelEntite::select($contact->getCodeEntite());
                     $tabEntite = ModelEntite::selectAll();
                     $tabDepartement = ModelDepartement::selectAll();
+                    $tabSourceFin = ModelSourceFin::selectAll();
                     $departement = ModelDepartement::select($contact->getCodeDepartement());
                     $view = 'update';
                     $pagetitle = 'Modification du Contact';
@@ -95,20 +96,23 @@ class ControllerContact
                  * Vérification existance
                  */
                 $updateContact = ModelContact::select($_POST['codeContact']);
-                if(!$updateContact || $_POST['codeContact'] == $updateContact->getCodeContact()) {
+                if($_POST['codeContact'] == $updateContact->getCodeContact()) {
+
                     $data = array(
                         'codeContact' => $_POST['codeContact'],
                         'nomContact' => $_POST['nomContact'],
                         'prenomContact' => $_POST['prenomContact'],
-                        'mail' => $_POST['mail'],
-                        'codeEntite' => $_POST['codeEntite'],
-                        'codeDepartement' => $_POST['codeDepartement']
-                    );
+                        'mail' => $_POST['mail']);
+                    if ($_POST['codeSourceFin'] != '') {
+                        $data['codeSourceFin'] = $_POST['codeSourceFin'];
+                    }else {
+                        $data['codeEntite'] = $_POST['codeEntite'];
+                        if ($_POST['codeDepartement'] != '') {
+                            $data['codeDepartement'] = $_POST['codeDepartement'];
+                        }
+                    }
                     if(!ModelContact::update($data)) ControllerMain::erreur("Impossible de modifier le contact");
                     else {
-                        if ($_POST['codeSourceFin'] != '') {
-                            $updateContact->setCodeSourceFin($_POST['codeSourceFin']);
-                        }
                         $tabProjet = ModelImplication::selectAllByContact($_POST['codeContact']);
                         $contact = ModelContact::select($_POST['codeContact']);
                         $entite = ModelEntite::select($_POST['codeEntite']);
@@ -128,6 +132,8 @@ class ControllerContact
             $contact = new ModelContact();
             if (isset($_GET['codeSourceFin'])) {
                 $codeSourceFin = $_GET['codeSourceFin'];
+            }else {
+                $codeProjet = $_GET['codeProjet'];
             }
             //$sourceFin = ModelSourceFin::select($Contact->getCodeSourceFin());
             $tabEntite = ModelEntite::selectAll();
@@ -152,25 +158,31 @@ class ControllerContact
         if (isset($_SESSION['login'])) {
             if (isset($_POST['nomContact']) &&
                 isset($_POST['prenomContact'])) {
+                $data = array('nomContact' => $_POST['nomContact'],
+                            'prenomContact' => $_POST['prenomContact'],
+                            'mail' => $_POST['mail']);
                 if ($_POST['codeSourceFin'] != '') {
-                    if (ModelContact::save(['nomContact' => $_POST['nomContact'],
-                                        'prenomContact' => $_POST['prenomContact'],
-                                        'mail' => $_POST['mail'],
-                                        'codeEntite' => $_POST['codeEntite'],
-                                        'codeSourceFin' => $_POST['codeSourceFin']])) {
-                        ControllerContact::readAll();
-                    }else ControllerMain::erreur("Impossible de créer le contact");
+                    $data['codeSourceFin'] = $_POST['codeSourceFin'];
+                    if (!ModelContact::save($data)) ControllerMain::erreur("Impossible de créer le contact");
+                    elseif(isset($_GET['codeSourceFin']))  require_once ControllerSourceFin::read();
+                    else ControllerContact::readAll();
                 }else {
-                    if (ModelContact::save(['nomContact' => $_POST['nomContact'],
-                                        'prenomContact' => $_POST['prenomContact'],
-                                        'mail' => $_POST['mail'],
-                                        'codeEntite' => $_POST['codeEntite']])) {
-                        if ($_POST['codeDepartement'] != '') {
-                            ModelContact::update(['codeContact' => $_POST['codeContact'],
-                                                'codeDepartement' => $_POST['codeDepartement']]);
-                        }
+                    $data['codeEntite'] = $_POST['codeEntite'];
+                    if ($_POST['codeDepartement'] != '') {
+                        $data['codeDepartement'] = $_POST['codeDepartement'];
+                    }
+                    if (isset($_GET['codeProjet'])) {
+                        $codeContact = ModelContact::save($data);
+                        if (!$codeContact) ControllerMain::erreur("Impossible de créer le contact");
+                        if(!ModelContact::select($codeContact)) ControllerMain::erreur(var_dump($codeContact));
+                        if (!ModelImplication::add($_GET['codeProjet'],$codeContact,$_GET['chefProjet'])) {
+                            ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                        }else {
+                            ControllerProjet::updateContact();
+                        }   
+                    }else {
                         ControllerContact::readAll();
-                    }else ControllerMain::erreur("Impossible de créer le contact");
+                    }
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();

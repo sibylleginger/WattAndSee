@@ -81,6 +81,7 @@ class ControllerProjet
                 $projet = ModelProjet::select($_GET['codeProjet']);
                 if ($projet == false) ControllerMain::erreur("Ce Projet n'existe pas");
                 else {
+                    $chef = ModelImplication::selectChef($projet->getCodeProjet());
                     $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
                     $theme = ModelTheme::select($projet->getCodeTheme());
                     $tabContact = ModelImplication::selectAllByProjet($_GET['codeProjet']);
@@ -126,9 +127,11 @@ class ControllerProjet
                 $projet = ModelProjet::select($_GET['codeProjet']);
                 if (!$projet) ControllerMain::erreur("Ce projet n'existe pas");
                 else {
+                    $chef = ModelImplication::selectChef($projet->getCodeProjet());
                     $tabContact = ModelImplication::selectAllByProjet($_GET['codeProjet']);
                     $allContactEDF = ModelContact::selectAllEDF();
-                    $allContactHorsEDF = ModelContact::selectAllBySource($projet->getCodeSourceFin());
+                    $allContactHorsEDF = ModelContact::selectAllHorsEDF();
+                    $allContactSource = ModelContact::selectAllBySource($projet->getCodeSourceFin());
                     $allParticipant = ModelParticipant::selectAll();
                     $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
                     $view = 'updateContacts';

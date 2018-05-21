@@ -1,0 +1,5 @@
+/*View for project search*/
+CREATE VIEW ProjetSearch AS
+SELECT P.codeProjet, P.nomProjet, P.dateDepot, C.codeEntite, P.codeTheme, P.statut
+FROM Projet P, Contact C, Implication I
+WHERE I.codeProjet=P.codeProjet AND I.codeContact=C.codeContact AND I.chefProjet=1;

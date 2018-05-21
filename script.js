@@ -1,4 +1,23 @@
 $(function(){
+	$(document).on('click','setAsChef', function() {
+		var codeContact = $(this).attr('class');
+		var row = $(this).parent().parent();
+        var codeProjet = row.attr('class');
+		$.ajax({
+            type:'POST',
+            url:'index.php?controller=implication&action=setChef',
+            data:{'codeContact':codeContact,'codeProjet':codeProjet},
+            success: function(data){
+                if(data!=false){
+                	row.css('background-color', 'red');
+                }else{
+                	window.alert('error');
+                }
+            }
+
+        });
+	});
+
 	$(document).on('change', '#codeEntite', function() {
 		var isRD = $('#isRD');
 		var selectedOption = $('#codeEntite option:selected').val();
@@ -24,18 +43,19 @@ $(function(){
 	});
 
     $(document).on('click','.deleteContact',function(){
-        var codeContact = $(this).attr('id');
+        var classContact = $(this).attr('class');
+        var codeContact = classContact.split(' ')[1];
         var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
         $.ajax({
             type:'POST',
             url:'index.php?controller=implication&action=delete',
-            data:{'codeContact':codeContact, 'codeProjet':codeProjet},
+            data:{'codeContact':codeContact,'codeProjet':codeProjet},
             success: function(data){
-                 if(data!=null){
+                 if(data=='true'){
                     row.fadeOut().remove();
                  }else{
-                 	window.alert('error');
+                 	window.alert(data);
                  }
              }
 
@@ -43,18 +63,19 @@ $(function(){
         });
 
     $(document).on('click','.addContact',function(){
-        var codeContact = $(this).attr('id');
+        var classContact = $(this).attr('class');
+        var codeContact = classContact.split(' ')[1];
         var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
         $.ajax({
             type:'POST',
             url:'index.php?controller=implication&action=add',
-            data:{'codeContact':codeContact, 'codeProjet':codeProjet},
+            data:{'codeContact':codeContact,'codeProjet':codeProjet},
             success: function(data){
-                 if(data!=null){
+                 if(data=="true"){
                     row.fadeOut().remove();
                  }else{
-                 	window.alert('error');
+                 	window.alert(data);
                  }
              }
 
@@ -62,7 +83,8 @@ $(function(){
         });
 
     $(document).on('click','.deleteParticipant',function(){
-        var codeParticipant = $(this).attr('id');
+        var classParticipant = $(this).attr('class');
+        var codeParticipant = classContact.split(' ')[1];
         var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
         $.ajax({
@@ -81,7 +103,8 @@ $(function(){
         });
 
     $(document).on('click','.addParticipant',function(){
-        var codeParticipant = $(this).attr('id');
+        var classParticipant = $(this).attr('class');
+        var codeParticipant = classContact.split(' ')[1];
         var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
         $.ajax({

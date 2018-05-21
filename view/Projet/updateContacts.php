@@ -1,12 +1,12 @@
 <form method="post" action="index.php?controller=projet&action=updateContacts">
-    <div style="margin: auto; display: flex; align-items: flex-start;">
+    <div class="detailProjet">
         <div class="mdl-card__title">
-            <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
+            <h2 class="mdl-card__title-text"><?php echo $pagetitle.' '.$projet->getNomProjet() ?></h2>
         </div>
         <div class="mdl-card__supporting-text">
         <div class="updateContactBox">
             <h5>Contacts EDF</h5>
-            <a href="index.php?controller=contact&action=create" class="addNew">
+            <a href="index.php?controller=contact&action=create&codeProjet=<?php echo $projet->getCodeProjet()?>" class="addNew">
                 <i class="material-icons">add</i>
             </a>
         </div>
@@ -17,6 +17,7 @@
                     <th class="mdl-data-table__cell--non-numeric">Nom</th>
                     <th class="mdl-data-table__cell--non-numeric">Prenom</th>
                     <th class="mdl-data-table__cell--non-numeric">Supprimer</th>
+                    <th class="mdl-data-table__cell--non-numeric">Chef de projet</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -25,11 +26,15 @@
                 foreach ($tabContact as $contact) {
                     //$contact = ModelContact::select($IDContact);
                     if ($contact->getCodeEntite() != null) {
+                        if ($chef && $contact->getCodeContact() == $chef->getCodeContact()) {
+
+                        }
                         echo '<tr class="'.$projet->getCodeProjet().'">
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact" id="'.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
-                        </tr>';
+                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact '.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a class="setAsChef" id="" href=""><i class="material-icons">check</i></a></td>';
+                        echo '</tr>';      
                     }
                 }
                 ?>              
@@ -52,7 +57,7 @@
                         echo '<tr class="'.$projet->getCodeProjet().'">
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="addContact" id="'.$contact->getCodeContact().'" href=""><i class="material-icons">add</i></a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a class="addContact '.$contact->getCodeContact().'" href=""><i class="material-icons">add</i></a></td>
                         </tr>';
                     }
                 }
@@ -85,7 +90,7 @@
                         echo '<tr class="'.$projet->getCodeProjet().'">
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact" id="'.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact '.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
                         </tr>';
                     }
                 }
@@ -109,7 +114,7 @@
                         echo '<tr class="'.$projet->getCodeProjet().'">
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="addContact" id="'.$contact->getCodeContact().'" href=""><i class="material-icons">add</i></a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a class="addContact '.$contact->getCodeContact().'" href=""><i class="material-icons">add</i></a></td>
                         </tr>';
                 }
                 ?>
@@ -137,7 +142,7 @@
                         echo '<tr class="'.$projet->getCodeProjet().'">
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
                                 <td class="mdl-data-table__cell--non-numeric">'.$participant->getNationalite().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteParticipant" id="'.$participant->getCodeParticipant().'" href=""><i class="material-icons">delete</i></a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteParticipant '.$participant->getCodeParticipant().'" href=""><i class="material-icons">delete</i></a></td>
                         </tr>';
                     }
                 }
@@ -160,7 +165,7 @@
                     echo '<tr class="'.$projet->getCodeProjet().'">
                         <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
                         <td class="mdl-data-table__cell--non-numeric">'.$participant->getNationalite().'</td>
-                        <td class="mdl-data-table__cell--non-numeric"><a class="addParticipant" id="'.$participant->getCodeParticipant().'" href=""><i class="material-icons">add</i></a></td>
+                        <td class="mdl-data-table__cell--non-numeric"><a class="addParticipant '.$participant->getCodeParticipant().'" href=""><i class="material-icons">add</i></a></td>
                     </tr>';
                 }
                 ?>

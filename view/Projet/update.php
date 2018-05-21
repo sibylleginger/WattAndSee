@@ -14,17 +14,22 @@
             </div>
             <br>
             <label class="select" for="statut">Statut</label>
-            <select style="display: block;" required name="statut" id="statut" value="<?php echo $projet->getStatut() ?>">
-                <option value="Accepté">Accepté</option>';
-                <option value="Accepté">Refusé</option>';
-                <option value="Accepté">Déposé</option>';
+            <select style="display: block;" required name="statut" id="statut">
+                <option value="Accepté" <?php if ($projet->getStatut()=='Accepté') echo "selected "?> >Accepté</option>';
+                <option value="Refusé" <?php if ($projet->getStatut()=='Refusé') echo "selected "?> >Refusé</option>';
+                <option value="Déposé" <?php if ($projet->getStatut()=='Déposé') echo "selected "?> >Déposé</option>';
+                <option value="En attente" <?php if ($projet->getStatut()=='En attente') echo "selected "?> >En attente</option>';
             </select>
 
             <label class="select" for="financement">Programme de financement</label>
-            <select style="display: block;" required name="financement" id="financement" value="<?php echo $projet->getCodeSourceFin() ?>">
+            <select style="display: block;" required name="financement" id="financement">
+                <option value=""></option>
                 <?php 
                     foreach ($tabSource as $source) {
                         echo '<option value="'.$source->getCodeSourceFin().'"';
+                        if ($projet->getCodeSourceFin()!=null && $projet->getCodeSourceFin()==$source->getCodeSourceFin()) {
+                            echo ' selected';
+                        }
                         echo '>'.$source->getNomSourceFin().'</option>';
                     }
                 ?>
@@ -57,10 +62,14 @@
                 <i class="material-icons">add</i>
             </button>
             </a>
-            <select style="display: block;" required name="theme" id="theme" value="<?phph echo $projet->getCodeTheme() ?>">
+            <select style="display: block;" required name="theme" id="theme">
+                <option value=""></option>
                 <?php 
                     foreach ($tabTheme as $theme) {
                         echo '<option value="'.$theme->getCodeTheme().'"';
+                        if ($projet->getCodeTheme()==$theme->getCodeTheme()) {
+                            echo ' selected';
+                        }
                         echo '>'.$theme->getNomTheme().'</option>';
                     }
                 //ADD NEW
@@ -69,8 +78,8 @@
 
             <label class="select" for="role">Role de EDF dans le projet</label>
             <select style="display: block;" required name="role" id="role" value="<?php echo $projet->getRole() ?>">
-                <option value="Partenaire">Partenaire</option>';
-                <option value="Coordinateur">Coordinateur</option>';
+                <option value="Partenaire" <?php if ($projet->getRole()=='Partenaire') echo "selected "?> >Partenaire</option>';
+                <option value="Coordinateur" <?php if ($projet->getRole()=='Coordinateur') echo "selected "?> >Coordinateur</option>';
             </select>
 
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

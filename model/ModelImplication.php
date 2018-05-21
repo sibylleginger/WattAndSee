@@ -71,13 +71,20 @@ class ModelImplication
      *
      * @uses  Model::select()
      */
-    public static function select($primary_value)
+    public static function select($codeProjet, $codeContact)
     {
-        $retourne = parent::select($primary_value);
-        if (!$retourne) return false;
-        $retourne->setCodeStatut(ModelStatutEnseignant::select($retourne->getCodeStatut()));
-        $retourne->setCodeDepartement(ModelDepartement::select($retourne->getCodeDepartement()));
-        return $retourne;
+        try {
+            $sql = 'SELECT * FROM Implication WHERE codeProjet=:codeProjet AND codeContact=:codeContact';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeContact' => $codeContact);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelImplication');
+            $retourne = $rep->fetchAll();
+            return $retourne[0];
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**
@@ -147,6 +154,23 @@ class ModelImplication
         }
     }
 
+    public static function selectChef($codeProjet) {
+        try {
+            $sql = 'SELECT * FROM Contact C
+            JOIN Implication I ON C.codeContact=I.codeContact
+            WHERE I.chefProjet="1" AND I.codeProjet=:codeProjet';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
+            $retourne = $rep->fetchAll();
+            if (empty($retourne)) return false;
+            return $retourne[0];
+        } catch (Exception $e) {
+            
+        }
+    }
+
     public static function delete($codeProjet, $codeContact) {
         try {
             $sql = 'DELETE FROM Implication WHERE codeProjet=:codeProjet AND codeContact=:codeContact';
@@ -154,34 +178,23 @@ class ModelImplication
             $values = array('codeProjet' => $codeProjet,
                             'codeContact' => $codeContact);
             $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelImplication');
-            $result = mysql_query($sql);
-            if(isset($result)) {
-               echo "YES";
-            } else {
-               echo "NO";
-            }
+            return true;
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public static function add($codeProjet, $codeContact) {
+    public static function add($codeProjet, $codeContact, $chefProjet) {
         try {
-            $sql = 'INSERT INTO Implication VALUES (:codeProjet,:codeContact, 0)';
+            $sql = 'INSERT INTO Implication VALUES (:codeProjet,:codeContact,:chefProjet)';
             $rep = Model::$pdo->prepare($sql);
             $values = array('codeProjet' => $codeProjet,
-                            'codeContact' => $codeContact);
+                            'codeContact' => $codeContact,
+                            'chefProjet' => $chefProjet);
             $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelImplication');
-            $result = mysql_query($sql);
-            if(isset($result)) {
-               echo "YES";
-            } else {
-               echo "NO";
-            }
+            return true;
         } catch (Exception $e) {
-            return false;
+            return $e->getMessage();;
         }
     }
 

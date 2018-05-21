@@ -49,13 +49,9 @@
 
                 <?php
                 if (isset($_SESSION['login']) && $_SESSION['is_admin']) {
-                    echo '<a class="mdl-navigation__link" href="index.php?controller=user&action=readAll"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">face</i></a>';
+                    echo '<a class="mdl-navigation__link" href="index.php?controller=user&action=readAll"><i class="material-icons" role="presentation">face</i></a>';
                 }
-                ?>           
-              
-              
-              
-              
+                ?>
             </nav>
           </div>
           <span class="android-mobile-title mdl-layout-title">
@@ -74,6 +70,10 @@
                 </a>
           </ul>
         </div>
+        <?php if ($view=='detail') {
+            echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller='.self::$object.'&action=readAll"><i class="material-icons" style="color: black;">arrow_back</i>Retour liste</a>';
+        }
+        ?>
       </div>
 
       <div class="android-drawer mdl-layout__drawer">

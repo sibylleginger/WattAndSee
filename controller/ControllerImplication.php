@@ -34,6 +34,20 @@ class ControllerImplication
         } else ControllerUser::connect();
     }
 
+    public static function setChef() {
+        if (isset($_SESSION['login'])) {
+            if (isset($_POST['codeProjet']) && isset($_POST['codeContact'])) {
+                $implication = ModelImplication::select($_POST['codeProjet'],$_POST['codeContact']);
+                if (!$implication) ControllerMain::erreur('Le contact n\'est pas impliqué dans le projet');
+                else {
+                    if($implication->getChefProjet() == 0) $implication->setChefProjet(1);
+                    else $implication->setChefProjet(0);
+                    return true;
+                }
+            }ControllerMain::erreur('Il manque des informations');
+        }ControllerUser::connect();
+    }
+
     /**
      * Affiche le formulaire de création d'un Implication
      *
@@ -42,9 +56,8 @@ class ControllerImplication
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $departementsXdiplome = ModelDiplome::selectAllOrganizedByDep();
             $implication = new ModelImplication();
-            if (isset($_GET['codeDiplome'])) {
+            if (isset($_GET['codeProjet']) && isset($_GET['codeContact'])) {
                 $diplome = ModelDiplome::select($_GET['codeDiplome']);
                 if ($diplome) $implication->setCodeDiplome($diplome);
                 else $implication->setCodeDiplome(new ModelDiplome());
@@ -152,10 +165,13 @@ class ControllerImplication
     public static function delete()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeProjet'])) {
-                if (!ModelImplication::delete($_POST['codeProjet'], $_POST['codeContact'])) ControllerMain::erreur("Impossible de supprime le contact");
-                else {
-                    return "YES";
+            if (isset($_POST['codeProjet']) && isset($_POST['codeContact'])) {
+                if (!ModelImplication::delete($_POST['codeProjet'],$_POST['codeContact'])){
+                    echo 'pb de model';
+                    exit();
+                }else {
+                    echo 'true';
+                    exit();
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
@@ -165,9 +181,11 @@ class ControllerImplication
     {
         if (isset($_SESSION['login'])) {
             if (isset($_POST['codeProjet'])) {
-                if (!ModelImplication::add($_POST['codeProjet'], $_POST['codeContact'])) ControllerMain::erreur("Impossible d'ajouter le contact");
-                else {
-                    return "YES";
+                $res = ModelImplication::add($_POST['codeProjet'],$_POST['codeContact'],'0');
+                if ($res) {
+                    echo "true";
+                }else {
+                    echo $res;
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();

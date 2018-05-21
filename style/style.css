@@ -13,6 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+div.is-compact > a.mdl-navigation__link {
+  display: none;
+}
+
+div.android-header > a.mdl-navigation__link {
+  background-color: #0088cc;
+  transition-duration: 0.2s;
+  color: black;
+}
+
 .detailProjet > div.list {
   display: flex;
   justify-content: space-around;
@@ -28,10 +38,12 @@
   justify-content: space-between;
 }
 
-table.scroll tbody,
-table.scroll thead { display: block; }
+table.scroll thead {
+  display: block;
+}
 
 table.scroll tbody {
+    display: block;
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -64,8 +76,9 @@ a {
 }
 
 #descProj {
-  border: 1px solid blue;
+  border-left: 3px solid #0088cc;
   padding: 10px;
+  background-color: #b9e2f7;
 }
 
 div > .projetPres {
@@ -74,6 +87,7 @@ div > .projetPres {
 
 .detailProjet {
   display: flex;
+  align-items: flex-start;
 }
 
 .mdl-menu > a {
@@ -152,7 +166,7 @@ a img{
 }
 
   .android-header .material-icons {
-    color: #767777 !important;
+    color: #767777;
   }
 
   .android-header .mdl-layout__drawer-button {
