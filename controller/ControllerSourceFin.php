@@ -71,19 +71,11 @@ class ControllerSourceFin
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeEns']) &&
-                isset($_POST['nomEns']) &&
-                isset($_POST['codeDepartement']) &&
-                isset($_POST['codeStatut'])) {
+            if (isset($_POST['nomSourceFin'])) {
                 $data = array(
-                    'codeEns' => $_POST['codeEns'],
-                    'nomEns' => $_POST['nomEns'],
-                    'codeDepartement' => $_POST['codeDepartement'],
-                    'codeStatut' => $_POST['codeStatut'],
-                    'remarque' => $_POST['remarque']
-                );
-                if (!ModelEnseignant::save($data)) ControllerMain::erreur("Impossible d'enregistrer l'enseignant");
-                else header("location: index.php?controller=enseignant&action=read&codeEns=" . $_POST['codeEns']);
+                    'nomSourceFin' => $_POST['nomSourceFin']);
+                if (!ModelSourceFin::save($data)) ControllerMain::erreur("Impossible d'enregistrer le programme");
+                else ControllerSourceFin::readAll();
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }
@@ -96,10 +88,10 @@ class ControllerSourceFin
     public static function delete()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeEns'])) {
-                if (!ModelEnseignant::delete($_GET["codeEns"])) ControllerMain::erreur("Impossible de supprime l'enseignant");
+            if (isset($_GET['codeSourceFin'])) {
+                if (!ModelSourceFin::delete($_GET["codeSourceFin"])) ControllerMain::erreur("Impossible de supprimer le programme");
                 else {
-                    ControllerEnseignant::readAll();
+                    ControllerSourceFin::readAll();
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
@@ -117,14 +109,12 @@ class ControllerSourceFin
     public static function update()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeEns'])) {
-                $ens = ModelEnseignant::select($_GET['codeEns']);
-                if (!$ens) ControllerMain::erreur("L'enseignant n'existe pas");
+            if (isset($_GET['codeSourceFin'])) {
+                $sourceFin = ModelSourceFin::select($_GET['codeSourceFin']);
+                if (!$sourceFin) ControllerMain::erreur("Le programme n'existe pas");
                 else {
-                    $departements = ModelDepartement::selectAll();
-                    $statuts = ModelStatutEnseignant::selectAll();
                     $view = 'update';
-                    $pagetitle = 'Modification de : ' . $ens->getCodeEns();
+                    $pagetitle = 'Modification de : ' . $sourceFin->getNomSourceFin();
                     require_once File::build_path(array('view', 'view.php'));
                 }
             }
@@ -143,20 +133,13 @@ class ControllerSourceFin
     public static function updated()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeEns']) &&
-                isset($_POST['nomEns']) &&
-                isset($_POST['codeDepartement']) &&
-                isset($_POST['codeStatut'])) {
+            if (isset($_POST['codeSourceFin']) && $_POST['nomSourceFin']) {
                 $data = array(
-                    'codeEns' => $_POST['codeEns'],
-                    'nomEns' => $_POST['nomEns'],
-                    'codeDepartement' => $_POST['codeDepartement'],
-                    'codeStatut' => $_POST['codeStatut'],
-                    'remarque' => $_POST['remarque']
-                );
-                if (!ModelEnseignant::update($data)) ControllerMain::erreur("Impossible de modifier l'enseignant");
+                    'codeSourceFin' => $_POST['codeSourceFin'],
+                    'nomSourceFin' => $_POST['nomSourceFin']);
+                if (!ModelSourceFin::update($data)) ControllerMain::erreur("Impossible de modifier l'enseignant");
                 else {
-                    header("location: index.php?controller=enseignant&action=read&codeEns=" . $_POST['codeEns']);
+                    ControllerSourceFin::readAll();
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();

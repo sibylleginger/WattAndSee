@@ -2,8 +2,8 @@
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp users">
         <thead>
         <tr>
-            <th class="mdl-data-table__cell--non-numeric">Nom du programme</th>
-            <th class="mdl-data-table__cell--non-numeric">Nombre projets</th>
+            <th class="mdl-data-table__cell--non-numeric">Nom de l'entité</th>
+            <th class="mdl-data-table__cell--non-numeric">Nombre contacts</th>
             <th class="mdl-data-table__cell--non-numeric">Modifier</th>
             <th class="mdl-data-table__cell--non-numeric">Supprimer</th>
         </tr>
@@ -11,19 +11,19 @@
         <tbody>
         <?php
 
-        foreach ($sourcesFin as $sourceFin) {
-            $tabProjet = ModelProjet::selectAllBySource($sourceFin->getCodeSourceFin());
-            $nbProjets = count($tabProjet);
+        foreach ($tabEntite as $entite) {
+            $tabContact = ModelContact::selectAllByEntite($entite->getCodeEntite());
+            $nbContacts = count($tabContact);
             echo '<tr>
-                        <td><a href="index.php?controller=sourceFin&action=read&codeSourceFin=' . htmlspecialchars($sourceFin->getCodeSourceFin()) . '">'. htmlspecialchars($sourceFin->getNomSourceFin()).'</a></td>
-                        <td class="mdl-data-table__cell--non-numeric">'; if($nbProjets == false) {
+                        <td><a href="index.php?controller=entite&action=read&codeEntite=' . htmlspecialchars($entite->getCodeEntite()) . '">'. htmlspecialchars($entite->getNomEntite()).'</a></td>
+                        <td class="mdl-data-table__cell--non-numeric">'; if($nbContacts == false) {
                             echo '0';
                         }else {
-                            echo htmlspecialchars($nbProjets);
+                            echo htmlspecialchars($nbContacts);
                         }
                         echo '</td>
-                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=sourceFin&action=update&codeSourceFin=' . htmlspecialchars($sourceFin->getCodeSourceFin()).'"><i class="material-icons">edit</i></a></td>
-                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=sourceFin&action=delete&codeSourceFin=' . htmlspecialchars($sourceFin->getCodeSourceFin()).'"><i class="material-icons">delete</i></a></td>
+                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=entite&action=update&codeEntite=' . htmlspecialchars($entite->getCodeEntite()).'"><i class="material-icons">edit</i></a></td>
+                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=entite&action=delete&codeEntite=' . htmlspecialchars($entite->getCodeEntite()).'"><i class="material-icons">delete</i></a></td>
                     </tr>
             ';
         }

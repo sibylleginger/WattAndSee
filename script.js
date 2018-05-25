@@ -1,6 +1,6 @@
 $(function(){
-	$(document).on('click','setAsChef', function() {
-		var codeContact = $(this).attr('class');
+	/*$(document).on('click','.setAsChef', function() {
+		var codeContact = $(this).attr('id');
 		var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
 		$.ajax({
@@ -8,15 +8,15 @@ $(function(){
             url:'index.php?controller=implication&action=setChef',
             data:{'codeContact':codeContact,'codeProjet':codeProjet},
             success: function(data){
-                if(data!=false){
-                	row.css('background-color', 'red');
+                if(data=='true'){
+                	window.alert('OK');
                 }else{
-                	window.alert('error');
+                	window.alert(data);
                 }
             }
 
         });
-	});
+	});*/
 
 	$(document).on('change', '#codeEntite', function() {
 		var isRD = $('#isRD');
@@ -42,6 +42,23 @@ $(function(){
 	    }
 	});
 
+	$(document).on('click','.deleteDate',function(){
+        var codeDeadLine = $(this).attr('id');
+        $.ajax({
+            type:'POST',
+            url:'index.php?controller=deadLine&action=delete',
+            data:{'codeDeadLine':codeDeadLine},
+            success: function(data){
+                if(data=='true'){
+                    window.alert('EHOH');;
+                }else{
+                 	window.alert(codeDeadLine);
+                }
+             }
+
+        });
+    });
+
     $(document).on('click','.deleteContact',function(){
         var classContact = $(this).attr('class');
         var codeContact = classContact.split(' ')[1];
@@ -59,8 +76,8 @@ $(function(){
                  }
              }
 
-            });
         });
+    });
 
     $(document).on('click','.addContact',function(){
         var classContact = $(this).attr('class');
@@ -79,8 +96,8 @@ $(function(){
                  }
              }
 
-            });
         });
+    });
 
     $(document).on('click','.deleteParticipant',function(){
         var classParticipant = $(this).attr('class');
@@ -99,8 +116,8 @@ $(function(){
                  }
              }
 
-            });
         });
+    });
 
     $(document).on('click','.addParticipant',function(){
         var classParticipant = $(this).attr('class');
@@ -119,6 +136,6 @@ $(function(){
                  }
              }
 
-            });
         });
+    });
 });

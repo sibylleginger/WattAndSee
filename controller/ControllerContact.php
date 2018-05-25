@@ -3,6 +3,7 @@
 require_once File::build_path(array('model', 'ModelContact.php'));
 require_once File::build_path(array('model', 'ModelEntite.php'));
 require_once File::build_path(array('model', 'ModelDepartement.php'));
+require_once File::build_path(array('model', 'ModelProjet.php'));
 
 /**
  * Class ControllerExtraction
@@ -105,6 +106,46 @@ class ControllerContact
                         'mail' => $_POST['mail']);
                     if ($_POST['codeSourceFin'] != '') {
                         $data['codeSourceFin'] = $_POST['codeSourceFin'];
+                        if (!ModelContact::update($data)) ControllerMain::erreur("Impossible de créer le contact");
+                        else {
+                            $contact = ModelContact::select($_POST['codeContact']);
+                            $sourceFin = ModelSourceFin::select($contact->getCodeSourceFin());
+                            $entite = ModelEntite::select($contact->getCodeEntite());
+                            $departement = ModelDepartement::select($contact->getCodeDepartement());
+                            $tabProjet = ModelImplication::selectAllByContact($_GET['codeContact']);
+                            //$tabParticipant = ModelParticipation::selectAllByConsortium($Contact->getCodeConsortium());
+                            $pagetitle = 'Contact ' . $contact->getNomContact();
+                            $view = 'detail';
+                            require_once File::build_path(array('view', 'view.php'));
+                        }
+                    }else {
+                        $data['codeEntite'] = $_POST['codeEntite'];
+                        if ($_POST['codeDepartement'] != '') {
+                            $data['codeDepartement'] = $_POST['codeDepartement'];
+                        }
+                        if (isset($_GET['codeProjet'])) {
+                            $codeContact = ModelContact::save($data);
+                            if (!$codeContact) ControllerMain::erreur("Impossible de créer le contact");
+                            if(!ModelContact::select($codeContact)) ControllerMain::erreur(var_dump($codeContact));
+                            if (isset($_POST['chefProjet'])) {
+                                if (!ModelImplication::add($_GET['codeProjet'],$codeContact,$_POST['chefProjet'])) {
+                                    ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }else {
+                                if (!ModelImplication::add($_GET['codeProjet'],$codeContact,0)) {
+                                    ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }   
+                        }else {
+                            ControllerContact::readAll();
+                        }
+                    }
+                    if ($_POST['codeSourceFin'] != '') {
+                        $data['codeSourceFin'] = $_POST['codeSourceFin'];
                     }else {
                         $data['codeEntite'] = $_POST['codeEntite'];
                         if ($_POST['codeDepartement'] != '') {
@@ -175,10 +216,18 @@ class ControllerContact
                         $codeContact = ModelContact::save($data);
                         if (!$codeContact) ControllerMain::erreur("Impossible de créer le contact");
                         if(!ModelContact::select($codeContact)) ControllerMain::erreur(var_dump($codeContact));
-                        if (!ModelImplication::add($_GET['codeProjet'],$codeContact,$_GET['chefProjet'])) {
-                            ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                        if (isset($_POST['chefProjet'])) {
+                            if (!ModelImplication::add($_GET['codeProjet'],$codeContact,$_POST['chefProjet'])) {
+                                ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                            }else {
+                                ControllerProjet::updateContacts();
+                            }
                         }else {
-                            ControllerProjet::updateContact();
+                            if (!ModelImplication::add($_GET['codeProjet'],$codeContact,0)) {
+                                ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                            }else {
+                                ControllerProjet::updateContacts();
+                            }
                         }   
                     }else {
                         ControllerContact::readAll();

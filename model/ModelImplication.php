@@ -20,7 +20,7 @@ class ModelImplication
      */
     public function getChefProjet()
     {
-        return $this->remarque;
+        return $this->chefProjet;
     }
 
     /**
@@ -48,14 +48,6 @@ class ModelImplication
     }
 
     /**
-     * @return mixed
-     */
-    public function setChefProjet($boolean)
-    {
-        $this->chefProjet = $boolean;
-    }
-
-    /**
      * @param mixed $codeStatut
      */
     public function setCodeProjet($codeProjet)
@@ -75,6 +67,31 @@ class ModelImplication
     {
         try {
             $sql = 'SELECT * FROM Implication WHERE codeProjet=:codeProjet AND codeContact=:codeContact';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeContact' => $codeContact);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelImplication');
+            $retourne = $rep->fetchAll();
+            return $retourne[0];
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function setChefProjet($codeProjet, $codeContact) {
+        $implication = ModelImplication::select($codeProjet,$codeContact);
+        try {
+            $sql = 'UPDATE Implication SET chefProjet=';
+            if ($implication->getChefProjet()==1) {
+                $sql .= '0 ';
+            }else {
+                $sql .= '1 ';
+            }
+            $sql .= 'WHERE codeProjet=:codeProjet AND codeContact=:codeContact';
             $rep = Model::$pdo->prepare($sql);
             $values = array('codeProjet' => $codeProjet,
                             'codeContact' => $codeContact);
@@ -180,7 +197,7 @@ class ModelImplication
             $rep->execute($values);
             return true;
         } catch (Exception $e) {
-            return false;
+            return $e->getMessage();
         }
     }
 

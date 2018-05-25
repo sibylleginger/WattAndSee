@@ -15,13 +15,16 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="./script.js"></script>
     <link rel="stylesheet" href="./style/style.css">
+    <?php
+    if(isset($script)) echo $script;
+    ?>
 </head>
 <body>
 <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
       <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
         <div class="mdl-layout__header-row">
-          <span class="android-title mdl-layout-title watt">WATT AND SEE</span>
+          <a href="index.php" class="android-title mdl-layout-title watt">WATT AND SEE</a>
           <!-- Add spacer, to align navigation to the right in desktop -->
           <div class="android-header-spacer mdl-layout-spacer"></div>
           <!--<div class="android-search-box mdl-textfield mdl-js-textfield mdl-textfield--expandable mdl-textfield--floating-label mdl-textfield--align-right mdl-textfield--full-width">
@@ -41,8 +44,8 @@
                 if (isset($_SESSION['login'])) {
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=readAll">Projets</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=sourcefin&action=readAll">Programmes</a>';
-                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=extract">Statistiques</a>';
-                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=contact&action=readAll">Contacts</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=stats">Statistiques</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=deadLine&action=readAll">Calendrier</a>';
                     
                 }
                 ?>
@@ -55,7 +58,7 @@
             </nav>
           </div>
           <span class="android-mobile-title mdl-layout-title">
-            <span class="android-logo-image">WATT AND SEE</span>
+            <a href="index.php" class="android-logo-image">WATT AND SEE</a>
           </span>
           <button class="android-more-button mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect" id="more-button">
             <i class="material-icons">more_vert</i>
@@ -86,7 +89,8 @@
                 if (isset($_SESSION['login'])) {
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=readAll">Projets</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=sourcefin&action=readAll">Programmes</a>';
-                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=extract">Statistiques</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=stats">Statistiques</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=deadLine&action=readAll">Calendrier</a>';
                     
                 }
                 ?>
@@ -102,8 +106,8 @@
     <main class="mdl-layout__content mdl-color--grey-100">
         <div class="page-content">
             <?php
-            $filepath = File::build_path(array("view", static::$object, "$view.php"));
-            require $filepath;
+            $filepath = File::build_path(array("view",ucfirst(static::$object), "$view.php"));
+            require_once $filepath;
             ?>
         </div>
     </main>

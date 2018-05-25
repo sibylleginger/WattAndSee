@@ -13,14 +13,21 @@
             echo $sourceFin->getNomSourceFin().'<br>';  
         }
         ?>
-        Date de dépôt du dossier : <?php echo $projet->getDateDepot();?> <br>
+        Date de dépôt du dossier : <?php list($year, $month, $day) = explode('-', $projet->getDateDepot());
+                        echo $day.'/'.$month.'/'.$year; ?> <br>
         <?php if ($projet->getDateReponse() != null) { ?>
-            Date de réponse : <?php echo $projet->getDateReponse();
+            Date de réponse : <?php list($year, $month, $day) = explode('-', $projet->getDateReponse());
+                        echo $day.'/'.$month.'/'.$year;;
         }?> <br>
     </div>
     <div class="mdl-card__actions mdl-card--border">
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=note&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet()?>">Commentaires sur le projet</a>
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=document&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet() ?>">Documents du projet</a>
+        <?php
+        if ($projet->getStatut() == 'En cours de montage') {
+            echo '<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=deadLine&action=create&codeProjet='.$projet->getCodeProjet().'">Ajouter une échéance</a>';
+        }
+        ?>
     </div>
     </div>
 
@@ -33,6 +40,7 @@
             echo "Thème : ".$theme->getNomTheme();
         }
         ?></p> <p>Rôle EDF : <?php echo $projet->getRole()?></p></div>
+        <div class="detailProjet">
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
                 <thead>
                 <tr>
@@ -60,6 +68,33 @@
                 </tr>-->
                 </tbody>
             </table>
+            <?php
+            if (isset($tabDeadLine)) {
+            ?>
+            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
+                <thead>
+                <tr>
+                    <th class="mdl-data-table__cell--non-numeric">Echéance</th>
+                    <th class="mdl-data-table__cell--non-numeric">Date</th>
+                    <th class="mdl-data-table__cell--non-numeric">Supprimer</th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                foreach ($tabDeadLine as $value) {
+                    echo '<tr>
+                        <td class="mdl-data-table__cell--non-numeric">'.$value->getNomDeadLine().'</td>
+                        <td class="mdl-data-table__cell--non-numeric">';
+                        list($year, $month, $day) = explode('-', $value->getDateDeadLine());
+                        echo $day.'/'.$month.'/'.$year.'</td>
+                        <td class="mdl-data-table__cell--non-numeric"><a id="'.$deadLine->getCodeDeadLine().'" class="deleteDate" href=""><i class="material-icons">delete</i></td>
+                        </tr>';
+                }
+                ?>
+                </tbody>
+            </table>
+            <?php } ?>
+        </div>
     </div>
 </div>
 

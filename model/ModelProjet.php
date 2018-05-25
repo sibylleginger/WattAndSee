@@ -409,16 +409,100 @@ class ModelProjet extends Model
     public static function statStatutEtProjet()
     {
         try {
-            $sql = 'SELECT statut, count(codeProjet) as quantity
+            $sql = 'SELECT P.statut as prim, count(P.codeProjet) as quantity
                     FROM Projet P
                     GROUP BY P.statut,statut;';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute();
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-            var_dump($retourne);
             return $retourne;
         } catch (Exception $e) {
             return $e;
+        }
+    }
+
+    /**
+     * Retourne un tableau avec les entités et le nombre de projets par entités
+     */
+    public static function statEntiteEtProjet($statut)
+    {
+        try {
+            $sql = 'SELECT PS.nomEntite as prim, count(PS.codeProjet) as quantity
+                    FROM ProjetSearch PS
+                    WHERE statut=:statut
+                    GROUP BY PS.nomEntite;';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('statut' => $statut);
+            $rep->execute($values);
+            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
+            return $retourne;
+        } catch (Exception $e) {
+            return $e;
+        }
+    }
+
+    public static function statEntiteEtMontant($statut)
+    {
+        try {
+            $sql = 'SELECT PS.nomEntite as prim, SUM(PS.subventionEDF) as quantity
+                    FROM ProjetSearch PS
+                    WHERE statut=:statut
+                    GROUP BY PS.nomEntite;';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('statut' => $statut);
+            $rep->execute($values);
+            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
+            return $retourne;
+        } catch (Exception $e) {
+            return $e;
+        }
+    }
+
+    public static function statNbProjet($startG,$endG,$statuts) //$sort = %Y pour année
+    {
+        try {
+            $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim, statut, count(codeProjet) as quantity
+                    FROM Projet P
+                    WHERE';
+            foreach ($statuts as $key => $value) {
+                $sql .= ' (dateDepot<=:endG AND dateDepot>=:startG AND statut=:statut'.$key. ') OR';
+                
+            }
+            $sql = rtrim($sql, ' OR');
+            $sql .= ' GROUP BY DATE_FORMAT(dateDepot,"%Y"), statut';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('startG' => $startG,
+                            'endG' => $endG);
+            foreach ($statuts as $key => $value) {
+                $values['statut'.$key] = $value;
+            }
+            $rep->execute($values);
+            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
+            return $retourne;
+        } catch (Exception $e) {
+            return $sql;
+        }
+    }
+
+    public static function statMontantProjet($startG,$endG,$statut,$montants) //$sort = %Y pour année
+    {
+        try {
+            $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim';
+            foreach ($montants as $key => $value) {
+                $sql .= ', SUM('.$value.') as value'.$key;
+            }
+            $sql .= ' FROM Projet P
+                    WHERE (dateDepot<=:endG AND dateDepot>=:startG AND statut=:statut)';
+            $sql .= ' GROUP BY DATE_FORMAT(dateDepot, "%Y")';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('startG' => $startG,
+                            'endG' => $endG,
+                            'statut' => $statut);
+            $rep->execute($values);
+            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
+            return $retourne;
+        } catch (Exception $e) {
+            return $sql;
         }
     }
 

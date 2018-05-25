@@ -234,6 +234,21 @@ class ModelContact extends Model
         }
     }
 
+    public static function selectAllByEntite($codeEntite)
+    {
+        try {
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite=:codeEntite ORDER BY nomContact ASC';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeEntite' => $codeEntite);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
+            $retourne = $rep->fetchAll();
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     /**
      * Retourne tous les enseignants avec un nom/prenom proche de $npEns
      * TODO supprimer l'attribut prénom
@@ -280,104 +295,4 @@ class ModelContact extends Model
             return $e;
         }
     }
-
-    /**
-     * @return float : nombres d'heures équivalent TD réalisés par un professeur
-     */
-    public function getNbHeuresReal()
-    {
-        $Tcours = ModelCours::selectAllByEns($this->getCodeEns());
-        if (!$Tcours) {
-            return 0;
-        } else {
-            $r = 0;
-            foreach ($Tcours as $cours) {
-                $t = $cours->getTypeCours();
-                if ($t == 'CM') {
-                    $d = floatval($cours->getDuree()) * 2 / 3;
-                } elseif ($t == 'TP') {
-                    $d = floatval($cours->getDuree()) * 1.5;
-                } else {
-                    $d = floatval($cours->getDuree());
-                }
-                $r = $r + $d;
-            }
-            return $r;
-        }
-    }
-
-    /**
-     * @return int : nombres d'heures de TD réalisés par le professeur
-     */
-    public function getHeuresTD($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresTD
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours = "TD"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresTD']);
-    }
-
-    /**
-     * @return int : nombres d'heures de TP réalisés par le professeur
-     */
-    public function getHeuresTP($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresTP
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours = "TP"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresTP']);
-    }
-
-    /**
-     * @return int : nombres d'heures de CM réalisés par le professeur
-     */
-    public function getHeuresCM($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresCM
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours = "CM"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresCM']);
-    }
-
-    /**
-     * @return int : nombres d'heures hors TD/TP/CM réalisés par le professeur
-     */
-    public function getHeuresAutres($codeModule)
-    {
-        $sql = 'SELECT sum(duree) AS heuresAutres
-                FROM Cours
-                WHERE codeEns = :codeEns
-                AND typeCours != "TD" 
-                AND typeCours != "TP" 
-                AND typeCours != "CM"
-                AND codeModule = :codeModule';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeEns' => $this->getCodeEns(),
-            'codeModule' => $codeModule));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return intval($retourne[0]['heuresAutres']);
-    }
-
 }

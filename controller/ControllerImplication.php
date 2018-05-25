@@ -9,40 +9,21 @@ class ControllerImplication
     public static $object = 'Implication';
 
     /**
-     * Affiche les détails d'un Implication grace à son idImplication @var $_GET ['nImplication']
+     * NOT WORKING
      *
-     * Il affiche aussi les Modules lié à cet Implication
-     * S'il manque l'idImplication, l'utilisateur est redirigé vers une erreur
-     * Si l'Implication n'existe pas, l'utilisateur est redirigé vers une erreur
-     *
-     * @uses ModelImplication::select()
-     * @uses ModelModule::selectAllByNImplication()
+     * setters?
      */
-    public static function read()
-    {
-        if (isset($_SESSION['login'])) {
-            if (isset($_GET['nImplication'])) {
-                $implication = ModelImplication::select($_GET['nImplication']);
-                if (!$implication) ControllerMain::erreur("Cette implication n'existe pas");
-                else {
-                    $modules = ModelModule::selectAllByNImplication($implication->getNImplication());
-                    $view = 'detail';
-                    $pagetitle = 'Implication : ' . $implication->nommer();
-                    require_once File::build_path(array('view', 'view.php'));
-                }
-            } else ControllerMain::erreur("Il manque des informations");
-        } else ControllerUser::connect();
-    }
-
     public static function setChef() {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeProjet']) && isset($_POST['codeContact'])) {
-                $implication = ModelImplication::select($_POST['codeProjet'],$_POST['codeContact']);
-                if (!$implication) ControllerMain::erreur('Le contact n\'est pas impliqué dans le projet');
-                else {
-                    if($implication->getChefProjet() == 0) $implication->setChefProjet(1);
-                    else $implication->setChefProjet(0);
-                    return true;
+            if (isset($_GET['codeProjet']) && isset($_GET['codeContact'])) {
+                if (!ModelImplication::select($_GET['codeProjet'],$_GET['codeContact'])) {
+                    ControllerMain::erreur('Le contact n\'est pas impliqué dans le projet');
+                }else {
+                    if (!ModelImplication::setChefProjet($_GET['codeProjet'], $_GET['codeContact'])) {
+                        ControllerMain::erreur('Impossible de modifier le chef de projet');
+                    } else {
+                        ControllerProjet::updateContacts();
+                    }
                 }
             }ControllerMain::erreur('Il manque des informations');
         }ControllerUser::connect();
@@ -166,12 +147,11 @@ class ControllerImplication
     {
         if (isset($_SESSION['login'])) {
             if (isset($_POST['codeProjet']) && isset($_POST['codeContact'])) {
-                if (!ModelImplication::delete($_POST['codeProjet'],$_POST['codeContact'])){
-                    echo 'pb de model';
-                    exit();
-                }else {
+                $res = ModelImplication::delete($_POST['codeProjet'], $_POST['codeContact']);
+                if ($res){
                     echo 'true';
-                    exit();
+                }else {
+                    echo $res;
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
@@ -180,7 +160,7 @@ class ControllerImplication
     public static function add()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeProjet'])) {
+            if (isset($_POST['codeProjet']) && isset($_POST['codeContact'])) {
                 $res = ModelImplication::add($_POST['codeProjet'],$_POST['codeContact'],'0');
                 if ($res) {
                     echo "true";

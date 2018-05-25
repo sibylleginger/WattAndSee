@@ -72,6 +72,7 @@ class Model
         } catch (Exception $e) {
             //return false;
             echo $e->getMessage();
+            return false;
         }
     }
 
@@ -104,10 +105,8 @@ class Model
             $sql = rtrim($sql,',').')';
             $req_prep = Model::$pdo->prepare($sql);
             $req_prep->execute($data);
-            if (static::$object == 'Contact') {
-                $retourne = Model::$pdo->lastInsertId();
-                return $retourne;
-            }return true;
+            $retourne = Model::$pdo->lastInsertId();
+            return $retourne;
         }
         catch (Exception $e) {
             if($e->getCode()==23000) {echo $e;return false;}

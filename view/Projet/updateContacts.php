@@ -1,9 +1,8 @@
-<form method="post" action="index.php?controller=projet&action=updateContacts">
-    <div class="detailProjet">
+<div class="detailProjet">
         <div class="mdl-card__title">
-            <h2 class="mdl-card__title-text"><?php echo $pagetitle.' '.$projet->getNomProjet() ?></h2>
+            <h2 class="mdl-card__title-text"><?php echo $pagetitle.' <a href="index.php?controller=projet&action=read&codeProjet='.$projet->getCodeProjet().'">'.$projet->getNomProjet() ?></a></h2>
         </div>
-        <div class="mdl-card__supporting-text">
+        <div >
         <div class="updateContactBox">
             <h5>Contacts EDF</h5>
             <a href="index.php?controller=contact&action=create&codeProjet=<?php echo $projet->getCodeProjet()?>" class="addNew">
@@ -17,7 +16,7 @@
                     <th class="mdl-data-table__cell--non-numeric">Nom</th>
                     <th class="mdl-data-table__cell--non-numeric">Prenom</th>
                     <th class="mdl-data-table__cell--non-numeric">Supprimer</th>
-                    <th class="mdl-data-table__cell--non-numeric">Chef de projet</th>
+                    <th class="mdl-data-table__cell--non-numeric">Chef</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -26,15 +25,22 @@
                 foreach ($tabContact as $contact) {
                     //$contact = ModelContact::select($IDContact);
                     if ($contact->getCodeEntite() != null) {
+                        echo '<tr class="'.$projet->getCodeProjet().'"';
                         if ($chef && $contact->getCodeContact() == $chef->getCodeContact()) {
-
+                            echo ' style="background-color: #b9e2f7;"';
                         }
-                        echo '<tr class="'.$projet->getCodeProjet().'">
+                        echo '>
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
                             <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact '.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="setAsChef" id="" href=""><i class="material-icons">check</i></a></td>';
-                        echo '</tr>';      
+                            <td class="mdl-data-table__cell--non-numeric">';
+                        if (!$chef || $contact->getCodeContact() != $chef->getCodeContact()) {
+                            echo '<a class="setAsChef" href="index.php?controller=implication&action=setChef&codeProjet='.$projet->getCodeProjet().'&codeContact='.$contact->getCodeContact().'"><i class="material-icons">radio_button_unchecked</i></a>';
+                        }else {
+                            echo '<a class="setAsChef" href="index.php?controller=implication&action=setChef&codeProjet='.$projet->getCodeProjet().'&codeContact='.$contact->getCodeContact().'"><i class="material-icons">radio_button_checked</i></a>';
+                        }
+                        echo '</td>
+                        </tr>';      
                     }
                 }
                 ?>              
@@ -173,16 +179,5 @@
                 </tbody>
             </table>
         </div>
-        
-        
-            <?php
-            if ($_GET['action'] == 'update') echo '<input type="hidden" name="codeProjet" value="' . $_GET['codeProjet'] . '">'
-            ?>
-
-            <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect bouton" type="submits">
-                <i class="material-icons">send</i>
-            </button>
         </div>
     </div>
-
-</form>
