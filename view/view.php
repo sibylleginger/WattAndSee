@@ -42,7 +42,7 @@
               <a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php">Accueil</a>
                 <?php
                 if (isset($_SESSION['login'])) {
-                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=readAll">Projets</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=readAll&p=1">Projets</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=sourcefin&action=readAll">Programmes</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=stats">Statistiques</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=deadLine&action=readAll">Calendrier</a>';

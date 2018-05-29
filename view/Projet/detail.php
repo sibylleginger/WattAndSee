@@ -10,7 +10,7 @@
         if ($sourceFin == false) {
             echo "Inconnue<br>";
         }else {
-            echo $sourceFin->getNomSourceFin().'<br>';  
+            echo '<a href="index.php?controller=sourceFin&action=read&codeSourceFin='.$sourceFin->getCodeSourceFin().'">'.$sourceFin->getNomSourceFin().'</a><br>';  
         }
         ?>
         Date de dépôt du dossier : <?php list($year, $month, $day) = explode('-', $projet->getDateDepot());
@@ -23,11 +23,8 @@
     <div class="mdl-card__actions mdl-card--border">
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=note&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet()?>">Commentaires sur le projet</a>
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=document&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet() ?>">Documents du projet</a>
-        <?php
-        if ($projet->getStatut() == 'En cours de montage') {
-            echo '<a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=deadLine&action=create&codeProjet='.$projet->getCodeProjet().'">Ajouter une échéance</a>';
-        }
-        ?>
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=deadLine&action=create&codeProjet=<?php echo $projet->getCodeProjet() ?>">Ajouter une échéance</a>
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=projet&action=updateContacts&codeProjet=<?php echo htmlspecialchars($projet->getCodeprojet()) ?>">Modifier les contacts</a>
     </div>
     </div>
 
@@ -69,7 +66,7 @@
                 </tbody>
             </table>
             <?php
-            if (isset($tabDeadLine)) {
+            if ($tabDeadLine) {
             ?>
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
                 <thead>
@@ -90,10 +87,10 @@
                         <td class="mdl-data-table__cell--non-numeric"><a id="'.$deadLine->getCodeDeadLine().'" class="deleteDate" href=""><i class="material-icons">delete</i></td>
                         </tr>';
                 }
-                ?>
+                echo '
                 </tbody>
-            </table>
-            <?php } ?>
+            </table>';
+            } ?>
         </div>
     </div>
 </div>
@@ -110,7 +107,10 @@
                 </button>
             </a>
         </div>
-    <a href="index.php?controller=projet&action=updateContacts&codeProjet=<?php echo htmlspecialchars($projet->getCodeprojet()) ?>">Modifier les contacts</a>
+
+    <h4><a href="index.php?controller=projet&action=updateContacts&codeProjet=<?php echo htmlspecialchars($projet->getCodeprojet()) ?>">Modifier les contacts</a></h4>
+<div class="list">
+    <div>
     <h3>Contact EDF</h3>
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
         <thead>
@@ -142,8 +142,9 @@
         ?>
         </tbody>
     </table>
-
-    <h3>Contact du programme de financement</h3>
+    </div> 
+    <div>
+    <h3>Contact du programme</h3>
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
         <thead>
         <tr>
@@ -167,7 +168,8 @@
         ?>
         </tbody>
     </table>
-
+    </div>
+    <div>
     <h3>Partenaires du consortium</h3>
     <?php
         if ($tabParticipant == false){
@@ -188,14 +190,11 @@
                     foreach ($tabParticipant as $participant) {
                     //$participant = ModelParticipant::select($IDParticipant);
                         echo '<tr>
-                            <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$participant->getAffiliation().'</td>
                             <td class="mdl-data-table__cell--non-numeric">'.$participant->getNationalite().'</td>
                             <td class="mdl-data-table__cell--non-numeric">';
                         $participation = ModelParticipation::select($projet->getCodeProjet(),$participant->getCodeParticipant());
-                        if ($participation) {
-                            # code...
-                        }
                         echo $participation->getBudget().'</td>
                         </tr>';
                     }
@@ -203,9 +202,10 @@
                 ?>
                 </tbody>
             </table>
+        </div>
         <?php } ?>
 
-
+</div>
 
 <a href="index.php?controller=projet&action=create" class="new">
     <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">

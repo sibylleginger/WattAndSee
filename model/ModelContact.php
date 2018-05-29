@@ -124,11 +124,15 @@ class ModelContact extends Model
     {
         $retourne = parent::select($primary_value);
         if (!$retourne) return false;
-        //$retourne->setCodeStatut(ModelStatutEnseignant::select($retourne->getCodeStatut()));
-        //$retourne->setCodeDepartement(ModelDepartement::select($retourne->getCodeDepartement()));
         return $retourne;
     }
 
+    public static function save($data) {
+        if (parent::save($data)) {
+            return Model::$pdo->lastInsertId();
+        }else return false;
+    }
+    
     /**
      * @deprecated
      * Renvoie la liste des tous les enseignants
@@ -141,10 +145,6 @@ class ModelContact extends Model
     public static function selectAll()
     {
         $retourne = parent::selectAll();
-        foreach ($retourne as $cle => $item) {
-            //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-            //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-        }
         return $retourne;
     }
 

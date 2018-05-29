@@ -9,6 +9,7 @@ class ModelProjet extends Model
     //WAS Projet
     protected static $object = 'Projet';
     protected static $primary = 'codeProjet';
+    protected static $valeursParPage = 30;
 
     private $codeProjet;
     /**
@@ -263,6 +264,14 @@ class ModelProjet extends Model
     }
 
     /**
+     * @return mixed
+     */
+    public static function getNbP()
+    {
+        return self::$valeursParPage;
+    }
+
+    /**
      * Retourne le projet désigné par son code Projet, false s'il y a une erreur ou qu'il n'existe pas
      *
      * @param $primary_value
@@ -295,15 +304,29 @@ class ModelProjet extends Model
     public static function selectAll()
     {
         $retourne = parent::selectAll();
-        foreach ($retourne as $cle => $item) {
-            //$retourne->setCodeSourceFin(ModelSourceFin::select($retourne->getCodeSourceFin()));
-            //$retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
-            //$retourne->setCodeCo(ModelReporting::select($retourne->getCodeReporting()));
-            //$retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
-            //$retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
-            //$retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
-        }
         return $retourne;
+    }
+
+    /**
+     * @deprecated
+     * renvoie @see ModelProjet::$valeursParPage de la page donnée en paramètre
+     *
+     * @param $p int
+     * @return bool|array(ModelProjet)
+     */
+    public static function selectByPage($p)
+    {
+        try {
+            $debut = ($p - 1) * self::$valeursParPage;
+            $sql = 'SELECT * FROM Projet ORDER BY nomProjet ASC LIMIT ' . $debut . ' , ' . self::$valeursParPage;
+            $rep = Model::$pdo->prepare($sql);
+            $rep->execute();
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
+            $retourne = $rep->fetchAll();
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     public static function countBySource($codeSourceFin) {
@@ -322,7 +345,7 @@ class ModelProjet extends Model
     public static function selectAllBySource($codeSourceFin)
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin=:codeSourceFin';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin=:codeSourceFin ORDER BY nomProjet ASC';
             $rep = Model::$pdo->prepare($sql);
             $values = array('codeSourceFin' => $codeSourceFin);
             $rep->execute($values);
@@ -342,6 +365,7 @@ class ModelProjet extends Model
                     $sql .= $value;
                 }else $sql .= $value . ' AND ';
             }
+            $sql .= ' ORDER BY nomProjet';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute($data);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
@@ -362,6 +386,7 @@ class ModelProjet extends Model
                     $sql .= $value;
                 }else $sql .= $value . ' AND ';
             }
+            $sql .= ' ORDER BY P.nomProjet';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute($data);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
@@ -484,7 +509,7 @@ class ModelProjet extends Model
         }
     }
 
-    public static function statMontantProjet($startG,$endG,$statut,$montants) //$sort = %Y pour année
+    public static function statMontantProjet($startG,$endG,$statut,$montants,$exceptionnel) //$sort = %Y pour année
     {
         try {
             $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim';
@@ -492,7 +517,10 @@ class ModelProjet extends Model
                 $sql .= ', SUM('.$value.') as value'.$key;
             }
             $sql .= ' FROM Projet P
-                    WHERE (dateDepot<=:endG AND dateDepot>=:startG AND statut=:statut)';
+                    WHERE dateDepot<=:endG AND dateDepot>=:startG AND statut=:statut';
+            if ($exceptionnel == false) {
+                $sql .= ' AND isExceptionnel=0';
+            }
             $sql .= ' GROUP BY DATE_FORMAT(dateDepot, "%Y")';
             $rep = Model::$pdo->prepare($sql);
             $values = array('startG' => $startG,

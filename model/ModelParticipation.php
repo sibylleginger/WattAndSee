@@ -10,14 +10,23 @@ class ModelParticipation
 
     private $codeProjet;
     private $codeParticipant;
+    private $coordinateur;
     private $budget;
 
     /**
      * @return mixed
      */
-    public function getRemarque()
+    public function getCoordinateur()
     {
-        return $this->remarque;
+        return $this->coordinateur;
+    }
+
+    /**
+     * @param mixed $codeDepartement
+     */
+    public function setCoordinateur($coordinateur)
+    {
+        $this->coordinateur = $coordinateur;
     }
 
     /**
@@ -85,13 +94,35 @@ class ModelParticipation
         }
     }
 
-
+    /**
+     * @return mixed
+     */
+    public static function setCoordinateurProjet($codeProjet, $codeParticipant) {
+        $participation = ModelParticipation::select($codeProjet,$codeParticipant);
+        try {
+            $sql = 'UPDATE Participation SET coordinateur=';
+            if ($participation->getCoordinateur()==1) {
+                $sql .= '0 ';
+            }else {
+                $sql .= '1 ';
+            }
+            $sql .= 'WHERE codeProjet=:codeProjet AND codeParticipant=:codeParticipant';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeParticipant' => $codeParticipant);
+            $rep->execute($values);
+            return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
     /**
-     * Renvoie tous les enseignants appartenant à un département, false s'il y a une erreur
+     * Renvoie tous les participants du consortium du projet, false s'il y a une erreur
+     * Return all the participants of the project, false if error
      *
-     * @param $codeDepartement string(1)
-     * @return bool|array(ModelEnseignant)
+     * @param $codeProjet int
+     * @return bool|array(ModelParticipant)
      */
     public static function selectAllByProjet($codeProjet)
     {
@@ -104,17 +135,20 @@ class ModelParticipation
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipant');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public static function selectAllByParticipant($codeParticipant)
+    /**
+     * Renvoie tous les projets auquel participe le participant, false s'il y a une erreur
+     * Return all the projects where the participant is involved, false if error
+     *
+     * @param $codeParticipant int
+     * @return bool|array(ModelProjet)
+     */
+    public static function selectByParticipant($codeParticipant)
     {
         try {
             $sql = 'SELECT * FROM Projet C
@@ -125,35 +159,83 @@ class ModelParticipation
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }
 
-    public static function add($codeProjet, $codeParticipant) {
+    /**
+     * Renvoie le coordinateur du consortium du projet, false s'il y a une erreur
+     * Return the coordinator of the project, false if error
+     *
+     * @param $codeProjet int
+     * @return bool|ModelParticipant
+     */
+    public static function selectCoordinateur($codeProjet) {
         try {
-            $sql = 'INSERT INTO Participation VALUES (:codeProjet,:codeParticipant,0,0)';
+            $sql = 'SELECT * FROM Participant C
+            JOIN Participation I ON C.codeParticipant=I.codeParticipant
+            WHERE I.coordinateur="1" AND I.codeProjet=:codeProjet';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet);
+            $rep->execute($values);
+            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelParticipant');
+            $retourne = $rep->fetchAll();
+            if (empty($retourne)) return false;
+            return $retourne[0];
+        } catch (Exception $e) {
+            
+        }
+    }
+
+    /**
+     * Delete delete the participation from the table, error message if error
+     *
+     * @param $codeProjet, $codeParticipant int
+     * @return bool|Exception
+     */
+    public static function delete($codeProjet, $codeParticipant) {
+        try {
+            $sql = 'DELETE FROM Participation WHERE codeProjet=:codeProjet AND codeParticipant=:codeParticipant';
             $rep = Model::$pdo->prepare($sql);
             $values = array('codeProjet' => $codeProjet,
                             'codeParticipant' => $codeParticipant);
             $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'Participation');
-            $result = mysql_query($sql);
-            if(isset($result)) {
-               echo "YES";
-            } else {
-               return false;
-            }
+            return true;
         } catch (Exception $e) {
-            return false;
+            return $e->getMessage();
         }
     }
 
-    
+    public static function add($codeProjet,$codeParticipant,$coordinateur,$budget) {
+        try {
+            $sql = 'INSERT INTO Participation VALUES (:codeProjet,:codeParticipant,:coordinateur,:budget)';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeParticipant' => $codeParticipant,
+                            'coordinateur' => $coordinateur,
+                            'budget' => $budget);
+            $rep->execute($values);
+            return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
 
+    public static function update($codeProjet,$codeParticipant,$coordinateur,$budget) {
+        try {
+            $sql = 'UPDATE Participation SET coordinateur=:coordinateur, budget=:budget
+                    WHERE codeProjet=:codeProjet AND codeParticipant=:codeParticipant';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('codeProjet' => $codeProjet,
+                            'codeParticipant' => $codeParticipant,
+                            'coordinateur' => $coordinateur,
+                            'budget' => $budget);
+            $rep->execute($values);
+            return true;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

@@ -20,16 +20,29 @@ class ControllerParticipant
     public static function read()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['nUE'])) {
-                $ue = ModelUniteDEnseignement::select($_GET['nUE']);
-                if (!$ue) ControllerMain::erreur("Cet unité d'enseignement n'existe pas");
+            if (isset($_GET['codeParticipant'])) {
+                $participant = ModelParticipant::select($_GET['codeParticipant']);
+                if (!$participant) ControllerMain::erreur("Ce participant n'existe pas");
                 else {
-                    $modules = ModelModule::selectAllByNUE($ue->getNUE());
+                    $tabProjet = ModelParticipation::selectByParticipant($participant->getCodeParticipant());
                     $view = 'detail';
-                    $pagetitle = 'UE : ' . $ue->nommer();
+                    $pagetitle = $participant->getNomParticipant();
                     require_once File::build_path(array('view', 'view.php'));
                 }
             } else ControllerMain::erreur("Il manque des informations");
+        } else ControllerUser::connect();
+    }
+
+    /**
+     * Envoie vers la page d'importation du fichier .csv
+     */
+     public static function readAll()
+    {
+        if (isset($_SESSION['login'])) {
+            $tab = ModelParticipant::selectAll();
+            $view = 'list';
+            $pagetitle = "Participants aux consortiums";
+            require_once File::build_path(array('view', 'view.php'));
         } else ControllerUser::connect();
     }
 
@@ -41,51 +54,60 @@ class ControllerParticipant
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $departementsXdiplome = ModelDiplome::selectAllOrganizedByDep();
-            $ue = new ModelUniteDEnseignement();
-            if (isset($_GET['codeDiplome'])) {
-                $diplome = ModelDiplome::select($_GET['codeDiplome']);
-                if ($diplome) $ue->setCodeDiplome($diplome);
-                else $ue->setCodeDiplome(new ModelDiplome());
-            } else $ue->setCodeDiplome(new ModelDiplome());
-            $view = 'update';
-            $pagetitle = 'Création d\'une unité d\'enseignement';
-            require_once File::build_path(array('view', 'view.php'));
+            if ($_SESSION['is_admin']) {
+                $participant = new ModelParticipant();
+                if (isset($_GET['codeProjet'])) {
+                    $codeProjet = $_GET['codeProjet'];
+                }
+                $view = 'update';
+                $pagetitle = 'Ajout d\'un nouveau participant';
+                require_once File::build_path(array('view', 'view.php'));
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeDiplome']) &&
-                isset($_POST['semestre']) &&
-                isset($_POST['idUE']) &&
-                isset($_POST['heuresTD']) &&
-                isset($_POST['heuresTP']) &&
-                isset($_POST['heuresCM'])) {
-                /**
-                 * Vérification existance
-                 */
-                $testUe = ModelUniteDEnseignement::selectBy($_POST['codeDiplome'], $_POST['semestre'], $_POST['idUE']);
-                if ($testUe) ControllerMain::erreur("Cette unité d'enseignement existe déjà");
-                else {
-                    if (!ModelUniteDEnseignement::save(array(
-                        'codeDiplome' => $_POST['codeDiplome'],
-                        'semestre' => $_POST['semestre'],
-                        'idUE' => $_POST['idUE'],
-                        'heuresTD' => $_POST['heuresTD'],
-                        'heuresTP' => $_POST['heuresTP'],
-                        'heuresCM' => $_POST['heuresCM']
-                    ))) ;
-                    else {
-                        $ue = ModelUniteDEnseignement::selectBy($_POST['codeDiplome'], $_POST['semestre'], $_POST['idUE']);
-                        $modules = ModelModule::selectAllByNUE($ue->getNUE());
-                        $view = 'detail';
-                        $pagetitle = 'UE : ' . $ue->nommer();
-                        require_once File::build_path(array('view', 'view.php'));
+            if($_SESSION['is_admin']) {
+                if (isset($_POST['nomParticipant'])) {
+                    $data = array('nomParticipant' => $_POST['nomParticipant'],
+                                'nationalite' => $_POST['nationalite'],
+                                'mailParticipant' => $_POST['mailParticipant'],
+                                'affiliation' => $_POST['affiliation']);
+                    $codeParticipant = ModelParticipant::save($data);
+                    if (!$codeParticipant) ControllerMain::erreur("Impossible de créer le participant");
+                    if (isset($_GET['codeProjet'])) {
+                            if (isset($_POST['coordinateur'])) {
+                                if (!ModelParticipation::add($_GET['codeProjet'],$codeParticipant,$_POST['coordinateur'],$_POST['budget'])) {
+                                    ControllerMain::erreur('Impossible d\'ajouter le participant au projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }else {
+                                if (!ModelParticipation::add($_GET['codeProjet'],$codeParticipant,0,$_POST['budget'])) {
+                                    ControllerMain::erreur('Impossible d\'ajouter le participant au projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }   
+                    }else {
+                        ControllerParticipant::readAll();
                     }
                 }
-            } else ControllerMain::erreur("Il manque des informations");
+            } else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
+        } else ControllerUser::connect();
+    }
+
+    public static function delete()
+    {
+        if(isset($_SESSION['login'])) {
+            if ($_SESSION['is_admin']) {
+                if(isset($_GET['codeParticipant'])) {
+                    if(ModelParticipant::delete($_GET['codeParticipant'])) ControllerParticipant::readAll();
+                    else ControllerMain::erreur("Impossible de supprimer le participant");
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 
@@ -98,53 +120,53 @@ class ControllerParticipant
     public static function update()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['nUE'])) {
-                $ue = ModelUniteDEnseignement::select($_GET['nUE']);
-                if (!$ue) ControllerMain::erreur("Cet unité d'enseignement n'existe pas");
-                else {
-                    $departementsXdiplome = ModelDiplome::selectAllOrganizedByDep();
-                    $view = 'update';
-                    $pagetitle = 'Modification d\'une unité d\'enseignement';
-                    require_once File::build_path(array('view', 'view.php'));
-                }
-            } else ControllerMain::erreur("Il manque des informations");
+            if ($_SESSION['is_admin']) {
+                if (isset($_GET['codeParticipant'])) {
+                    $participant = ModelParticipant::select($_GET['codeParticipant']);
+                    if (!$participant) ControllerMain::erreur("Ce participant n'existe pas");
+                    else {
+                        if (isset($_GET['codeProjet'])) {
+                            $participation = ModelParticipation::select($_GET['codeProjet'],$participant->getCodeParticipant());
+                        }
+                        $view = 'update';
+                        $pagetitle = 'Modification d\'une unité d\'enseignement';
+                        require_once File::build_path(array('view', 'view.php'));
+                    }
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 
     public static function updated()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['nUE']) &&
-                isset($_POST['codeDiplome']) &&
-                isset($_POST['semestre']) &&
-                isset($_POST['idUE']) &&
-                isset($_POST['heuresTD']) &&
-                isset($_POST['heuresTP']) &&
-                isset($_POST['heuresCM'])) {
-                /**
-                 * Vérification existance
-                 */
-                $testUe = ModelUniteDEnseignement::selectBy($_POST['codeDiplome'], $_POST['semestre'], $_POST['idUE']);
-                if(!$testUe || (is_a($testUe,'ModelUniteDEnseignement') && $_POST['nUE'] == $testUe->getNUE())) {
-                    $data = array(
-                        'nUE' => $_POST['nUE'],
-                        'codeDiplome' => $_POST['codeDiplome'],
-                        'semestre' => $_POST['semestre'],
-                        'idUE' => $_POST['idUE'],
-                        'heuresTD' => $_POST['heuresTD'],
-                        'heuresTP' => $_POST['heuresTP'],
-                        'heuresCM' => $_POST['heuresCM']
-                    );
-                    if(!ModelUniteDEnseignement::update($data)) ControllerMain::erreur("Impossible de modifier l'unité d'enseignement");
-                    else {
-                        $ue = ModelUniteDEnseignement::select($_POST['nUE']);
-                        $modules = ModelModule::selectAllByNUE($ue->getNUE());
-                        $view = 'detail';
-                        $pagetitle = 'UE : ' . $ue->nommer();
-                        require_once File::build_path(array('view', 'view.php'));
+            if($_SESSION['is_admin']) {
+                if (isset($_POST['codeParticipant']) && isset($_POST['nomParticipant'])) {
+                    $data = array('codeParticipant' => $_POST['codeParticipant'],
+                                'nomParticipant' => $_POST['nomParticipant'],
+                                'nationalite' => $_POST['nationalite'],
+                                'mailParticipant' => $_POST['mailParticipant'],
+                                'affiliation' => $_POST['affiliation']);
+                    if (!ModelParticipant::update($data)) ControllerMain::erreur("Impossible de créer le participant");
+                    if (isset($_GET['codeProjet'])) {
+                            if (isset($_POST['coordinateur'])) {
+                                if (!ModelParticipation::update($_GET['codeProjet'],$_POST['codeParticipant'],$_POST['coordinateur'],$_POST['budget'])) {
+                                    ControllerMain::erreur('Impossible de modifier le participant du projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }else {
+                                if (!ModelParticipation::update($_GET['codeProjet'],$_POST['codeParticipant'],0,$_POST['budget'])) {
+                                    ControllerMain::erreur('Impossible de modifier le participant du projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }   
+                    }else {
+                        ControllerParticipant::readAll();
                     }
-                } else ControllerMain::erreur("Cette unité d'enseignement existe déjà");
-            } else ControllerMain::erreur("Il manque des informations");
+                }
+            } else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 

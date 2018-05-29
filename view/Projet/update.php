@@ -58,9 +58,7 @@
             <br>
             <label class="select" for="theme">Thème</label>
             <a href="index.php?controller=theme&action=create" class="addNew">
-            <button class="mdl-button mdl-js-button mdl-button-raised mdl-button--colored addNew">
                 <i class="material-icons">add</i>
-            </button>
             </a>
             <select style="display: block;" required name="theme" id="theme">
                 <option value=""></option>
@@ -102,7 +100,7 @@
                 <label class="mdl-textfield__label" for="subventionEDF">Subvention EDF du projet</label>
             </div>
             <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="isExceptionnel">
-                <input type="checkbox" name="isExceptionnel" id="isExceptionnel" value="0" class="mdl-checkbox__input">
+                <input type="checkbox" name="isExceptionnel" id="isExceptionnel" value="1" class="mdl-checkbox__input">
                 <span class="mdl-checkbox__label">Projet exceptionnel</span>
             </label>
 

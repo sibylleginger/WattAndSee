@@ -1,4 +1,5 @@
-<form method="post" action="index.php?controller=participant&action=<?php echo $_GET['action'] . 'd' ?>">
+<form method="post" action="index.php?controller=participant&action=<?php echo $_GET['action'] . 'd';
+    if(isset($_GET['codeProjet'])) echo '&codeProjet='.$_GET['codeProjet'] ?>">
 
     <div class="mdl-card mdl-shadow--2dp import">
         <div class="mdl-card__title">
@@ -6,64 +7,49 @@
         </div>
         <div class="mdl-card__supporting-text">
 
-            <label class="select">Diplome</label>
-            <select style="display: block;" required name="codeDiplome">
-                <?php
-
-                foreach ($departementsXdiplome as $cle => $item) {
-                    echo '<optgroup label="' . $cle . '">';
-                    foreach ($item as $diplome) {
-                        echo '<option value="'.$diplome->getCodeDiplome().'"';
-                        if($ue->getCodeDiplome()->getCodeDiplome()==$diplome->getCodeDiplome()) echo ' selected ';
-                        echo '>'.$diplome->nommer().'</option>';
-                    }
-                    echo '</optgroup>';
-                }
-
-                ?>
-            </select>
-
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input"
-                       value="<?php echo htmlspecialchars($ue->getSemestre()) ?>"
-                       type="number" id="semestre" name="semestre" required>
-                <label class="mdl-textfield__label" for="semestre">Semestre</label>
-                <span class="mdl-textfield__error">Veuillez rentrer un nombre</span>
+                       value="<?php echo htmlspecialchars($participant->getNomParticipant()) ?>"
+                       type="text" id="nomParticipant" name="nomParticipant" required>
+                <label class="mdl-textfield__label" for="nomParticipant">Nom</label>
+                <span class="mdl-textfield__error">Veuillez rentrer un nom</span>
             </div>
-
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input"
-                       value="<?php echo htmlspecialchars($ue->getIdUE()) ?>"
-                       type="number" id="idUE" name="idUE" required>
-                <label class="mdl-textfield__label" for="idUE">Numéro d'UE</label>
+                       value="<?php echo htmlspecialchars($participant->getNationalite()) ?>"
+                       type="text" id="nationalite" name="nationalite">
+                <label class="mdl-textfield__label" for="nationalite">Nationalité</label>
             </div>
-
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input"
-                       value="<?php echo htmlspecialchars($ue->getHeuresTP()) ?>"
-                       type="number" id="heuresTP" name="heuresTP" required>
-                <label class="mdl-textfield__label" for="heuresTP">Heures de TP à réaliser</label>
-                <span class="mdl-textfield__error">Veuillez rentrer un nombre</span>
+                       value="<?php echo htmlspecialchars($participant->getAffiliation()) ?>"
+                       type="text" id="affiliation" name="affiliation">
+                <label class="mdl-textfield__label" for="affiliation">Affiliation</label>
             </div>
-
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input"
-                       value="<?php echo htmlspecialchars($ue->getHeuresTD()) ?>"
-                       type="number" id="heuresTD" name="heuresTD" required>
-                <label class="mdl-textfield__label" for="heuresTD">Heures de TD à réaliser</label>
-                <span class="mdl-textfield__error">Veuillez rentrer un nombre</span>
-            </div>
+                       value="<?php echo htmlspecialchars($participant->getMailParticipant()) ?>"
+                       type="mailParticipant" id="mailParticipant" name="mailParticipant">
+                <label class="mdl-textfield__label" for="mail">Mail</label>
 
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input"
-                       value="<?php echo htmlspecialchars($ue->getHeuresCM()) ?>"
-                       type="number" id="heuresCM" name="heuresCM" required>
-                <label class="mdl-textfield__label" for="heuresCM">Heures de CM à réaliser</label>
-                <span class="mdl-textfield__error">Veuillez rentrer un nombre</span>
             </div>
 
             <?php
-            if ($_GET['action'] == 'update') echo '<input type="hidden" name="codeParticipant" value="' . $_GET['codeParticipant'] . '">'
+            if ($_GET['action'] == 'update') echo '<input type="hidden" name="codeParticipant" value="' . $_GET['codeParticipant'] . '">';
+            if (isset($_GET['codeProjet'])) {
+                echo '<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="coordinateur">
+                        <input type="checkbox" id="coordinateur" name="coordinateur" value="1" class="mdl-checkbox__input"';
+                if ($participant->isCoordinateur($_GET['codeProjet'])) {
+                    echo 'checked';
+                }
+                echo '>
+                        <span class="mdl-checkbox__label" for="coordinateur">Coordinateur du consortium</span>
+                    </label>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <input class="mdl-textfield__input" type="number" value="'.$participation->getBudget().'" id="budget" name="budget">
+                        <label class="mdl-textfield__label" for="budget">Budget</label>
+                    </div>';
+            }
             ?>
 
             <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect bouton" type="submits">

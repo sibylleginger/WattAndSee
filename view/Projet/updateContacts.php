@@ -1,6 +1,6 @@
 <div class="detailProjet">
         <div class="mdl-card__title">
-            <h2 class="mdl-card__title-text"><?php echo $pagetitle.' <a href="index.php?controller=projet&action=read&codeProjet='.$projet->getCodeProjet().'">'.$projet->getNomProjet() ?></a></h2>
+            <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
         </div>
         <div >
         <div class="updateContactBox">
@@ -35,9 +35,9 @@
                             <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact '.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
                             <td class="mdl-data-table__cell--non-numeric">';
                         if (!$chef || $contact->getCodeContact() != $chef->getCodeContact()) {
-                            echo '<a class="setAsChef" href="index.php?controller=implication&action=setChef&codeProjet='.$projet->getCodeProjet().'&codeContact='.$contact->getCodeContact().'"><i class="material-icons">radio_button_unchecked</i></a>';
+                            echo '<a class="setAsChef '.$contact->getCodeContact().'" href=""><i class="material-icons">radio_button_unchecked</i></a>';
                         }else {
-                            echo '<a class="setAsChef" href="index.php?controller=implication&action=setChef&codeProjet='.$projet->getCodeProjet().'&codeContact='.$contact->getCodeContact().'"><i class="material-icons">radio_button_checked</i></a>';
+                            echo '<a class="setAsChef '.$contact->getCodeContact().'" href=""><i class="material-icons">radio_button_checked</i></a>';
                         }
                         echo '</td>
                         </tr>';      
@@ -129,13 +129,20 @@
             </table>
         </div>
 
+        <div class="updateContactBox">
         <h5>Contacts Consortium</h5>
+        <a href="index.php?controller=participant&action=create&codeProjet=<?php echo $projet->getCodeProjet() ?>" class="addNew">
+            <i class="material-icons">add</i>
+        </a>
+        </div>
         <div class="updateContactBox" id="<?php echo $projet->getCodeProjet()?>">
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp users scroll" id="tableConsortium">
                 <thead>
                 <tr>
                     <th class="mdl-data-table__cell--non-numeric">Nom</th>
                     <th class="mdl-data-table__cell--non-numeric">Nationalité</th>
+                    <th class="mdl-data-table__cell--non-numeric">Budget</th>
+                    <th class="mdl-data-table__cell--non-numeric">Modifier</th>
                     <th class="mdl-data-table__cell--non-numeric">Supprimer</th>
                 </tr>
                 </thead>
@@ -145,10 +152,17 @@
                     echo '<tr class="'.$projet->getCodeProjet().'"></tr>';
                 }else {
                     foreach ($tabParticipant as $participant) {
-                        echo '<tr class="'.$projet->getCodeProjet().'">
+                        $participation = ModelParticipation::select($projet->getCodeProjet(),$participant->getCodeParticipant());
+                        echo '<tr class="'.$projet->getCodeProjet().'"';
+                        if ($participant->isCoordinateur($projet->getCodeProjet())) {
+                            echo ' style="background-color: #b9e2f7;"';
+                        }
+                        echo '>
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
                                 <td class="mdl-data-table__cell--non-numeric">'.$participant->getNationalite().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteParticipant '.$participant->getCodeParticipant().'" href=""><i class="material-icons">delete</i></a></td>
+                                <td class="mdl-data-table__cell--non-numeric">'.$participation->getBudget().'</td>
+                                <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=update&codeProjet='.$projet->getCodeProjet().'&codeParticipant='.$participant->getCodeParticipant().'"><i class="material-icons">edit</i></a></td>
+                                <td class="mdl-data-table__cell--non-numeric"><a class="deleteParticipant '.$participant->getCodeParticipant().'" href=""><i class="material-icons">delete</i></a></td>
                         </tr>';
                     }
                 }

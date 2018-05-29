@@ -22,7 +22,8 @@
                             echo htmlspecialchars($nbProjets);
                         }
                         echo '</td>
-                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=sourceFin&action=update&codeSourceFin=' . htmlspecialchars($sourceFin->getCodeSourceFin()).'"><i class="material-icons">edit</i></a></td>
+                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=sourceFin&action=update&codeSourceFin=' . htmlspecialchars($sourceFin->getCodeSourceFin()).'"><i class="material-icons">edit</i></a>
+                            <a href="index.php?controller=contact&action=create&codeSourceFin=' . htmlspecialchars($sourceFin->getCodeSourceFin()).'"><i class="material-icons">person_add</i></a></td>
                         <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=sourceFin&action=delete&codeSourceFin=' . htmlspecialchars($sourceFin->getCodeSourceFin()).'"><i class="material-icons">delete</i></a></td>
                     </tr>
             ';

@@ -170,19 +170,22 @@ class ControllerContact
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $contact = new ModelContact();
-            if (isset($_GET['codeSourceFin'])) {
-                $codeSourceFin = $_GET['codeSourceFin'];
-            }else {
-                $codeProjet = $_GET['codeProjet'];
-            }
-            //$sourceFin = ModelSourceFin::select($Contact->getCodeSourceFin());
-            $tabEntite = ModelEntite::selectAll();
-            $tabSourceFin = ModelSourceFin::selectAll();
-            $tabDepartement = ModelDepartement::selectAll();
-            $view = 'update';
-            $pagetitle = 'Créer un nouveau contact';
-            require_once File::build_path(array('view', 'view.php'));
+            if ($_SESSION['is_admin']) {
+                $contact = new ModelContact();
+                if (isset($_GET['codeSourceFin'])) {
+                    $codeSourceFin = $_GET['codeSourceFin'];
+                }else {
+                    $codeProjet = $_GET['codeProjet'];
+                }
+                //$sourceFin = ModelSourceFin::select($Contact->getCodeSourceFin());
+                $tabEntite = ModelEntite::selectAll();
+                $tabSourceFin = ModelSourceFin::selectAll();
+                $tabDepartement = ModelDepartement::selectAll();
+                $view = 'update';
+                $pagetitle = 'Créer un nouveau contact';
+                require_once File::build_path(array('view', 'view.php'));
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
+                
         } else ControllerUser::connect();
     }
 
@@ -191,49 +194,55 @@ class ControllerContact
      *
      * @uses ModelContact::save()
      * @uses ControllerContact::readAll()
+     * @uses ControllerSourceFin::read()
+     * @uses ControllerProjet::updateContacts()
      *
      * @see ControllerContact::readAll()
+     * @see ControllerSourceFin::read()
+     * @see ControllerProjet::updateContacts()
      */
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['nomContact']) &&
-                isset($_POST['prenomContact'])) {
-                $data = array('nomContact' => $_POST['nomContact'],
-                            'prenomContact' => $_POST['prenomContact'],
-                            'mail' => $_POST['mail']);
-                if ($_POST['codeSourceFin'] != '') {
-                    $data['codeSourceFin'] = $_POST['codeSourceFin'];
-                    if (!ModelContact::save($data)) ControllerMain::erreur("Impossible de créer le contact");
-                    elseif(isset($_GET['codeSourceFin']))  require_once ControllerSourceFin::read();
-                    else ControllerContact::readAll();
-                }else {
-                    $data['codeEntite'] = $_POST['codeEntite'];
-                    if ($_POST['codeDepartement'] != '') {
-                        $data['codeDepartement'] = $_POST['codeDepartement'];
-                    }
-                    if (isset($_GET['codeProjet'])) {
-                        $codeContact = ModelContact::save($data);
-                        if (!$codeContact) ControllerMain::erreur("Impossible de créer le contact");
-                        if(!ModelContact::select($codeContact)) ControllerMain::erreur(var_dump($codeContact));
-                        if (isset($_POST['chefProjet'])) {
-                            if (!ModelImplication::add($_GET['codeProjet'],$codeContact,$_POST['chefProjet'])) {
-                                ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
-                            }else {
-                                ControllerProjet::updateContacts();
-                            }
-                        }else {
-                            if (!ModelImplication::add($_GET['codeProjet'],$codeContact,0)) {
-                                ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
-                            }else {
-                                ControllerProjet::updateContacts();
-                            }
-                        }   
+            if($_SESSION['is_admin']) {
+                if (isset($_POST['nomContact']) &&
+                    isset($_POST['prenomContact'])) {
+                    $data = array('nomContact' => $_POST['nomContact'],
+                                'prenomContact' => $_POST['prenomContact'],
+                                'mail' => $_POST['mail']);
+                    if ($_POST['codeSourceFin'] != '') {
+                        $data['codeSourceFin'] = $_POST['codeSourceFin'];
+                        if (!ModelContact::save($data)) ControllerMain::erreur("Impossible de créer le contact");
+                        elseif(isset($_GET['codeSourceFin']))  require_once ControllerSourceFin::read();
+                        else ControllerContact::readAll();
                     }else {
-                        ControllerContact::readAll();
+                        $data['codeEntite'] = $_POST['codeEntite'];
+                        if ($_POST['codeDepartement'] != '') {
+                            $data['codeDepartement'] = $_POST['codeDepartement'];
+                        }
+                        if (isset($_GET['codeProjet'])) {
+                            $codeContact = ModelContact::save($data);
+                            if (!$codeContact) ControllerMain::erreur("Impossible de créer le contact");
+                            if(!ModelContact::select($codeContact)) ControllerMain::erreur(var_dump($codeContact));
+                            if (isset($_POST['chefProjet'])) {
+                                if (!ModelImplication::add($_GET['codeProjet'],$codeContact,$_POST['chefProjet'])) {
+                                    ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }else {
+                                if (!ModelImplication::add($_GET['codeProjet'],$codeContact,0)) {
+                                    ControllerMain::erreur('Impossible d\'ajouter le contact au projet');
+                                }else {
+                                    ControllerProjet::updateContacts();
+                                }
+                            }   
+                        }else {
+                            ControllerContact::readAll();
+                        }
                     }
                 }
-            } else ControllerMain::erreur("Il manque des informations");
+            } else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 

@@ -28,10 +28,17 @@ class ControllerProjet
         for ($y=$start; $y <= $end; $y++) { 
             $row = "[" . $y . ", ";
             $t = 0;
-            foreach ($tabValues as $key => $value) {
-                if ($value['prim']==$y) {
-                    $row .= $value['quantity'].",'".$value['quantity']."',";
-                    $t++;
+            foreach ($tabStatuts as $keyS => $statut) {
+                foreach ($tabValues as $key => $value) {
+                    if ($value['prim']==$y) {
+                        if ($value['statut']==$statut){
+                            $row .= $value['quantity'].",'".$value['quantity']."',";                            
+                        }else {
+                            $row .= "0, '0', ";
+                        }
+                        
+                        $t++;
+                    }
                 }
             }
             if ($t < count($tabStatuts)) {
@@ -87,6 +94,14 @@ class ControllerProjet
 
                     var chart = new google.visualization.ColumnChart(document.getElementById('graphBar".$i."'));
 
+                    // Wait for the chart to finish drawing before calling the getImageURI() method.
+                    google.visualization.events.addListener(chart, 'ready', function () {
+                        var button = document.getElementById('saveBar".$i."');
+                        var encoding = (chart.getImageURI()).slice(15);
+                        button.innerHTML = '<a download=\"image.png\" href=\"data:application/octet-stream;' + encoding + '\"><i class=\"material-icons\">save</i></a>';
+                        console.log(button.innerHTML);
+                    });
+
                     chart.draw(data, options);
                   }";
         return $fonction;
@@ -109,7 +124,7 @@ class ControllerProjet
             foreach ($tabColumns as $keyC => $column) {
                 $row .= $ligne['value'.$keyC].", ";
             }
-            $row = rtrim($row, ',');
+            $row = rtrim($row, ', ');
             $row .= '],';
             $data .= $row;
         }
@@ -130,7 +145,7 @@ class ControllerProjet
                             title: '".$column1."'
                         },
                         chartArea: {
-                            width: '50%'
+                            width: '75%'
                         }
                     };
 
@@ -169,6 +184,15 @@ class ControllerProjet
                     };
 
                     var chart = new google.visualization.PieChart(document.getElementById(\'graphPie'.$i.'\'));
+
+                    // Wait for the chart to finish drawing before calling the getImageURI() method.
+                    google.visualization.events.addListener(chart, \'ready\', function () {
+                        var button = document.getElementById(\'savePie'.$i.'\');
+                        var encoding = (chart.getImageURI()).slice(15);
+                        button.innerHTML = \'<a download="image.png" href="data:application/octet-stream;\' + encoding + \'"><i class="material-icons">save</i></a>\';
+                        console.log(button.innerHTML);
+                    });
+
                     chart.draw(data, options);
                 }';
         return $fonction;
@@ -179,10 +203,16 @@ class ControllerProjet
     public static function readAll()
     {
         if (isset($_SESSION['login'])) {
+            if (isset($_GET['p'])) {
+                $p = intval($_GET['p']);
+                if ($p > ModelProjet::getNbP()) $p = ModelProjet::getNbP();
+                if ($p <= 0) $p = 1;
+            } else $p = 1;
+            $max = ModelProjet::getNbP();
+            $tab = ModelProjet::selectByPage($p);
             $tabTheme = ModelTheme::selectAll();
             $tabEntite = ModelEntite::selectAll();
             $statuts = array('Accepté', 'Refusé', 'Déposé', 'En cours de montage');
-            $tab = ModelProjet::selectAll();
             $view = 'list';
             $pagetitle = "Projets";
             require_once File::build_path(array('view', 'view.php'));
@@ -202,8 +232,8 @@ class ControllerProjet
             $scriptBar1 = ControllerProjet::scriptBarNbProjet(1,array('Accepté'),'Nombre de projets acceptés par an','Nombre de projets acceptés',2014,date('Y'),$statAP);
             $statPD = ModelProjet::statNbProjet('0000-00-00',date('Y-m-d'),array('Déposé'));
             $statPA = ModelProjet::statNbProjet('0000-00-00',date('Y-m-d'),array('Accepté'));
-            $statMSE = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('subventionEDF'));
-            $statME = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'));
+            $statMSE = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('subventionEDF'),false);
+            $statME = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),true);
             $scriptBar2 = ControllerProjet::scriptBarNbProjet(2,array('Déposé'),'Nombre de projets déposés par an','Nomde de projets déposés',2014, date('Y'),$statPD);
             $scriptBar4 = ControllerProjet::scriptBar(4,array('Accepté'),'Montant des subventions obtenues par EDF pour les projets acceptés','Montant en €',2014, date('Y'),$statMSE);
             $scriptBar5 = ControllerProjet::scriptBar(5,array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),'Montant des budget et subventions obtenues pour les projets acceptés','Montant en €',2014, date('Y'),$statME);
@@ -234,9 +264,7 @@ class ControllerProjet
                 $projet = ModelProjet::select($_GET['codeProjet']);
                 if ($projet == false) ControllerMain::erreur("Ce Projet n'existe pas");
                 else {
-                    if ($projet->getStatut() == 'En cours de montage') {
-                        $tabDeadLine = ModelDeadLine::selectAllByProjet($projet->getCodeProjet());
-                    }
+                    $tabDeadLine = ModelDeadLine::selectAllByProjet($projet->getCodeProjet());
                     $chef = ModelImplication::selectChef($projet->getCodeProjet());
                     $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
                     $theme = ModelTheme::select($projet->getCodeTheme());
@@ -247,20 +275,14 @@ class ControllerProjet
                     $pagetitle = 'Projet ' . $projet->getNomProjet();
                     $view = 'detail';
                     require_once File::build_path(array('view', 'view.php'));
-                    
-                    /*else {
-                        $pagetitle = 'Projet ' . $_GET['nomProjet'];
-                        $view = 'detail';
-                        require_once File::build_path(array('view', 'view.php'));
-                    }*/
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }
 
     public static function update() {
-        if (isset($_GET['codeProjet'])){
-            if(isset($_SESSION['login'])) {
+        if (isset($_SESSION['login']) && $_SESSION['is_admin']){
+            if(isset($_GET['codeProjet'])) {
                 $projet = ModelProjet::select($_GET['codeProjet']);
                 if (!$projet) ControllerMain::erreur("Ce projet n'existe pas");
                 else {
@@ -272,13 +294,13 @@ class ControllerProjet
                     $pagetitle = 'Modification du projet';
                     require_once File::build_path(array('view', 'view.php'));
                 }
-            } else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
-        }
+            } else ControllerMain::erreur("Il manque des informations");
+        }ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
             
     }
 
     public static function updateContacts() {
-        if (isset($_SESSION['login'])){
+        if (isset($_SESSION['login']) && $_SESSION['is_admin']){
             if(isset($_GET['codeProjet'])) {
                 $projet = ModelProjet::select($_GET['codeProjet']);
                 if (!$projet) ControllerMain::erreur("Ce projet n'existe pas");
@@ -291,7 +313,7 @@ class ControllerProjet
                     $allParticipant = ModelParticipant::selectAll();
                     $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
                     $view = 'updateContacts';
-                    $pagetitle = 'Modifier les contacts du projet';
+                    $pagetitle = 'Modifier les contacts du projet <a href="index.php?controller=projet&action=read&codeProjet='.$projet->getCodeProjet().'">'.$projet->getNomProjet().'</a>';
                     require_once File::build_path(array('view', 'view.php'));
                 }
             } else ControllerMain::erreur("Il manque des informations");
@@ -302,63 +324,71 @@ class ControllerProjet
     public static function updated()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeProjet']) &&
-                isset($_POST['nom']) &&
-                isset($_POST['statut']) &&
-                isset($_POST['financement']) &&
-                isset($_POST['dateDepot']) &&
-                isset($_POST['description']) &&
-                isset($_POST['theme']) &&
-                isset($_POST['role'])) {
-                /**
-                 * Vérification existance
-                 */
-                $updateProjet = ModelProjet::select($_POST['codeProjet']);
-                if($updateProjet && $_POST['codeProjet'] == $updateProjet->getCodeProjet()) {
-                    $data = array(
-                        'codeProjet' => $_POST['codeProjet'],
-                        'nomProjet' => $_POST['nom'],
-                        'description' => $_POST['description'],
-                        'dateDepot' => $_POST['dateDepot'],
-                        'dateReponse' => $_POST['dateReponse'],
-                        'statut' => $_POST['statut'],
-                        'role' => $_POST['role'],
-                        'budgetTotal' => $_POST['budgetTotal'],
-                        'budgetEDF' => $_POST['budgetEDF'],
-                        'subventionTotal' => $_POST['subventionTotal'],
-                        'subventionEDF' => $_POST['subventionEDF'],
-                        'codeSourceFin' => $_POST['financement'],
-                        'codeTheme' => $_POST['theme'],
-                        
-                    );
-                    if(!ModelProjet::update($data)) ControllerMain::erreur("Impossible de modifier le projet");
-                    else {
-                        $projet = ModelProjet::select($_POST['codeProjet']);
-                        $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
-                        $theme = ModelTheme::select($projet->getCodeTheme());
-                        $tabContact = ModelImplication::selectAllByProjet($projet->getCodeProjet());
-                        $tabContactProgramme = ModelContact::selectAllBySource($projet->getCodeSourceFin());
-                        $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
-                        $view = 'detail';
-                        $pagetitle = 'Projet : ' . $projet->getNomProjet();
-                        require_once File::build_path(array('view', 'view.php'));
-                    }
-                } else ControllerMain::erreur("Cette unité n'existe pas");
-            } else ControllerMain::erreur("Il manque des informations");
+            if ($_SESSION['is_admin']) {
+                if (isset($_POST['codeProjet']) &&
+                    isset($_POST['nom']) &&
+                    isset($_POST['statut']) &&
+                    isset($_POST['financement']) &&
+                    isset($_POST['dateDepot']) &&
+                    isset($_POST['description']) &&
+                    isset($_POST['theme']) &&
+                    isset($_POST['role'])) {
+                    /**
+                     * Vérification existance
+                     */
+                    $updateProjet = ModelProjet::select($_POST['codeProjet']);
+                    if($updateProjet && $_POST['codeProjet'] == $updateProjet->getCodeProjet()) {
+                        $data = array(
+                            'codeProjet' => $_POST['codeProjet'],
+                            'nomProjet' => $_POST['nom'],
+                            'description' => $_POST['description'],
+                            'dateDepot' => $_POST['dateDepot'],
+                            'dateReponse' => $_POST['dateReponse'],
+                            'statut' => $_POST['statut'],
+                            'role' => $_POST['role'],
+                            'budgetTotal' => $_POST['budgetTotal'],
+                            'budgetEDF' => $_POST['budgetEDF'],
+                            'subventionTotal' => $_POST['subventionTotal'],
+                            'subventionEDF' => $_POST['subventionEDF'],
+                            'codeSourceFin' => $_POST['financement'],
+                            'codeTheme' => $_POST['theme'],
+                            
+                        );
+                        if (isset($_POST['isExceptionnel'])) {
+                            $data['isExceptionnel'] = $_POST['isExceptionnel'];
+                        }
+                        if(!ModelProjet::update($data)) ControllerMain::erreur("Impossible de modifier le projet");
+                        else {
+                            $projet = ModelProjet::select($_POST['codeProjet']);
+                            $tabDeadLine = ModelDeadLine::selectAllByProjet($projet->getCodeProjet());
+                            $chef = ModelImplication::selectChef($projet->getCodeProjet());
+                            $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
+                            $theme = ModelTheme::select($projet->getCodeTheme());
+                            $tabContact = ModelImplication::selectAllByProjet($projet->getCodeProjet());
+                            $tabContactProgramme = ModelContact::selectAllBySource($projet->getCodeSourceFin());
+                            $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
+                            $view = 'detail';
+                            $pagetitle = 'Projet : ' . $projet->getNomProjet();
+                            require_once File::build_path(array('view', 'view.php'));
+                        }
+                    } else ControllerMain::erreur("Cette unité n'existe pas");
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $projet = new ModelProjet();
-            //$sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
-            $tabSource = ModelSourceFin::selectAll();
-            $tabTheme = ModelTheme::selectAll();
-            $theme = ModelTheme::select($projet->getCodeTheme());
-            $view = 'update';
-            $pagetitle = 'Créer un nouveau projet';
-            require_once File::build_path(array('view', 'view.php'));
+            if (isset($_SESSION['is_admin'])) {
+                $projet = new ModelProjet();
+                $tabSource = ModelSourceFin::selectAll();
+                $tabTheme = ModelTheme::selectAll();
+                $theme = ModelTheme::select($projet->getCodeTheme());
+                $view = 'update';
+                $pagetitle = 'Créer un nouveau projet';
+                require_once File::build_path(array('view', 'view.php'));
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
@@ -373,42 +403,46 @@ class ControllerProjet
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['nom']) &&
-                isset($_POST['statut']) &&
-                isset($_POST['financement']) &&
-                isset($_POST['dateDepot']) &&
-                isset($_POST['description']) &&
-                isset($_POST['theme']) &&
-                isset($_POST['role'])) {
+            if (isset($_SESSION['is_admin'])) {
+                if (isset($_POST['nom']) &&
+                    isset($_POST['statut']) &&
+                    isset($_POST['financement']) &&
+                    isset($_POST['dateDepot']) &&
+                    isset($_POST['description']) &&
+                    isset($_POST['theme']) &&
+                    isset($_POST['role'])) {
 
-                $data = array(
-                        'nomProjet' => $_POST['nom'],
-                        'description' => $_POST['description'],
-                        'dateDepot' => $_POST['dateDepot'],
-                        'dateReponse' => $_POST['dateReponse'],
-                        'statut' => $_POST['statut'],
-                        'role' => $_POST['role'],
-                        'budgetTotal' => $_POST['budgetTotal'],
-                        'budgetEDF' => $_POST['budgetEDF'],
-                        'subventionTotal' => $_POST['subventionTotal'],
-                        'subventionEDF' => $_POST['subventionEDF'],
-                        'codeSourceFin' => $_POST['financement'],
-                        'codeTheme' => $_POST['theme'],
-                        
-                    );
-                $codeProjet = ModelProjet::save($data);
-                if (isset($codeProjet))  {
-                    $projet = ModelProjet::select($codeProjet);
-                    $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
-                    $theme = ModelTheme::select($projet->getCodeTheme());
-                    $tabContact = ModelImplication::selectAllByProjet($projet->getCodeProjet());
-                    $tabContactProgramme = ModelContact::selectAllBySource($projet->getCodeSourceFin());
-                    $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
-                    $view = 'detail';
-                    $pagetitle = 'Projet : ' . $projet->getNomProjet();
-                    require_once File::build_path(array('view', 'view.php'));
-                }else ControllerMain::erreur("Impossible de créer le Projet");
-            } else ControllerMain::erreur("Il manque des informations");
+                    $data = array(
+                            'nomProjet' => $_POST['nom'],
+                            'description' => $_POST['description'],
+                            'dateDepot' => $_POST['dateDepot'],
+                            'dateReponse' => $_POST['dateReponse'],
+                            'statut' => $_POST['statut'],
+                            'role' => $_POST['role'],
+                            'budgetTotal' => $_POST['budgetTotal'],
+                            'budgetEDF' => $_POST['budgetEDF'],
+                            'subventionTotal' => $_POST['subventionTotal'],
+                            'subventionEDF' => $_POST['subventionEDF'],
+                            'codeSourceFin' => $_POST['financement'],
+                            'codeTheme' => $_POST['theme'],
+                            
+                        );
+                    $codeProjet = ModelProjet::save($data);
+                    if (isset($codeProjet))  {
+                        $projet = ModelProjet::select($codeProjet);
+                        $tabDeadLine = ModelDeadLine::selectAllByProjet($projet->getCodeProjet());
+                        $chef = ModelImplication::selectChef($projet->getCodeProjet());
+                        $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
+                        $theme = ModelTheme::select($projet->getCodeTheme());
+                        $tabContact = ModelImplication::selectAllByProjet($projet->getCodeProjet());
+                        $tabContactProgramme = ModelContact::selectAllBySource($projet->getCodeSourceFin());
+                        $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
+                        $view = 'detail';
+                        $pagetitle = 'Projet : ' . $projet->getNomProjet();
+                        require_once File::build_path(array('view', 'view.php'));
+                    }else ControllerMain::erreur("Impossible de créer le Projet");
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
@@ -424,10 +458,12 @@ class ControllerProjet
     public static function delete()
     {
         if(isset($_SESSION['login'])) {
-            if(isset($_GET['codeProjet'])) {
-                if(ModelProjet::delete($_GET['codeProjet'])) ControllerProjet::readAll();
-                else ControllerMain::erreur("Impossible de supprimer le Projet");
-            } else ControllerMain::erreur("Il manque des informations");
+            if (isset($_SESSION['is_admin'])) {
+                if(isset($_GET['codeProjet'])) {
+                    if(ModelProjet::delete($_GET['codeProjet'])) ControllerProjet::readAll();
+                    else ControllerMain::erreur("Impossible de supprimer le Projet");
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 
@@ -468,12 +504,7 @@ class ControllerProjet
                 $view = 'list';
                 $pagetitle = 'Projet';
                 require_once File::build_path(array('view', 'view.php'));
-            }elseif ($_POST['codeProjet'] != null) {
-                $values['codeProjet'] = $_POST['codeProjet'];
-                $codeCondition = 'codeProjet LIKE CONCAT(\'%\',:codeProjet,\'%\')';
-                array_push($conditions, $codeCondition);
-            }
-            if ($_POST['nomProjet'] != null) {
+            }elseif ($_POST['nomProjet'] != null) {
                 $values['nomProjet'] = $_POST['nomProjet'];
                 $nomCondition = 'nomProjet LIKE CONCAT(\'%\',:nomProjet,\'%\')';
                 array_push($conditions, $nomCondition);
@@ -507,12 +538,19 @@ class ControllerProjet
         $statuts = $_POST['statut'];
         $start = $_POST['start'].'-01-01';
         $end = $_POST['end'].'-12-31';
+        if ($_POST['graph']=='pie') {
+            
+        }
         if ($_POST['data']==1) {
             $tab = ModelProjet::statNbProjet($start,$end,$statuts);
             $scriptNewGraph = ControllerProjet::scriptBarNbProjet(1,$statuts,$_POST['titre'],'Nombre de projets',$_POST['start'],$_POST['end'],$tab);
         }elseif ($_POST['data']==2) {
             $montants = $_POST['montant'];
-            $tab = ModelProjet::statMontantProjet($start,$end,$statuts[0],$montants);
+            if (isset($_POST['exceptionnel'])) {
+                $tab = ModelProjet::statMontantProjet($start,$end,$statuts[0],$montants, true);
+            }else {
+                $tab = ModelProjet::statMontantProjet($start,$end,$statuts[0],$montants, false);
+            }
             $scriptNewGraph = ControllerProjet::scriptBar(1,$montants,$_POST['titre'], 'Montant en €', $_POST['start'], $_POST['end'],$tab);
         }
         $script = ControllerProjet::$introScript.$scriptNewGraph.'</script>';

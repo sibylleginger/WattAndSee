@@ -96,11 +96,9 @@ class ModelImplication
             $values = array('codeProjet' => $codeProjet,
                             'codeContact' => $codeContact);
             $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelImplication');
-            $retourne = $rep->fetchAll();
-            return $retourne[0];
+            return true;
         } catch (Exception $e) {
-            return false;
+            return $e->getMessage();
         }
     }
 
@@ -140,10 +138,6 @@ class ModelImplication
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
@@ -161,10 +155,6 @@ class ModelImplication
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
@@ -214,77 +204,4 @@ class ModelImplication
             return $e->getMessage();;
         }
     }
-
-    /**
-     * Renvoie tous les enseignant appartenant à un statut, false s'il y a une erreur
-     *
-     * @param $codeStatut string (techniquement c'est un string mais c'est un nombre)
-     * @return bool|array(ModelEnseigant)
-     */
-    public static function selectAllByStatut($codeStatut)
-    {
-        try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeStatut=:codeStatut';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array('codeStatut' => $codeStatut);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelEnseignant');
-            $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
-            return $retourne;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Retourne tous les enseignants avec un nom/prenom proche de $npEns
-     * TODO supprimer l'attribut prénom
-     *
-     * @param $npEns string nom/prenom d'un enseigant
-     * @return bool|array(ModelEnseignant)
-     */
-    public static function selectAllByName($npEns)
-    {
-        try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE nomEns LIKE CONCAT(\'%\',:npEns,\'%\')';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array('npEns' => $npEns);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelEnseignant');
-            $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
-            return $retourne;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Retourne un tableau avec les statuts et le nombre de professeurs par statuts
-     */
-    public static function statStatutEtEnseignant()
-    {
-        try {
-            $sql = 'SELECT
-                      statut,
-                      count(codeEns) as quantity
-                    FROM StatutEnseignant
-                      JOIN Enseignant E ON StatutEnseignant.codeStatut = E.codeStatut
-                    GROUP BY E.codeStatut,statut;';
-            $rep = Model::$pdo->prepare($sql);
-            $rep->execute();
-            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-            return $retourne;
-        } catch (Exception $e) {
-            return $e;
-        }
-    }
-
 }

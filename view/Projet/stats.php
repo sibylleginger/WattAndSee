@@ -6,6 +6,13 @@
         <div class="mdl-card__supporting-text">
             <form method="post" action="index.php?controller=projet&action=createBarGraph" class="horizontal">
                 <div>
+                    <label class="select" for="graph">Forme du diagramme</label>
+                    <select required name="graph" id="graph">
+                        <option value="pie">Circulaire</option>
+                        <option value="bar">Barres verticales</option>
+                    </select>
+                </div>
+                <div>
                 <p>Créer un graphe sur</p>
                 <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="nbP">
                     <input type="radio" id="nbP" class="mdl-radio__button" name="data" value="1">
@@ -50,6 +57,10 @@
                     <span class="mdl-checkbox__label">Subvention EDF</span>
                 </label>
                 </div>
+                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="exceptionnel">
+                    <input type="radio" id="exceptionnel" class="mdl-radio__button" name="exceptionnel" value="1">
+                    <span class="mdl-radio__label">Projets exceptionnels</span>
+                </label>
                 <div>
                 <p>Intervalle d'année</p>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -73,32 +84,37 @@
             </form>
         </div>
 
+<h3><a href="index.php?controller=entite&action=readAll">Voir les statistiques par entités</a></h3>
+
 <h3>Le réseau Enfin c'est :</h3>
 <div class="list">
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphPie1" style="width: 90%; height: 250px;"></div>
+            <div id="graphPie1"></div>
         </div>
+        <button id="savePie1"></button>
     </div>
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar1" style="width: 90%; height: 250px;"></div>
+            <div id="graphBar1"></div>
         </div>
+        <button id="saveBar1"></button>
     </div>
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar2" style="width: 90%; height: 250px;"></div>
+            <div id="graphBar2"></div>
         </div>
+        <button id="saveBar2"></button>
     </div>
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar4" style="width: 90%; height: 250px;"></div>
+            <div id="graphBar4"></div>
         </div>
         <button id="saveBar4"></button>
     </div>
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar5" style="width: 90%; height: 250px;"></div>
+            <div id="graphBar5"></div>
         </div>
         <button id="saveBar5"></button>
     </div>
@@ -108,13 +124,15 @@
 <div class="list">
 <div class="mdl-card mdl-shadow--2dp graph">
     <div class="mdl-card__supporting-text mdl-card--border">
-        <div id="graphPie2" style="width: 90%; height: 250px;"></div>
+        <div id="graphPie2"></div>
     </div>
+    <button id="savePie2"></button>
 </div>
 <div class="mdl-card mdl-shadow--2dp graph">
     <div class="mdl-card__supporting-text mdl-card--border">
-        <div id="graphPie3" style="width: 90%; height: 250px;"></div>
+        <div id="graphPie3"></div>
     </div>
+    <button id="savePie3"></button>
 </div>
 </div>
 </div>

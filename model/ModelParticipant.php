@@ -15,7 +15,24 @@ class ModelParticipant extends Model
     private $nomParticipant;
     private $nationalite;
     private $affiliation;
+    private $mailParticipant;
 
+
+    /**
+     * @return mixed
+     */
+    public function getMailParticipant()
+    {
+        return $this->mailParticipant;
+    }
+
+    /**
+     * @param mixed $codeDepartement
+     */
+    public function setMailParticipant($mailParticipant)
+    {
+        $this->mailParticipant = $mailParticipant;
+    }
 
     /**
      * @return mixed
@@ -73,6 +90,13 @@ class ModelParticipant extends Model
         return $this->affiliation;
     }
 
+    public function isCoordinateur($codeProjet) {
+        $coordinateur = ModelParticipation::selectCoordinateur($codeProjet);
+        if ($coordinateur->getCodeParticipant() == $this->codeParticipant) {
+            return true;
+        }else return false;
+    }
+
     /**
      * Retourne l'enseignant désigné par son code Enseignant, false s'il y a une erreur ou qu'il n'existe pas
      *
@@ -85,9 +109,13 @@ class ModelParticipant extends Model
     {
         $retourne = parent::select($primary_value);
         if (!$retourne) return false;
-        $retourne->setCodeStatut(ModelStatutEnseignant::select($retourne->getCodeStatut()));
-        $retourne->setCodeDepartement(ModelDepartement::select($retourne->getCodeDepartement()));
         return $retourne;
+    }
+
+    public static function save($data) {
+        if (parent::save($data)) {
+            return Model::$pdo->lastInsertId();
+        }else return false;
     }
 
     /**

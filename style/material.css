@@ -4251,9 +4251,7 @@ input.mdl-button[type="submit"] {
           align-self: flex-end;
   color: inherit;
   display: block;
-  display: -webkit-flex;
   display: -ms-flexbox;
-  display: flex;
   font-size: 24px;
   font-weight: 300;
   line-height: normal;
@@ -10115,7 +10113,6 @@ _:-ms-input-placeholder, :root .mdl-slider.mdl-slider.is-upgraded {
   font-size: 16px;
   display: inline-block;
   box-sizing: border-box;
-  width: 300px;
   max-width: 100%;
   margin: 0;
   padding: 20px 0; }

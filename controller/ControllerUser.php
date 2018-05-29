@@ -138,7 +138,9 @@ class ControllerUser
                             'mailUser' => $_POST['mailUser'],
                             'passwordUser' => Security::chiffrer($_POST['passwordUser'])
                         );
-                        if (!ModelUser::save($data)) {
+                        $test = ModelUser::save($data);
+                        if (!$test) {
+                            var_dump($test);
                             ControllerMain::erreur("Impossible d'inscrire l'utilisateur");
                         } else {
                             ControllerUser::connect();

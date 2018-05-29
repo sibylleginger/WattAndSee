@@ -10,7 +10,7 @@
         if ($sourceFin == false) {
             echo "Inconnue<br>";
         }else {
-            echo $sourceFin->getNomSourceFin().'<br>';  
+            echo '<a href="index.php?controller=sourceFin&action=read&codeSourceFin='.$sourceFin->getCodeSourceFin().'">'.$sourceFin->getNomSourceFin().'</a><br>';  
         }
         ?>
         Date de dépôt du dossier : <?php echo $projet->getDateDepot();?> <br>
@@ -31,13 +31,14 @@
                 foreach ($tabComment as $value) {
                     echo '<div class="mdl-card mdl-shadow--2dp comment">
                             <div class="mdl-card__supporting-text">
+                                <p>'.$value->getMailUser().': </p>
                                 <p>'.$value->getComment().'</p>
                             </div>
                             <div class="mdl-card__actions mdl-card--border commentHeader">
                             <p>';
                     list($year, $month, $day) = explode('-', $value->getDateNote());
                     echo $day.'/'.$month.'/'.$year.'</p>
-                            <p>'.$value->getMailUser().'</p>
+                            <a href="index.php?controller=note&action=delete&codeProjet='.$projet->getCodeProjet().'&codeNote='.$value->getCodeNote().'"><i class="material-icons">delete</i></a>
                         </div>
                     </di>';
                 }

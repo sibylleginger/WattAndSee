@@ -15,7 +15,7 @@
                         echo "Affiliation : ". $sourceFin->getNomSourceFin();
                     }
                 }else {
-                    echo "Entité EDF : ". $entite->getNomEntite()."<br>";
+                    echo "Entité EDF : <a href=\"index.php?controller=entite&action=read&codeEntite=". $entite->getCodeEntite()."\">".$entite->getNomEntite()."</a><br>";
                     if ($departement != false) {
                         echo "Département : ". $departement->getNomDepartement()."<br>";
                     }

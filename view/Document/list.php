@@ -10,7 +10,7 @@
         if ($sourceFin == false) {
             echo "Inconnue<br>";
         }else {
-            echo $sourceFin->getNomSourceFin().'<br>';  
+            echo '<a href="index.php?controller=sourceFin&action=read&codeSourceFin='.$sourceFin->getCodeSourceFin().'">'.$sourceFin->getNomSourceFin().'</a><br>';  
         }
         ?>
         Date de dépôt du dossier : <?php echo $projet->getDateDepot();?> <br>
@@ -29,7 +29,7 @@
         <ul>
             <?php
                 foreach ($tabDoc as $key => $value) {
-                    echo '<li><a href="./docs/'.$value->getNamePJ().'">'.$value->getTitre().'</a></li>';
+                    echo '<li><a href="./docs/'.$value->getNamePJ().'">'.$value->getTitre().'</a><a href="index.php?controller=document&action=delete&codeProjet&='.$projet->getCodeProjet().'&codeDocument='.$value->getNamePJ().'"><i class="material-icons">delete</i></a></li>';
                 }
             ?>
         </ul>

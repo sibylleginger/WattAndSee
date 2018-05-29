@@ -13,6 +13,7 @@ require_once File::build_path(array('controller', 'ControllerProjet.php'));
 require_once File::build_path(array('controller', 'ControllerDocument.php'));
 require_once File::build_path(array('controller', 'ControllerNote.php'));
 require_once File::build_path(array('controller', 'ControllerDeadLine.php'));
+require_once File::build_path(array('controller', 'ControllerTheme.php'));
 
 if (isset($_GET['controller'])) {
     $controller_class = 'Controller' . ucfirst($_GET['controller']);

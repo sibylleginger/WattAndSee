@@ -1,10 +1,10 @@
 <?php
-require_once File::build_path(array('model', 'ModelSourceFin.php'));
+require_once File::build_path(array('model', 'ModelTheme.php'));
 
-class ControllerSourceFin
+class ControllerTheme
 {
 
-    protected static $object = 'sourceFin';
+    protected static $object = 'Theme';
 
     /**
      * Redirige vers le centre de recherche des enseignants
@@ -15,9 +15,9 @@ class ControllerSourceFin
     public static function readAll()
     {
         if (isset($_SESSION['login'])) {
-            $sourcesFin = ModelSourceFin::selectAll();
+            $tabTheme = ModelTheme::selectAll();
             $view = 'list';
-            $pagetitle = 'Programmes de financement';
+            $pagetitle = 'Themes';
             require_once File::build_path(array('view', 'view.php'));
         } else ControllerUser::connect();
     }
@@ -32,14 +32,13 @@ class ControllerSourceFin
     public static function read()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeSourceFin'])) {
-                $sourceFin = ModelSourceFin::select($_GET['codeSourceFin']);
-                if (!$sourceFin) ControllerMain::erreur("Le programme n'existe pas");
+            if (isset($_GET['codeTheme'])) {
+                $theme = ModelTheme::select($_GET['codeTheme']);
+                if (!$theme) ControllerMain::erreur("Le thème n'existe pas");
                 else {
-                    $tabProjet = ModelProjet::selectAllBySource($_GET['codeSourceFin']);
-                    $tabContact = ModelContact::selectAllBySource($_GET['codeSourceFin']);
+                    $tabProjet = ModelProjet::selectAllByTheme($_GET['codeTheme']);
                     $view = 'detail';
-                    $pagetitle = 'Programme : ' . $sourceFin->getNomSourceFin();
+                    $pagetitle = 'Liste des projets du thème ' . $theme->getNomTheme();
                     require_once File::build_path(array('view', 'view.php'));
                 }
             }else ControllerMain::erreur('Il manque des informations');
@@ -55,9 +54,9 @@ class ControllerSourceFin
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $sourceFin = new ModelSourceFin();
+            $theme = new ModelTheme();
             $view = 'update';
-            $pagetitle = 'Créer un programme de financement';
+            $pagetitle = 'Créer un nouveau thème de projet';
             require_once File::build_path(array('view', 'view.php'));
         } else ControllerUser::connect();
     }
@@ -71,11 +70,11 @@ class ControllerSourceFin
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['nomSourceFin'])) {
+            if (isset($_POST['nomTheme'])) {
                 $data = array(
-                    'nomSourceFin' => $_POST['nomSourceFin']);
-                if (!ModelSourceFin::save($data)) ControllerMain::erreur("Impossible d'enregistrer le programme");
-                else ControllerSourceFin::readAll();
+                    'nomTheme' => $_POST['nomTheme']);
+                if (!ModelTheme::save($data)) ControllerMain::erreur("Impossible d'enregistrer le thème");
+                else ControllerTheme::readAll();
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
     }
@@ -88,10 +87,10 @@ class ControllerSourceFin
     public static function delete()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeSourceFin'])) {
-                if (!ModelSourceFin::delete($_GET["codeSourceFin"])) ControllerMain::erreur("Impossible de supprimer le programme");
+            if (isset($_GET['codeTheme'])) {
+                if (!ModelTheme::delete($_GET["codeTheme"])) ControllerMain::erreur("Impossible de supprimer le thème");
                 else {
-                    ControllerSourceFin::readAll();
+                    ControllerTheme::readAll();
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();
@@ -109,12 +108,12 @@ class ControllerSourceFin
     public static function update()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeSourceFin'])) {
-                $sourceFin = ModelSourceFin::select($_GET['codeSourceFin']);
-                if (!$sourceFin) ControllerMain::erreur("Le programme n'existe pas");
+            if (isset($_GET['codeTheme'])) {
+                $theme = ModelTheme::select($_GET['codeTheme']);
+                if (!$theme) ControllerMain::erreur("Le thème n'existe pas");
                 else {
                     $view = 'update';
-                    $pagetitle = 'Modification de : ' . $sourceFin->getNomSourceFin();
+                    $pagetitle = 'Modification de : ' . $theme->getNomTheme();
                     require_once File::build_path(array('view', 'view.php'));
                 }
             }
@@ -133,13 +132,13 @@ class ControllerSourceFin
     public static function updated()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeSourceFin']) && $_POST['nomSourceFin']) {
+            if (isset($_POST['codeTheme']) && $_POST['nomTheme']) {
                 $data = array(
-                    'codeSourceFin' => $_POST['codeSourceFin'],
-                    'nomSourceFin' => $_POST['nomSourceFin']);
-                if (!ModelSourceFin::update($data)) ControllerMain::erreur("Impossible de modifier le programme");
+                    'codeTheme' => $_POST['codeTheme'],
+                    'nomTheme' => $_POST['nomTheme']);
+                if (!ModelTheme::update($data)) ControllerMain::erreur("Impossible de modifier le thème");
                 else {
-                    ControllerSourceFin::readAll();
+                    ControllerTheme::readAll();
                 }
             } else ControllerMain::erreur("Il manque des informations");
         } else ControllerUser::connect();

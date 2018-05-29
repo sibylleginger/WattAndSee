@@ -1,7 +1,8 @@
 $(function(){
-	/*$(document).on('click','.setAsChef', function() {
-		var codeContact = $(this).attr('id');
-		var row = $(this).parent().parent();
+	$(document).on('click','.setAsChef', function() {
+		var classContact = $(this).attr('class');
+        var codeContact = classContact.split(' ')[1];
+        var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
 		$.ajax({
             type:'POST',
@@ -16,7 +17,7 @@ $(function(){
             }
 
         });
-	});*/
+	});
 
 	$(document).on('change', '#codeEntite', function() {
 		var isRD = $('#isRD');
@@ -109,10 +110,10 @@ $(function(){
             url:'index.php?controller=participation&action=delete',
             data:{'codeProjet':codeProjet, 'codeParticipant':codeParticipant},
             success: function(data){
-                 if(data=="YES"){
+                 if(data=="true"){
                     row.fadeOut().remove();
                  }else{
-                 	window.alert('error');
+                 	window.alert(data);
                  }
              }
 
@@ -129,10 +130,10 @@ $(function(){
             url:'index.php?controller=participation&action=add',
             data:{'codeProjet':codeProjet, 'codeParticipant':codeParticipant},
             success: function(data){
-                 if(data=="YES"){
+                 if(data=="true"){
                     row.fadeOut().remove();
                  }else{
-                 	window.alert('error');
+                 	window.alert(data);
                  }
              }
 

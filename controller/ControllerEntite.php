@@ -46,7 +46,7 @@ class ControllerEntite
                     $tabContact = ModelContact::selectAllByEntite($entite->getCodeEntite());
                     $script = ControllerProjet::$introScript.$graph1.$graph2.$graph3.'</script>';
                     $view = 'detail';
-                    $pagetitle = 'Programme : ' . $entite->getNomEntite();
+                    $pagetitle = 'Entité : ' . $entite->getNomEntite();
                     require_once File::build_path(array('view', 'view.php'));
                 }
             }else ControllerMain::erreur('Il manque des informations');
@@ -62,10 +62,12 @@ class ControllerEntite
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $entite = new ModelEntite();
-            $view = 'update';
-            $pagetitle = 'Créer un programme de financement';
-            require_once File::build_path(array('view', 'view.php'));
+            if($_SESSION['is_admin']) {
+                $entite = new ModelEntite();
+                $view = 'update';
+                $pagetitle = 'Créer un programme de financement';
+                require_once File::build_path(array('view', 'view.php'));
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
@@ -78,12 +80,14 @@ class ControllerEntite
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['nomEntite'])) {
-                $data = array(
-                    'nomEntite' => $_POST['nomEntite']);
-                if (!ModelEntite::save($data)) ControllerMain::erreur("Impossible d'enregistrer le programme");
-                else ControllerEntite::readAll();
-            } else ControllerMain::erreur("Il manque des informations");
+            if($_SESSION['is_admin']) {
+                if (isset($_POST['nomEntite'])) {
+                    $data = array(
+                        'nomEntite' => $_POST['nomEntite']);
+                    if (!ModelEntite::save($data)) ControllerMain::erreur("Impossible d'enregistrer le programme");
+                    else ControllerEntite::readAll();
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
@@ -95,12 +99,14 @@ class ControllerEntite
     public static function delete()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeEntite'])) {
-                if (!ModelEntite::delete($_GET["codeEntite"])) ControllerMain::erreur("Impossible de supprimer le programme");
-                else {
-                    ControllerEntite::readAll();
-                }
-            } else ControllerMain::erreur("Il manque des informations");
+            if($_SESSION['is_admin']) {
+                if (isset($_GET['codeEntite'])) {
+                    if (!ModelEntite::delete($_GET["codeEntite"])) ControllerMain::erreur("Impossible de supprimer le programme");
+                    else {
+                        ControllerEntite::readAll();
+                    }
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
@@ -116,15 +122,17 @@ class ControllerEntite
     public static function update()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeEntite'])) {
-                $entite = ModelEntite::select($_GET['codeEntite']);
-                if (!$entite) ControllerMain::erreur("Le programme n'existe pas");
-                else {
-                    $view = 'update';
-                    $pagetitle = 'Modification de : ' . $entite->getNomEntite();
-                    require_once File::build_path(array('view', 'view.php'));
-                }
-            }
+            if($_SESSION['is_admin']) {
+                if (isset($_GET['codeEntite'])) {
+                    $entite = ModelEntite::select($_GET['codeEntite']);
+                    if (!$entite) ControllerMain::erreur("Le programme n'existe pas");
+                    else {
+                        $view = 'update';
+                        $pagetitle = 'Modification de : ' . $entite->getNomEntite();
+                        require_once File::build_path(array('view', 'view.php'));
+                    }
+                }else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
@@ -140,15 +148,17 @@ class ControllerEntite
     public static function updated()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeEntite']) && $_POST['nomEntite']) {
-                $data = array(
-                    'codeEntite' => $_POST['codeEntite'],
-                    'nomEntite' => $_POST['nomEntite']);
-                if (!ModelEntite::update($data)) ControllerMain::erreur("Impossible de modifier l'enseignant");
-                else {
-                    ControllerEntite::readAll();
-                }
-            } else ControllerMain::erreur("Il manque des informations");
+            if($_SESSION['is_admin']) {
+                if (isset($_POST['codeEntite']) && $_POST['nomEntite']) {
+                    $data = array(
+                        'codeEntite' => $_POST['codeEntite'],
+                        'nomEntite' => $_POST['nomEntite']);
+                    if (!ModelEntite::update($data)) ControllerMain::erreur("Impossible de modifier l'enseignant");
+                    else {
+                        ControllerEntite::readAll();
+                    }
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 }

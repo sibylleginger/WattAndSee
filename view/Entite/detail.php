@@ -23,21 +23,25 @@
             ?>
         </tbody>
     </table>
-
+    <div class="list">
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphPie1" style="width: 90%; height: 250px;"></div>
+            <div id="graphPie1"></div>
         </div>
+        <button id="savePie1"></button>
     </div>
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar2" style="width: 90%; height: 250px;"></div>
+            <div id="graphBar2"></div>
         </div>
+        <button id="saveBar2"></button>
     </div>
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar3" style="width: 90%; height: 250px;"></div>
+            <div id="graphBar3"></div>
         </div>
+        <button id="saveBar3"></button>
+    </div>
     </div>
         <div class="mdl-card__menu">
             <a href="index.php?controller=entite&action=update&codeEntite=<?php echo htmlspecialchars($entite->getCodeEntite()) ?>">

@@ -42,7 +42,7 @@
                                 <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                                 <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
                                 <td class="mdl-data-table__cell--non-numeric">'.$contact->getMail().'</td>
-                                <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact" id="'.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
+                                <td class="mdl-data-table__cell--non-numeric"><a id="'.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
                             </tr>';
                     }
                     ?>

@@ -42,7 +42,7 @@
                     <?php
                     foreach ($tabSourceFin as $value) {
                         echo '<option value="'. $value->getCodeSourceFin().'" ';
-                        if ($contact->getCodeSourceFin() !== null && $value->getCodeSourceFin() == $contact->getCodeSourceFin()) {
+                        if ($value->getCodeSourceFin() == $contact->getCodeSourceFin() || $value->getCodeSourceFin() == $_GET['codeSourceFin']) {
                             echo 'selected';
                         }
                         echo '>'.htmlspecialchars($value->getNomSourceFin()).'</option>';
@@ -83,9 +83,6 @@
                 <input type="checkbox" id="chefProjet" name="chefProjet" value="1" class="mdl-checkbox__input">
                 <span class="mdl-checkbox__label" for="chefProjet">Chef du projet</span>
             </label>';
-            elseif (isset($_GET['codeSourceFin'])) echo '<input type="hidden" name="codeSourceFin" value="' . $_GET['codeSourceFin'] . '">'; {
-                # code...
-            }
             ?>
 
             <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect bouton" type="submits">

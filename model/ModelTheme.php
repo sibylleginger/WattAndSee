@@ -10,7 +10,7 @@ class ModelTheme extends Model
 
     private $codeTheme;
     /**
-     * @var $codeStatut ModelStatutEnseignant
+     * @var $codeStatut ModelStatutthème
      */
     private $nomTheme;
      /**
@@ -46,10 +46,10 @@ class ModelTheme extends Model
     }
 
     /**
-     * Retourne l'enseignant désigné par son code Enseignant, false s'il y a une erreur ou qu'il n'existe pas
+     * Retourne le thème désigné par son code thème, false s'il y a une erreur ou qu'il n'existe pas
      *
      * @param $primary_value
-     * @return bool|ModelEnseignant
+     * @return bool|Modelthème
      *
      * @uses  Model::select()
      */
@@ -62,10 +62,10 @@ class ModelTheme extends Model
 
     /**
      * @deprecated
-     * Renvoie la liste des tous les enseignants
+     * Renvoie la liste des tous les thèmes
      * TODO implémenter une fonction de page ?
      *
-     * @return bool|array(ModelEnseigant)
+     * @return bool|array(ModelTheme)
      *
      * @uses  Model::selectAll()
      */
