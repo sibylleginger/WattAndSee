@@ -21,7 +21,7 @@
         }?> <br>
     </div>
     <div class="mdl-card__actions mdl-card--border">
-        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=note&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet()?>">Commentaires sur le projet</a>
+        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=note&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet()?>">Commentaires du projet</a>
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=document&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet() ?>">Documents du projet</a>
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=deadLine&action=create&codeProjet=<?php echo $projet->getCodeProjet() ?>">Ajouter une échéance</a>
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=projet&action=updateContacts&codeProjet=<?php echo htmlspecialchars($projet->getCodeprojet()) ?>">Modifier les contacts</a>
@@ -84,7 +84,7 @@
                         <td class="mdl-data-table__cell--non-numeric">';
                         list($year, $month, $day) = explode('-', $value->getDateDeadLine());
                         echo $day.'/'.$month.'/'.$year.'</td>
-                        <td class="mdl-data-table__cell--non-numeric"><a id="'.$deadLine->getCodeDeadLine().'" class="deleteDate" href=""><i class="material-icons">delete</i></td>
+                        <td class="mdl-data-table__cell--non-numeric"><a id="'.$value->getCodeDeadLine().'" class="deleteDate" href=""><i class="material-icons">delete</i></td>
                         </tr>';
                 }
                 echo '

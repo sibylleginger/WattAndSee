@@ -5,7 +5,6 @@
             <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
         </div>
         <div class="mdl-card__supporting-text">
-        	<input type="hidden" name="MAX_FILE_SIZE" value="600000" />
             <input class="mdl-textfield__input" type="file" id="namePJ" name="namePJ" required>
             <label for="namePJ">Ajouter un document</label>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

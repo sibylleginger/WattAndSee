@@ -112,7 +112,7 @@ class ModelEntite extends Model
     {
         $entite = ModelEntite::select($codeEntite);
         try {
-            $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim, statut, count(codeProjet) as quantity
+            $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim, statut as bar, count(codeProjet) as quantity
                     FROM ProjetSearch P
                     WHERE';
             foreach ($statuts as $key => $value) {

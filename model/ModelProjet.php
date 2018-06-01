@@ -283,19 +283,18 @@ class ModelProjet extends Model
     {
         $retourne = parent::select($primary_value);
         if (!$retourne) return false;
-        //$retourne->setCodeSourceFin(ModelSourceFin::select($retourne->getCodeSourceFin()));
-            //$retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
-            //$retourne->setCodeCo(ModelReporting::select($retourne->getCodeReporting()));
-            //$retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
-            //$retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
-            //$retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
         return $retourne;
+    }
+
+    public static function save($data) {
+        if (parent::save($data)) {
+            return Model::$pdo->lastInsertId();
+        }else return false;
     }
 
     /**
      * @deprecated
      * Renvoie la liste des tous les Projets
-     * TODO implémenter une fonction de page ?
      *
      * @return bool|array(ModelProjet)
      *
@@ -329,19 +328,6 @@ class ModelProjet extends Model
         }
     }
 
-    public static function countBySource($codeSourceFin) {
-        try {
-            $sql = 'SELECT * FROM Projets WHERE codeSourceFin=:codeSourceFin';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array('codeSourceFin' => $codeSourceFin);
-            $rep->execute($values);
-            var_dump($rep);
-            return $rep->rowCount();
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
     public static function selectAllBySource($codeSourceFin)
     {
         try {
@@ -357,6 +343,14 @@ class ModelProjet extends Model
         }
     }
 
+    /**
+     * Retourne tous les projets dont les caractéristiques correspondent aux tableau de conditions dans la table Projet
+     * Return all the projects corresponding to the conditions in the table Projet
+     *
+     * @param $conditions array string, SQL conditions
+     * @param $data array of values of the conditions
+     * @return false|array(ModelProjet)
+     */
     public static function searchBy($data, $conditions) {
         try {
             $sql = 'SELECT * FROM ' . self::$object . ' WHERE ';
@@ -376,6 +370,14 @@ class ModelProjet extends Model
         }
     }
 
+    /**
+     * Retourne tous les projets dont les caractéristiques correspondent aux tableau de conditions dans la view ProjetSearch
+     * Return all the projects corresponding to the conditions in the view ProjetSearch
+     *
+     * @param $conditions array string, SQL conditions
+     * @param $data array of values of the conditions
+     * @return false|array(ModelProjet)
+     */
     public static function searchByEntite($data, $conditions) {
         try {
             $sql = 'SELECT * FROM Projet P
@@ -466,10 +468,30 @@ class ModelProjet extends Model
         }
     }
 
-    public static function statEntiteEtMontant($statut)
+    /**
+     * Retourne un tableau avec les entités et le nombre de projets par entités
+     */
+    public static function statProgrammeEtProjet($statut)
     {
         try {
-            $sql = 'SELECT PS.nomEntite as prim, SUM(PS.subventionEDF) as quantity
+            $sql = 'SELECT S.nomSourceFin as prim, count(P.codeProjet) as quantity
+                    FROM Projet P, SourceFin S
+                    WHERE P.statut=:statut AND P.codeSourceFin=S.codeSourceFin
+                    GROUP BY S.nomSourceFin;';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('statut' => $statut);
+            $rep->execute($values);
+            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
+            return $retourne;
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public static function statEntiteEtMontant($montant,$statut)
+    {
+        try {
+            $sql = 'SELECT PS.nomEntite as prim, SUM(PS.'.$montant.') as quantity
                     FROM ProjetSearch PS
                     WHERE statut=:statut
                     GROUP BY PS.nomEntite;';
@@ -486,7 +508,7 @@ class ModelProjet extends Model
     public static function statNbProjet($startG,$endG,$statuts) //$sort = %Y pour année
     {
         try {
-            $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim, statut, count(codeProjet) as quantity
+            $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim, statut as bar, count(codeProjet) as quantity
                     FROM Projet P
                     WHERE';
             foreach ($statuts as $key => $value) {
@@ -530,63 +552,41 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $sql;
+            return $e->getMessage();
         }
     }
 
-    //EN COURS
-
-    /**
-     * @return date : échéance dépot du projet
-        DEPENDS IF AAP OR NOT
-     
-    public function getDateDepot()
+    public static function statMontantStatutProjet($startG,$endG,$statuts,$montants,$exceptionnel) //$sort = %Y pour année
     {
-        $sql = 'SELECT dateDepot
-                FROM AAP
-                JOIN projet P ON AAP.codeAAP = P.codeAAP
-                WHERE P.codeAAP=:codeAAP';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeProjet' => $this->getcodeProjet(),
-            'codeAAP' => $this->codeAAP));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return $retourne;
-    }*/
-
-    /**
-     * @return string : nom du statut du projet
-     
-    public function getDateNotification()
-    {
-        $sql = 'SELECT dateReponse
-                FROM Reporting
-                JOIN Projet P ON Reporting.codeReporting = P.codeReporting
-                WHERE P.codeReporting=:codeReporting';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeProjet' => $this->codeProjet,
-            'codeReporting' => $this->codeReporting));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return $retourne;
-    }*/
-
-    /**
-     * @return string : implicationde EDF dans le projet
-     
-    public function getProgrammeFin()
-    {
-        $sql = 'SELECT nomSource
-                FROM SourceFinancement
-                JOIN Projet P ON SourceFinancement.codeSource = P.codeSourceFin
-                WHERE P.codeSourceFin=:codeSourceFin
-                AND P.codeProjet=:codeProjet';
-        $rep = Model::$pdo->prepare($sql);
-        $rep->execute(array(
-            'codeProjet' => $this->codeProjet,
-            'statut' => $this->statut));
-        $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-        return $retourne;
-    }*/
-
+        try {
+            $sql = 'SELECT statut as prim';
+            foreach ($montants as $key => $value) {
+                $sql .= ', SUM('.$value.') as value'.$key;
+            }
+            $sql .= ' FROM Projet P
+                    WHERE';
+            foreach ($statuts as $key => $value) {
+                if ($exceptionnel == false) {
+                    $sql .= ' (isExceptionnel=0 AND dateDepot<=:endG AND dateDepot>=:startG AND statut=:statut'.$key. ') OR';
+                }else {
+                    $sql .= ' (dateDepot<=:endG AND dateDepot>=:startG AND statut=:statut'.$key. ') OR';
+                }
+                
+                
+            }
+            $sql = rtrim($sql, ' OR');
+            $sql .= ' GROUP BY statut';
+            $rep = Model::$pdo->prepare($sql);
+            $values = array('startG' => $startG,
+                            'endG' => $endG);
+            foreach ($statuts as $key => $value) {
+                $values['statut'.$key] = $value;
+            }
+            $rep->execute($values);
+            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
+            return $retourne;
+        } catch (Exception $e) {
+            return $sql;
+        }
+    }
 }

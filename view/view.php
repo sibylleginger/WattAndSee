@@ -4,16 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <title><?php echo $pagetitle; ?></title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-    <link rel="stylesheet" href="./style/material.css">
     <script src="./style/material.min.js"></script>
     <script src="./jQuery/jquery-3.3.1.min.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.js"></script>
+    <link rel="stylesheet" href='https://www.amcharts.com/lib/3/plugins/export/export.css' type='text/css' media='all'/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
     <link rel="stylesheet" href="./style/materialize.css">
+    <link rel="stylesheet" href="./style/material.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <script src="./script.js"></script>
+    <script src="./jQuery/script.js"></script>
     <link rel="stylesheet" href="./style/style.css">
     <?php
     if(isset($script)) echo $script;

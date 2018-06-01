@@ -68,22 +68,24 @@ class ControllerContact
     }
 
     public static function update() {
-        if (isset($_GET['codeContact'])){
-            if(isset($_SESSION['login'])) {
-                $contact = ModelContact::select($_GET['codeContact']);
-                if (!$contact) ControllerMain::erreur("Ce contact n'existe pas");
-                else {
-                    $entite = ModelEntite::select($contact->getCodeEntite());
-                    $tabEntite = ModelEntite::selectAll();
-                    $tabDepartement = ModelDepartement::selectAll();
-                    $tabSourceFin = ModelSourceFin::selectAll();
-                    $departement = ModelDepartement::select($contact->getCodeDepartement());
-                    $view = 'update';
-                    $pagetitle = 'Modification du Contact';
-                    require_once File::build_path(array('view', 'view.php'));
-                }
+        if(isset($_SESSION['login'])) {
+            if ($_SESSION['is_admin']) {
+                if (isset($_GET['codeContact'])){
+                    $contact = ModelContact::select($_GET['codeContact']);
+                    if (!$contact) ControllerMain::erreur("Ce contact n'existe pas");
+                    else {
+                        $entite = ModelEntite::select($contact->getCodeEntite());
+                        $tabEntite = ModelEntite::selectAll();
+                        $tabDepartement = ModelDepartement::selectAll();
+                        $tabSourceFin = ModelSourceFin::selectAll();
+                        $departement = ModelDepartement::select($contact->getCodeDepartement());
+                        $view = 'update';
+                        $pagetitle = 'Modification du Contact';
+                        require_once File::build_path(array('view', 'view.php'));
+                    }
+                }else ControllerMain::erreur('Il manque des informations');
             } else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
-        }
+        }else ControllerUser::connect();
             
     }
 
@@ -258,10 +260,36 @@ class ControllerContact
     public static function delete()
     {
         if(isset($_SESSION['login'])) {
-            if(isset($_GET['codeContact'])) {
-                if(ModelContact::delete($_GET['codeContact'])) ControllerContact::readAll();
-                else ControllerMain::erreur("Impossible de supprimer le Contact");
-            } else ControllerMain::erreur("Il manque des informations");
+            if($_SESSION['is_admin']) {
+                if(isset($_GET['codeContact'])) {
+                    if(ModelContact::delete($_GET['codeContact'])) ControllerContact::readAll();
+                    else ControllerMain::erreur("Impossible de supprimer le Contact");
+                } else ControllerMain::erreur("Il manque des informations");
+            } else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
+        } else ControllerUser::connect();
+    }
+
+
+    public static function updateSourceFin()
+    {
+        if (isset($_SESSION['login'])) {
+            if ($_SESSION['is_admin']) {
+                if (isset($_POST['codeSourceFin']) && isset($_POST['codeContact'])) {
+                    $contact = ModelContact::select($_POST['codeContact']);
+                    if (!$contact) {
+                        echo 'Le contact n\'existe pas';
+                    }else {
+                        $data = array('codeContact' => $_POST['codeContact'],
+                                    'codeSourceFin' => $_POST['codeSourceFin']);
+                        $res = ModelContact::update($data);
+                        if ($res) {
+                            echo 'true';
+                        }else {
+                            echo $res;
+                        }
+                    }
+                } else echo("Il manque des informations");
+            } else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 }

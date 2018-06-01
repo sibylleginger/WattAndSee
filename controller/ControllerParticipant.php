@@ -129,7 +129,7 @@ class ControllerParticipant
                             $participation = ModelParticipation::select($_GET['codeProjet'],$participant->getCodeParticipant());
                         }
                         $view = 'update';
-                        $pagetitle = 'Modification d\'une unité d\'enseignement';
+                        $pagetitle = 'Modification d\'un participant à un consortium';
                         require_once File::build_path(array('view', 'view.php'));
                     }
                 } else ControllerMain::erreur("Il manque des informations");

@@ -33,28 +33,32 @@ class ControllerParticipation
     public static function delete()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeProjet']) && isset($_POST['codeParticipant'])) {
-                $res = ModelParticipation::delete($_POST['codeProjet'], $_POST['codeParticipant']);
-                if ($res){
-                    echo 'true';
-                }else {
-                    echo $res;
-                }
-            } else ControllerMain::erreur("Il manque des informations");
+            if ($_SESSION['is_admin']) {
+                if (isset($_POST['codeProjet']) && isset($_POST['codeParticipant'])) {
+                    $res = ModelParticipation::delete($_POST['codeProjet'],$_POST['codeParticipant']);
+                    if ($res) {
+                        echo "true";
+                    }else {
+                        echo $res;
+                    }
+                } else echo("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
     public static function add()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeProjet']) && isset($_POST['codeParticipant'])) {
-                $res = ModelParticipation::add($_POST['codeProjet'],$_POST['codeParticipant'],'0',0);
-                if ($res) {
-                    echo "true";
-                }else {
-                    echo $res;
-                }
-            } else ControllerMain::erreur("Il manque des informations");
+            if ($_SESSION['is_admin']) {
+                if (isset($_POST['codeProjet']) && isset($_POST['codeParticipant'])) {
+                    $res = ModelParticipation::add($_POST['codeProjet'],$_POST['codeParticipant'],0,0);
+                    if ($res) {
+                        echo "true";
+                    }else {
+                        echo $res;
+                    }
+                } else echo("Il manque des informations");
+            }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 

@@ -37,14 +37,21 @@ class ControllerEntite
                 if (!$entite) ControllerMain::erreur("Le programme n'existe pas");
                 else {
                     //STATS
+                    $statuts = array('Accepté','Refusé','Déposé','En cours de montage');
                     $statSP = ModelEntite::statStatutEtProjet($entite->getCodeEntite());
                     $statPD = ModelEntite::statNbProjet('2014-01-01',date('Y-m-d'),array('Accepté','Déposé','Refusé'),$entite->getCodeEntite());
                     $statMP = ModelEntite::statMontantProjet('2014-01-01',date('Y-m-d'),'Accepté',array('subventionEDF'),$entite->getCodeEntite());
-                    $graph1 = ControllerProjet::scriptPie(1,'Répartition des projets en fonction de leur statut','Nombre de projets','Statut',$statSP);
-                    $graph2 = ControllerProjet::scriptBarNbProjet(2,array('Accepté','Refusé','Déposé'),'Nombre de projet déposés','Nombre de projets',2014,date('Y'),$statPD);
-                    $graph3 = ControllerProjet::scriptBar(3,array('Subvention EDF'),'Montant des subventions EDF','Montant en €',2014,date('Y'),$statMP);
+                    $statAMP = ModelEntite::statMontantProjet('2014-01-01',date('Y-m-d'),'Accepté',array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),$entite->getCodeEntite());
+                    $years = array();
+                    for ($i=2014; $i <= date('Y'); $i++) { 
+                        array_push($years, $i);
+                    }
+                    $graph1 = ControllerProjet::scriptAM(1,'pie',$statuts,null,$statSP,'Répartition des projets en fonction de leur statut','Nombre de projets');
+                    $graph2 = ControllerProjet::scriptAM(2,'serial',$years,array('Accepté','Refusé','Déposé'),$statPD,'Nombre de projet déposés depuis 2014','Nombre de projets');
+                    $graph3 = ControllerProjet::scriptAM(3,'serial',$years,array('subventionEDF'),$statMP,'Montant des subventions EDF','Montant en €');
+                    $graph4 = ControllerProjet::scriptAM(4,'serial',$years,array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),$statAMP,'Montant des budget et subventions','Montant en €');
                     $tabContact = ModelContact::selectAllByEntite($entite->getCodeEntite());
-                    $script = ControllerProjet::$introScript.$graph1.$graph2.$graph3.'</script>';
+                    $script = ControllerProjet::$introScript.$graph1.$graph2.$graph3.$graph4.'</script>';
                     $view = 'detail';
                     $pagetitle = 'Entité : ' . $entite->getNomEntite();
                     require_once File::build_path(array('view', 'view.php'));

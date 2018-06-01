@@ -8,167 +8,134 @@ class ControllerProjet
 
     protected static $object = 'Projet';
 
-    public static $introScript = '<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-        <script type="text/javascript">
-        google.charts.load(\'current\', {packages: [\'corechart\', \'bar\']});
-        google.charts.load(\'current\', {\'packages\': [\'corechart\']});';
+    public static $introScript = '<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/pie.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script type="text/javascript">';
 
-    public static function scriptBarNbProjet($i,$tabStatuts,$title,$column1,$start,$end,$tabValues)  {
-        $fonction = 'google.charts.setOnLoadCallback(graph'.$i.');
-                function graph'.$i.'() {
-                    var data = new google.visualization.DataTable();
-                    data.addColumn(\'number\', \'Date de dépot\');
-                    ';
-        foreach ($tabStatuts as $key => $value) {
-            $fonction .= 'data.addColumn(\'number\', \'Projets '.$value.'s\');
-                    data.addColumn({type: \'string\', role: \'annotation\'});
-                    ';
-        }                       
-        $data = 'data.addRows([';
-        for ($y=$start; $y <= $end; $y++) { 
-            $row = "[" . $y . ", ";
-            $t = 0;
-            foreach ($tabStatuts as $keyS => $statut) {
-                foreach ($tabValues as $key => $value) {
-                    if ($value['prim']==$y) {
-                        if ($value['statut']==$statut){
-                            $row .= $value['quantity'].",'".$value['quantity']."',";                            
-                        }else {
-                            $row .= "0, '0', ";
-                        }
-                        
-                        $t++;
+    public static function scriptAM($idGraph,$type,$tabCategorie,$tabBar,$tabValues,$title,$yAxis) {
+        $function = '
+        AmCharts.makeChart("graph'.$idGraph.'",
+            {
+                "type": "'.$type.'",';
+        if ($type == 'serial') {
+            $function .= '"categoryField": "category",
+            "startDuration": 1,
+                "categoryAxis": {
+                    "gridPosition": "start"
+                },
+                "trendLines": [],
+                "graphs": [';
+            foreach ($tabBar as $key => $value) {
+                $id = $key+1;
+                $function .= '{
+                    "balloonText": "'.$value.': [[value]]",
+                    "fillAlphas": 1,
+                    "id": "AmGraph-'.$id.'",
+                    "title": "'.$value.'",
+                    "type": "column",
+                    "valueField": "column-'.$id.'"
+                },';
+            }
+            $function = rtrim($function, ',');
+            $function .= '],';
+        }else {
+            $function .= '"balloonText": "[[title]] [[value]] ([[percents]]%)",
+                "titleField": "category",
+                "valueField": "column-1",';
+        }
+        $function .= '
+                "export": {
+                    "enabled": true
+                },
+                "guides": [],
+                "valueAxes": [
+                    {
+                        "id": "ValueAxis-1",
+                        "title": "'.$yAxis.'"
                     }
+                ],
+                "allLabels": [],
+                "balloon": {},
+                "legend": {
+                    "enabled": true
+                },
+                "titles": [
+                    {
+                        "id": "Title-1",
+                        "size": 15,
+                        "text": "'.$title.'"
+                    }
+                ],';
+                $data = '"dataProvider": [';
+                foreach ($tabCategorie as $keyC => $categorie) {
+                    $data .= '{
+                        "category": "'.$categorie.'",';
+                    if (isset($tabBar)) {
+                        foreach ($tabBar as $keyB => $bar) {
+                            $id = $keyB+1;
+                            foreach ($tabValues as $keyV => $value) {
+                                if ($value['prim']==$categorie) {
+                                    if (isset($value['bar'])) {
+                                        if ($value['bar']==$bar) {
+                                            $data .= '"column-'.$id.'": "'.$value['quantity'].'",';
+                                        }
+                                    }else {
+                                        $data .= '"column-'.$id.'": "'.$value['value'.$keyB].'",';
+                                    }
+                                }
+                            }
+                        }
+                    }else {
+                        foreach ($tabValues as $key => $value) {
+                            if ($value['prim']==$categorie) {
+                                $data .= '"column-1": "'.$value['quantity'].'",';
+                            }
+                        }
+                    }
+                    $data = rtrim($data, ',');
+                    $data .= '},';
                 }
-            }
-            if ($t < count($tabStatuts)) {
-                switch ($t) {
-                    case 0:
-                        foreach ($tabStatuts as $value) {
-                            $row .= "0, '0', ";
-                        }
-                        break;
-                    case 1:
-                        foreach ($tabStatuts as $key => $value) {
-                            if ($key >= count($tabStatuts)-1) {
-                                break;
-                            }else {
-                                $row .= "0, '0', ";
-                            }
-                        }
-                        break;
-                    case 2:
-                        $row .= "0, '0', ";
-                        break;
-                }
-            }
-            $row = rtrim($row, ',');
-            $row .= '],';
-            $data .= $row;
-            $row='';
-        }
-        $data = rtrim($data, ',');
-        $fonction .= $data;
-        $fonction .= "]);
-                    var options = {
-                        title: '".$title."',
-                        annotations: {
-                          textStyle: {
-                            fontSize: 14,
-                            color: '#000',
-                            auraColor: 'none'
-                          }
-                        },
-                        hAxis: {
-                            title: 'Date de dépot',
-                            format: '####',
-                            viewWindow: {
-                                min:".$start."-1 ,
-                                max:".$end."+1
-                            }
-                        },
-                        vAxis: {
-                            title: '".$column1."'
-                        }
-                    };
-
-                    var chart = new google.visualization.ColumnChart(document.getElementById('graphBar".$i."'));
-
-                    // Wait for the chart to finish drawing before calling the getImageURI() method.
-                    google.visualization.events.addListener(chart, 'ready', function () {
-                        var button = document.getElementById('saveBar".$i."');
-                        var encoding = (chart.getImageURI()).slice(15);
-                        button.innerHTML = '<a download=\"image.png\" href=\"data:application/octet-stream;' + encoding + '\"><i class=\"material-icons\">save</i></a>';
-                        console.log(button.innerHTML);
-                    });
-
-                    chart.draw(data, options);
-                  }";
-        return $fonction;
-    }
-
-    public static function scriptBar($i,$tabColumns,$title,$column1,$start,$end,$tabValues)  {
-        $fonction = 'google.charts.setOnLoadCallback(graph'.$i.');
-                function graph'.$i.'() {
-                    var data = new google.visualization.DataTable();
-                    data.addColumn(\'number\', \'Date de dépot\');
-                    ';
-        foreach ($tabColumns as $key => $value) {
-            $fonction .= 'data.addColumn(\'number\', \'Montant '.$value.'\');
-                    ';
-        }                        
-        $data = 'data.addRows([';
-        foreach ($tabValues as $ligne) {
-            $row='';
-            $row .= "[" . $ligne['prim'] . ", ";
-            foreach ($tabColumns as $keyC => $column) {
-                $row .= $ligne['value'.$keyC].", ";
-            }
-            $row = rtrim($row, ', ');
-            $row .= '],';
-            $data .= $row;
-        }
-        $data = rtrim($data, ',');
-        $fonction .= $data;
-        $fonction .= "]);
-                    var options = {
-                        title: '".$title."',
-                        hAxis: {
-                            title: 'Date de dépot',
-                            format: '####',
-                            viewWindow: {
-                                min:".$start."-1 ,
-                                max:".$end."+1
-                            }
-                        },
-                        vAxis: {
-                            title: '".$column1."'
-                        },
-                        chartArea: {
-                            width: '75%'
-                        }
-                    };
-
-                    var chart = new google.visualization.ColumnChart(document.getElementById('graphBar".$i."'));
-
-                    // Wait for the chart to finish drawing before calling the getImageURI() method.
-                    google.visualization.events.addListener(chart, 'ready', function () {
-                        var button = document.getElementById('saveBar".$i."');
-                        var encoding = (chart.getImageURI()).slice(15);
-                        button.innerHTML = '<a download=\"image.png\" href=\"data:application/octet-stream;' + encoding + '\"><i class=\"material-icons\">save</i></a>';
-                        console.log(button.innerHTML);
-                    });
-
-                    chart.draw(data, options);
-                  }";
-        return $fonction;
+                $data = rtrim($data, ',');
+                $data .= ']})';
+                $function .= $data;
+                return $function;
     }
 
     public static function scriptPie($i,$title,$column1,$column2,$tabValues) {
-        $fonction = 'google.charts.setOnLoadCallback(pie'.$i.');
-
-                function pie'.$i.'() {
-                    var data = google.visualization.arrayToDataTable([ [\''.$column1.'\',\''.$column2.'\'],
+        $fonction = '
+        AmCharts.makeChart("graph'.$idGraph.'",
+        {
+            "type": "pie",
+            "balloonText": "[[title]]<br><span style=\'font-size:14px\'><b>[[value]]</b> ([[percents]]%)</span>",
+            "titleField": "category",
+            "valueField": "column-1",
+            "allLabels": [],
+            "balloon": {},
+            "legend": {
+                "enabled": true,
+                "align": "center",
+                "markerType": "circle"
+            },
+            "titles": [],
+            "dataProvider": [
+                {
+                    "category": "category 1",
+                    "column-1": 8
+                },
+                {
+                    "category": "category 2",
+                    "column-1": 6
+                },
+                {
+                    "category": "category 3",
+                    "column-1": 2
+                }
+            ]
+        }
                         ';
                         $data = '';
                         foreach ($tabValues as $stat) {
@@ -180,20 +147,30 @@ class ControllerProjet
                         
                     ]);
                     var options = {
-                        title: \''.$title.'\'
+                        title: \''.$title.'\',
+                        chartArea: {
+                            width: \'80%\'
+                        }
                     };
 
                     var chart = new google.visualization.PieChart(document.getElementById(\'graphPie'.$i.'\'));
 
-                    // Wait for the chart to finish drawing before calling the getImageURI() method.
-                    google.visualization.events.addListener(chart, \'ready\', function () {
-                        var button = document.getElementById(\'savePie'.$i.'\');
-                        var encoding = (chart.getImageURI()).slice(15);
-                        button.innerHTML = \'<a download="image.png" href="data:application/octet-stream;\' + encoding + \'"><i class="material-icons">save</i></a>\';
-                        console.log(button.innerHTML);
-                    });
+                    function drawToolbar() {
+                        var components = [
+                            {type: \'html\', datasource: \'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA\'},
+                            {type: \'csv\', datasource: \'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA\'},
+                            {type: \'htmlcode\', datasource: \'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA\',
+                                gadget: \'https://www.google.com/ig/modules/pie-chart.xml\',
+                                userprefs: {\'3d\': 1},
+                                style: \'width: 800px; height: 700px; border: 3px solid purple;\'}
+                        ];
+
+                        var container = document.getElementById(\'savePie'.$i.'\');
+                        google.visualization.drawToolbar(container, components);
+                    };
 
                     chart.draw(data, options);
+                    drawToolbar();
                 }';
         return $fonction;
     }
@@ -221,27 +198,41 @@ class ControllerProjet
 
     public static function stats() {
         if (isset($_SESSION['login'])) {
-            $statuts = array('Accepté', 'Refusé', 'Déposé', 'En cours de montage');
-            $statSP = ModelProjet::statStatutEtProjet();
-            $scriptPie1 = ControllerProjet::scriptPie(1,'Répartition des projets par statut','Statut du projet','Nombre de projets',$statSP);
-            $statEP = ModelProjet::statEntiteEtProjet('Accepté');
-            $scriptPie2 = ControllerProjet::scriptPie(2,'Répartition des projets acceptés par entité EDF','Entité du chef de projet','Nombre de projets',$statEP);
-            $statEM = ModelProjet::statEntiteEtMontant('Accepté');
-            $scriptPie3 = ControllerProjet::scriptPie(3,'Montant des subventions EDF des projets acceptés par entité','Entité du chef de projet','Montant du budget EDF',$statEM);
-            $statAP = ModelProjet::statNbProjet('2014-01-01',date('Y-m-d'),array('Accepté'));
-            $scriptBar1 = ControllerProjet::scriptBarNbProjet(1,array('Accepté'),'Nombre de projets acceptés par an','Nombre de projets acceptés',2014,date('Y'),$statAP);
-            $statPD = ModelProjet::statNbProjet('0000-00-00',date('Y-m-d'),array('Déposé'));
-            $statPA = ModelProjet::statNbProjet('0000-00-00',date('Y-m-d'),array('Accepté'));
-            $statMSE = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('subventionEDF'),false);
-            $statME = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),true);
-            $scriptBar2 = ControllerProjet::scriptBarNbProjet(2,array('Déposé'),'Nombre de projets déposés par an','Nomde de projets déposés',2014, date('Y'),$statPD);
-            $scriptBar4 = ControllerProjet::scriptBar(4,array('Accepté'),'Montant des subventions obtenues par EDF pour les projets acceptés','Montant en €',2014, date('Y'),$statMSE);
-            $scriptBar5 = ControllerProjet::scriptBar(5,array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),'Montant des budget et subventions obtenues pour les projets acceptés','Montant en €',2014, date('Y'),$statME);
             $tabTheme = ModelTheme::selectAll();
             $tabEntite = ModelEntite::selectAll();
-            $script = ControllerProjet::$introScript.$scriptPie1.$scriptPie2.$scriptPie3.$scriptBar1.$scriptBar2.$scriptBar4.$scriptBar5.'</script>';
+            $years = array(2014,2015,2016,2017,2018);  
+            $statuts = array('Accepté', 'Refusé', 'Déposé', 'En cours de montage');
+            $statSP = ModelProjet::statStatutEtProjet();
+            $script1 = ControllerProjet::scriptAM(1,'pie',$statuts,null,$statSP,'Répartition des projets selon leur statut','Nombre de projets');
+            $statME = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),true);
+            $script2 = ControllerProjet::scriptAM(2,'serial',$years,array('budgetTotal','budgetEDF','subventionTotal','subventionEDF'),$statME,'Montants des budgets et subventions obtenues pour les projets acceptés','Montant en €');
+            $statEP = ModelProjet::statEntiteEtProjet('Accepté');
+            $tabNomEntite3 = array();
+            foreach ($statEP as $key => $value) {
+                array_push($tabNomEntite3, $value['prim']);
+            }
+            $script3 = ControllerProjet::scriptAM(3,'pie',$tabNomEntite3,null,$statEP,'Répartition des projets acceptés par entité EDF','Nombre de projets');
+            $statEM = ModelProjet::statEntiteEtMontant('subventionEDF','Accepté',false);
+            $tabNomEntite4 = array();
+            foreach ($statEM as $key => $value) {
+                array_push($tabNomEntite4, $value['prim']);
+            }
+            $script4 = ControllerProjet::scriptAM(4,'pie',$tabNomEntite4,null,$statEM,'Montant des subventions EDF des projets acceptés par entité','Montant du budget EDF');
+            $statPP = ModelProjet::statProgrammeEtProjet('Accepté');
+            $tabNomSourceFin5 = array();
+            foreach ($statPP as $key => $value) {
+                array_push($tabNomSourceFin5, $value['prim']);
+            }
+            $script5 = ControllerProjet::scriptAM(5,'pie',$tabNomSourceFin5,null,$statPP,'Répartition des projets acceptés par programme de financement','Nombre de projets');
+            $statAP = ModelProjet::statNbProjet('2014-01-01',date('Y-m-d'),array('Accepté','Refusé','Déposé'));
+            $script6 = ControllerProjet::scriptAM(6,'serial',$years,array('Accepté','Refusé','Déposé'),$statAP,'Nombre de projets déposés par an','Nombre de projets');
+            $statMSE = ModelProjet::statMontantProjet('0000-00-00',date('Y-m-d'),'Accepté',array('subventionEDF'),false);
+            $script7 = ControllerProjet::scriptAM(7,'serial',$years,array('subventionEDF'),$statMSE,'Montant des subventions obtenues par EDF pour les projets acceptés','Montant en €');
+            $statMSB = ModelProjet::statMontantStatutProjet('0000-00-00',date('Y-m-d'),array('Accepté','Refusé','Déposé'),array('budgetEDF','subventionEDF'),false);
+            $script8 = ControllerProjet::scriptAM(8,'serial',array('Accepté','Refusé','Déposé'),array('budgetEDF','subventionEDF'),$statMSB,'Montant des subventions et des budgets obtenus par EDF selon le statut du projet', 'Montant en €');
+            $script = ControllerProjet::$introScript.$script1.$script2.$script3.$script4.$script5.$script6.$script7.$script8.'</script>';
             $view = 'stats';
-            $pagetitle = 'Rechercher un projet';
+            $pagetitle = 'Statistiques';
             require_once File::build_path(array('view', 'view.php'));
         }else ControllerUser::connect();
     }
@@ -281,24 +272,41 @@ class ControllerProjet
     }
 
     public static function update() {
-        if (isset($_SESSION['login']) && $_SESSION['is_admin']){
-            if(isset($_GET['codeProjet'])) {
-                $projet = ModelProjet::select($_GET['codeProjet']);
-                if (!$projet) ControllerMain::erreur("Ce projet n'existe pas");
-                else {
-                    $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
-                    $tabSource = ModelSourceFin::selectAll();
-                    $tabTheme = ModelTheme::selectAll();
-                    $theme = ModelTheme::select($projet->getCodeTheme());
-                    $view = 'update';
-                    $pagetitle = 'Modification du projet';
-                    require_once File::build_path(array('view', 'view.php'));
-                }
-            } else ControllerMain::erreur("Il manque des informations");
-        }ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
+        if (isset($_SESSION['login'])) {
+            if ($_SESSION['is_admin']) {
+                if(isset($_GET['codeProjet'])) {
+                    $projet = ModelProjet::select($_GET['codeProjet']);
+                    if (!$projet) ControllerMain::erreur("Ce projet n'existe pas");
+                    else {
+                        $sourceFin = ModelSourceFin::select($projet->getCodeSourceFin());
+                        $tabSource = ModelSourceFin::selectAll();
+                        $tabTheme = ModelTheme::selectAll();
+                        $theme = ModelTheme::select($projet->getCodeTheme());
+                        $view = 'update';
+                        $pagetitle = 'Modification du projet';
+                        require_once File::build_path(array('view', 'view.php'));
+                    }
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
+        }else ControllerUser::connect();
             
     }
 
+    /**
+     * Affiche tous les contacts/participants d'un projet de code @var $_GET['codeProjet'] par catégorie, et tous les contacts/participants de la base de données.
+     * Displays all the project's contacts/participants of id @var $_GET['codeProjet'] and all the contacts/participants of the database
+     * Si le Projet n'existe pas, l'utilisateur sera redirigé vers une erreur
+     * If the project doesn't exist, the user is redirected to an error.
+     *
+     * @uses ModelProjet::select()
+     * @uses ModelImplication::selectAllByProjet()
+     * @uses ModelImplication::selectChef()
+     * @uses ModelContact::selectAllEDF()
+     * @uses ModelContact::selectAllHorsEDF()
+     * @uses ModelContact::selectAllBySource()
+     * @uses ModelParticipant::selectAll()
+     * @uses ModelParticipation::selectAllByProjet()
+     */
     public static function updateContacts() {
         if (isset($_SESSION['login']) && $_SESSION['is_admin']){
             if(isset($_GET['codeProjet'])) {
@@ -467,19 +475,24 @@ class ControllerProjet
         } else ControllerUser::connect();
     }
 
+    /**
+     * Recherche les projets correspondants grâce aux conditions du formulaire par la methode POST
+     * Search for projects corresponding to the form request via POST method
+     *
+     * S'il n'y a pas de codeEntite, @uses ModelProjet::searchBy()
+     * If codeEntite is not defined, @uses ModelProjet::searchBy()
+     * Sinon, @uses ModelProjet::searchByEntite()
+     * Else, @uses ModelProjet::searchByEntite()
+     */
     public static function searchBy() {
         if (isset($_SESSION['login'])) {
             $values = array();
             $conditions = array();
-            if ($_POST['codeEntite'] != null) { 
+            if ($_POST['codeEntite'] != null) { //Si codeEntité est rempli, rechercher dans la view ProjetSearch
                 $values['codeEntite'] = $_POST['codeEntite'];
+                //associe la condition sql à la requête de l'utilisateur et la stocke dans un tableau
                 $entiteCondition = "S.codeEntite=:codeEntite";
                 array_push($conditions, $entiteCondition);
-                if ($_POST['codeProjet'] != null) {
-                    $values['codeProjet'] = $_POST['codeProjet'];
-                    $codeCondition = 'S.codeProjet LIKE CONCAT(\'%\',:codeProjet,\'%\')';
-                    array_push($conditions, $codeCondition);
-                }
                 if ($_POST['nomProjet'] != null) {
                     $values['nomProjet'] = $_POST['nomProjet'];
                     $nomCondition = 'S.nomProjet LIKE CONCAT(\'%\',:nomProjet,\'%\')';
@@ -504,7 +517,7 @@ class ControllerProjet
                 $view = 'list';
                 $pagetitle = 'Projet';
                 require_once File::build_path(array('view', 'view.php'));
-            }elseif ($_POST['nomProjet'] != null) {
+            }elseif ($_POST['nomProjet'] != null) { //Sinon, recherche dans la table Projet
                 $values['nomProjet'] = $_POST['nomProjet'];
                 $nomCondition = 'nomProjet LIKE CONCAT(\'%\',:nomProjet,\'%\')';
                 array_push($conditions, $nomCondition);
@@ -535,24 +548,79 @@ class ControllerProjet
     }
 
     public static function createBarGraph() {
+        $type = $_POST['type'];
+        $xAxis = $_POST['xAxis'];
+        $title = $_POST['titre'];
+        $yAxis = $_POST['yAxis'];
         $statuts = $_POST['statut'];
         $start = $_POST['start'].'-01-01';
         $end = $_POST['end'].'-12-31';
-        if ($_POST['graph']=='pie') {
-            
-        }
+        $tabCategorie = array();
         if ($_POST['data']==1) {
-            $tab = ModelProjet::statNbProjet($start,$end,$statuts);
-            $scriptNewGraph = ControllerProjet::scriptBarNbProjet(1,$statuts,$_POST['titre'],'Nombre de projets',$_POST['start'],$_POST['end'],$tab);
+            switch ($xAxis) {
+                case 1:
+                    $bar = null;
+                    $tab = ModelProjet::statStatutEtProjet();
+                    foreach ($tab as $key => $value) {
+                        array_push($tabCategorie, $value['prim']);
+                    }
+                    break;
+                case 2:
+                    $bar = null;
+                    $tab = ModelProjet::statEntiteEtProjet($statuts[0]);
+                    foreach ($tab as $key => $value) {
+                        array_push($tabCategorie, $value['prim']);
+                    }
+                    break;
+                case 3:
+                    $bar = null;
+                    $tab = ModelProjet::statProgrammeEtProjet($statuts[0]);
+                    foreach ($tab as $key => $value) {
+                        array_push($tabCategorie, $value['prim']);
+                    }
+                    break;
+                case 4:
+                    $bar = $statuts;
+                    $tab = ModelProjet::statNbProjet($start,$end,$statuts);
+                    for ($i=$_POST['start']; $i <= $_POST['end']; $i++) { 
+                        array_push($tabCategorie, $i);
+                    }
+                    break;
+                default:
+                    ControllerMain::erreur('Erreur dans la création du graphique');
+                    break;
+            }
         }elseif ($_POST['data']==2) {
             $montants = $_POST['montant'];
+            $bar = $montants;
             if (isset($_POST['exceptionnel'])) {
-                $tab = ModelProjet::statMontantProjet($start,$end,$statuts[0],$montants, true);
+                $exceptionnel = true;
             }else {
-                $tab = ModelProjet::statMontantProjet($start,$end,$statuts[0],$montants, false);
+                $exceptionnel = false;
             }
-            $scriptNewGraph = ControllerProjet::scriptBar(1,$montants,$_POST['titre'], 'Montant en €', $_POST['start'], $_POST['end'],$tab);
+            switch ($xAxis) {
+                case 1:
+                    $tab = ModelProjet::statMontantStatutProjet($start,$end,$statuts,$montants,$exceptionnel);
+                    $tabCategorie = $statuts;
+                    break;
+                case 2:
+                    $tab = ModelProjet::statEntiteEtMontant($montants[0],$statuts[0],$exceptionnel);
+                    foreach ($tab as $key => $value) {
+                        array_push($tabCategorie, $value['prim']);
+                    }
+                    break;
+                case 4:
+                    $tab = ModelProjet::statMontantProjet($start,$end,$statuts[0],$montants,$exceptionnel);
+                    for ($i=$_POST['start']; $i <= $_POST['end']; $i++) { 
+                        array_push($tabCategorie, $i);
+                    }
+                    break;
+                default:
+                    ControllerMain::erreur('Erreur dans la création du graphique');
+                    break;
+            }
         }
+        $scriptNewGraph = ControllerProjet::scriptAM(1,$type,$tabCategorie,$bar,$tab,$title,$yAxis);
         $script = ControllerProjet::$introScript.$scriptNewGraph.'</script>';
                     
         $view = 'new';

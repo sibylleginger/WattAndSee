@@ -9,8 +9,13 @@ class ControllerImplication
     public static $object = 'Implication';
 
     /**
-     * NOT WORKING
+     * Attribue le rôle de chef de projet à un contact de EDF de code @var $_POST['codeContact'] impliqué dans le projet de code @var $_POST['codeProjet']. Retourne 'true' ou false si erreur
+     * Set the role of projet leader to a contact of id @var $_POST['codeContact'] involved in the project of id @var $_POST['codeProject']. Return 'true' or false if error.  
      *
+     * @uses ModelImplication::select($codeProjet,$codeContact)
+     * @uses ModelSalle::setChefProjet()
+     *
+     * @return 'true' string|array(ModelProjet)
      * setters?
      */
     public static function setChef() {
@@ -26,8 +31,8 @@ class ControllerImplication
                         echo $res;
                     }
                 }
-            }ControllerMain::erreur('Il manque des informations');
-        }ControllerUser::connect();
+            }else echo('Il manque des informations');
+        }else ControllerUser::connect();
     }
     
     public static function delete()

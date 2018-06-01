@@ -1,8 +1,8 @@
-<div class="detailBatiment1" style="justify-content: center;">
+<div>
     <div class="mdl-card__title">
         <h2 class="mdl-card__title-text">Rechercher un projet</h2>
     </div>
-    <div class="mdl-card__supporting-text">
+    <div class="mdl-card__supporting-text detailProjet">
         <form method="post" action="index.php?controller=projet&action=searchBy" class="horizontal">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" id="nomProjet" name="nomProjet">
@@ -50,7 +50,12 @@
         </form>
     </div>
 </div>
-<div>
+<?php
+if (!$tab) {
+    echo '<h4>Il n\'y a pas de projet';
+}else {
+?>
+<div class="page-content">
 
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp users">
         <thead>
@@ -115,17 +120,10 @@ if ($_GET['action']=='readAll') {
     </div>';
     echo $nav;
 }
+}
 ?>
-<a href="index.php?controller=projet&action=create" class="new">
-    <button id="demo-menu-top-right"
-            class="mdl-button mdl-js-button mdl-button--fab">
+<a href="index.php?controller=projet&action=create">
+    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
         <i class="material-icons">add</i>
     </button>
-
-    <!--<ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect"
-        for="demo-menu-top-right">
-        <a href="index.php?controller=departement&action=create"><li class="mdl-menu__item">Ajouter un nouveau projet</li></a>
-        <a href="index.php?controller=diplome&action=create"><li class="mdl-menu__item">Créer un diplome</li></a>
-        <a href="index.php?controller=uniteDEnseignement&action=create"><li class="mdl-menu__item">Créer une unité d'enseignement</li></a>
-    </ul>-->
 </a>

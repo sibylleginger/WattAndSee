@@ -13,15 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.list > .graph {
-  width: 60%;
+.graph {
+  height: 400px;
+  background-color: #FFFFFF;
+  width: 100%;
   margin: 0px 15px 15px 15px;
+}
+
+.mdl-button--fab {
+  margin: 0px;
 }
 
 .horizontal {
   display: flex;
   align-items: flex-start;
   justify-content: space-around;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.horizontal > div {
+  display: flex;
+  flex-direction: column;
 }
 
 .mdl-card__title-text > a:hover {
@@ -50,8 +63,8 @@ div > div.list {
   flex-wrap: wrap;
 }
 
-.detailProjet > div.mdl-card__title:first-child {
-  max-width: 25%;
+.detailProjet > div.mdl-card:first-child {
+  min-width: 20%;
 }
 
 .content {
@@ -65,6 +78,7 @@ div > div.list {
 
 table.scroll thead {
   display: block;
+  justify-content: space-around;
 }
 
 table.scroll tbody {
@@ -72,6 +86,14 @@ table.scroll tbody {
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
+}
+
+table {
+  margin: auto;
+}
+
+#tableEDF td:first-of-type {
+  min-width: 125px;
 }
 
 #membreEDF {
@@ -88,6 +110,7 @@ table.scroll tbody {
 
 .updateContactBox {
   display: flex;
+  justify-content: space-around;
 }
 
 a {
@@ -96,14 +119,11 @@ a {
   font-weight: bold;
 }
 
-.mdl-button {
-  color: #0088cc;
-}
-
 #descProj {
   border-left: 3px solid #0088cc;
   padding: 10px;
   background-color: #b9e2f7;
+  min-width: 62%;
 }
 
 div > .projetPres {
@@ -113,6 +133,7 @@ div > .projetPres {
 .detailProjet {
   display: flex;
   align-items: flex-start;
+  justify-content: space-around;
 }
 
 .mdl-menu > a {
@@ -124,7 +145,6 @@ div > .projetPres {
     bottom: 15px;
     right: 15px;
     z-index: 100;
-    color: #0088cc;
     background-color: #0088cc;
 }
 
@@ -136,18 +156,22 @@ body {
   margin: 0;
 }
 
+.page-content {
+  align-items: center;
+}
+
 /* Disable ugly boxes around images in IE10 */
 a img{
   border: 0px;
 }
 
 ::-moz-selection {
-  background-color: #6ab344;
+  background-color: #b3d4fc;
   color: #fff;
 }
 
 ::selection {
-  background-color: #6ab344;
+  background-color: #b3d4fc;
   color: #fff;
 }
 

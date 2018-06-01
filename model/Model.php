@@ -88,7 +88,7 @@ class Model
             return true;
         }
         catch (Exception $e) {
-            return false;
+            return $e->getMessage();
         }
     }
 

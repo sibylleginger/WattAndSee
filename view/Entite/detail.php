@@ -1,7 +1,6 @@
-<div class="detailBatiment1">
-    <div class="mdl-card__title">
-        <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
-    </div>
+<div class="detailProjet">
+    <div>
+    <h2><?php echo $pagetitle ?></h2>
     <h3>Contacts</h3>
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3 scroll">
         <thead>
@@ -23,25 +22,20 @@
             ?>
         </tbody>
     </table>
+    </div>
     <div class="list">
-    <div class="mdl-card mdl-shadow--2dp graph">
-        <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphPie1"></div>
+        <div class="mdl-card mdl-shadow--2dp graph">
+            <div id="graph1" style="height: 400px;"></div>
         </div>
-        <button id="savePie1"></button>
-    </div>
-    <div class="mdl-card mdl-shadow--2dp graph">
-        <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar2"></div>
+        <div class="mdl-card mdl-shadow--2dp graph">
+            <div id="graph2" style="height: 400px;"></div>
         </div>
-        <button id="saveBar2"></button>
-    </div>
-    <div class="mdl-card mdl-shadow--2dp graph">
-        <div class="mdl-card__supporting-text mdl-card--border">
-            <div id="graphBar3"></div>
+        <div class="mdl-card mdl-shadow--2dp graph">
+            <div id="graph3" style="height: 400px;"></div>
         </div>
-        <button id="saveBar3"></button>
-    </div>
+        <div class="mdl-card mdl-shadow--2dp graph">
+            <div id="graph4" style="height: 400px;"></div>
+        </div>
     </div>
         <div class="mdl-card__menu">
             <a href="index.php?controller=entite&action=update&codeEntite=<?php echo htmlspecialchars($entite->getCodeEntite()) ?>">

@@ -1,23 +1,23 @@
+<h3>Calendrier</h3>
 <div class="detailProjet">
-    <h3>Calendrier</h3>
     <?php
         foreach ($dates as $value) {
             list($year, $month, $day) = explode('-', $value->getDateDeadLine());
-            echo '<div class="content">
-                <h4>'.$day.'/'.$month.'/'.$year.'</h4>
-                <div class="mdl-card__supporting-text list">';
+            $tab = ModelDeadLine::selectByDate($value->getDateDeadLine());
+            echo '<div class="demo-card-square mdl-card mdl-shadow--2dp">
+                    <div class="mdl-card__title mdl-card--expand">
+                        <h2 class="mdl-card__title-text">'.$day.'/'.$month.'/'.$year.'</h2>
+                    </div>
+                  <div class="mdl-card__actions mdl-card--border">';
             foreach ($tab as $deadLine) {
                 $projet = ModelProjet::select($deadLine->getCodeProjet());
                 if ($deadLine->getDateDeadLine() == $value->getDateDeadLine()) {
-                    echo '<div id="'.$deadLine->getCodeDeadLine().'" class="mdl-shadow--2dp">
-                    <div class="mdl-card__supporting-text">
-                        <a href="index.php?controller=projet&action=read&codeProjet='.$deadLine->getCodeProjet().'">'.$projet->getNomProjet().'</a> - '.$deadLine->getNomDeadLine().'<a class="deleteDate" href=""><i class="material-icons">delete</i></a> 
-                    </div>
-                    </div>';
+                    echo '
+                        <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=projet&action=read&codeProjet='.$deadLine->getCodeProjet().'">'.$projet->getNomProjet().'</a> - '.$deadLine->getNomDeadLine().'<a class="deleteDate" id="'.$deadLine->getCodeDeadLine().'" href=""><i class="material-icons">delete</i></a> ';
                 }
             }
-        echo '</div>
-        </div>';
+            echo '</div>
+            </div>';
         }
     ?>
     

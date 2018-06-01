@@ -15,6 +15,7 @@ class ModelParticipant extends Model
     private $nomParticipant;
     private $nationalite;
     private $affiliation;
+    private $typeOrga;
     private $mailParticipant;
 
 
@@ -27,27 +28,11 @@ class ModelParticipant extends Model
     }
 
     /**
-     * @param mixed $codeDepartement
-     */
-    public function setMailParticipant($mailParticipant)
-    {
-        $this->mailParticipant = $mailParticipant;
-    }
-
-    /**
      * @return mixed
      */
     public function getNationalite()
     {
         return $this->nationalite;
-    }
-
-    /**
-     * @param mixed $codeDepartement
-     */
-    public function setNomParticipant($nomParticipant)
-    {
-        $this->nomParticipant = $nomParticipant;
     }
 
     /**
@@ -59,27 +44,11 @@ class ModelParticipant extends Model
     }
 
     /**
-     * @param mixed $codeStatut
-     */
-    public function setNationalite($nationalite)
-    {
-        $this->nationalite = $nationalite;
-    }
-
-    /**
      * @return mixed
      */
     public function getNomParticipant()
     {
         return $this->nomParticipant;
-    }
-
-    /**
-     * @param mixed $codeStatut
-     */
-    public function setAffiliation($affiliation)
-    {
-        $this->affiliation = $affiliation;
     }
 
     /**
@@ -90,9 +59,19 @@ class ModelParticipant extends Model
         return $this->affiliation;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getTypeOrga()
+    {
+        return $this->typeOrga;
+    }
+
     public function isCoordinateur($codeProjet) {
         $coordinateur = ModelParticipation::selectCoordinateur($codeProjet);
-        if ($coordinateur->getCodeParticipant() == $this->codeParticipant) {
+        if (!$coordinateur) {
+            return false;
+        }elseif ($coordinateur->getCodeParticipant() == $this->codeParticipant) {
             return true;
         }else return false;
     }

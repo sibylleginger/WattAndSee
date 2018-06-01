@@ -98,7 +98,7 @@ class ModelImplication
             $rep->execute($values);
             return true;
         } catch (Exception $e) {
-            return $e->getMessage();
+            return false;
         }
     }
 

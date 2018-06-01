@@ -90,13 +90,13 @@
                 <tbody>
                 <?php
 
-                foreach ($tabContact as $contact) {
+                foreach ($allContactSource as $contact) {
                     //$contact = ModelContact::select($IDContact);
                     if ($contact->getCodeEntite() == null) {
-                        echo '<tr class="'.$projet->getCodeProjet().'">
+                        echo '<tr class="'.$projet->getCodeSourceFin().'">
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteContact '.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a class="deleteContactSource '.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
                         </tr>';
                     }
                 }
@@ -117,10 +117,10 @@
 
                 foreach ($allContactHorsEDF as $contact) {
                     //$contact = ModelContact::select($IDContact);
-                        echo '<tr class="'.$projet->getCodeProjet().'">
+                        echo '<tr class="'.$projet->getCodeSourceFin().'">
                             <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                             <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                            <td class="mdl-data-table__cell--non-numeric"><a class="addContact '.$contact->getCodeContact().'" href=""><i class="material-icons">add</i></a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a class="addContactSource '.$contact->getCodeContact().'" href=""><i class="material-icons">add</i></a></td>
                         </tr>';
                 }
                 ?>
@@ -148,9 +148,6 @@
                 </thead>
                 <tbody>
                 <?php
-                if ($tabParticipant == false) {
-                    echo '<tr class="'.$projet->getCodeProjet().'"></tr>';
-                }else {
                     foreach ($tabParticipant as $participant) {
                         $participation = ModelParticipation::select($projet->getCodeProjet(),$participant->getCodeParticipant());
                         echo '<tr class="'.$projet->getCodeProjet().'"';
@@ -165,7 +162,6 @@
                                 <td class="mdl-data-table__cell--non-numeric"><a class="deleteParticipant '.$participant->getCodeParticipant().'" href=""><i class="material-icons">delete</i></a></td>
                         </tr>';
                     }
-                }
                 ?>
                                 
                 </tbody>

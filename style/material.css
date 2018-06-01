@@ -905,7 +905,7 @@ p {
   margin-bottom: 16px; }
 
 a {
-  color: rgb(255,64,129);
+  color: #0088cc;
   font-weight: 500; }
 
 blockquote {
@@ -1551,7 +1551,7 @@ ul, ol {
   background-color: rgb(255,128,171) !important; }
 
 .mdl-color-text--pink-A200 {
-  color: rgb(255,64,129) !important; }
+  color: #0088cc !important; }
 
 .mdl-color--pink-A200 {
   background-color: rgb(255,64,129) !important; }
@@ -3048,7 +3048,7 @@ ul, ol {
   background-color: rgb(48,63,159) !important; }
 
 .mdl-color--accent {
-  background-color: rgb(255,64,129) !important; }
+  background-color: #0088cc !important; }
 
 .mdl-color--accent-contrast {
   background-color: rgb(255,255,255) !important; }
@@ -3063,7 +3063,7 @@ ul, ol {
   color: rgb(48,63,159) !important; }
 
 .mdl-color-text--accent {
-  color: rgb(255,64,129) !important; }
+  color: #0088cc !important; }
 
 .mdl-color-text--accent-contrast {
   color: rgb(255,255,255) !important; }
@@ -3639,13 +3639,13 @@ ul, ol {
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background: rgb(255,64,129);
+    background: #0088cc;
     color: rgb(255,255,255); }
     .mdl-button .mdl-badge[data-badge]:after {
       top: -10px;
       right: -5px; }
   .mdl-badge.mdl-badge--no-background[data-badge]:after {
-    color: rgb(255,64,129);
+    color: #0088cc;
     background: rgba(255,255,255,0.2);
     box-shadow: 0 0 1px gray; }
   .mdl-badge.mdl-badge--overlap {
@@ -3907,7 +3907,6 @@ input.mdl-button[type="submit"] {
   border-radius: 50%;
   font-size: 24px;
   height: 56px;
-  margin: auto;
   min-width: 56px;
   width: 56px;
   padding: 0;
@@ -4002,12 +4001,12 @@ input.mdl-button[type="submit"] {
     background-color: rgb(63,81,181); }
 
 .mdl-button--accent.mdl-button--accent {
-  color: rgb(255,64,129); }
+  color: #0088cc; }
   .mdl-button--accent.mdl-button--accent .mdl-ripple {
     background: rgb(255,255,255); }
   .mdl-button--accent.mdl-button--accent.mdl-button--raised, .mdl-button--accent.mdl-button--accent.mdl-button--fab {
     color: rgb(255,255,255);
-    background-color: rgb(255,64,129); }
+    background-color: #0088cc; }
 
 .mdl-button[disabled][disabled], .mdl-button.mdl-button--disabled.mdl-button--disabled {
   color: rgba(0,0,0, 0.26);
@@ -4215,7 +4214,7 @@ input.mdl-button[type="submit"] {
   box-sizing: border-box; }
 
 .mdl-card__media {
-  background-color: rgb(255,64,129);
+  background-color: #0088cc;
   background-repeat: repeat;
   background-position: 50% 50%;
   background-size: cover;
@@ -4271,7 +4270,7 @@ input.mdl-button[type="submit"] {
   line-height: 18px;
   overflow: hidden;
   padding: 16px 16px;
-  width: 90%; }
+}
   .mdl-card__supporting-text.mdl-card--border {
     border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
 
@@ -4488,7 +4487,6 @@ input.mdl-button[type="submit"] {
   vertical-align: middle;
   display: inline-block;
   box-sizing: border-box;
-  width: 100%;
   height: 24px;
   margin: 0;
   padding: 0; }
@@ -7865,7 +7863,7 @@ input.mdl-button[type="submit"] {
     bottom: 0;
     left: 0;
     position: absolute;
-    background: rgb(255,64,129);
+    background: #0088cc;
     -webkit-animation: border-expand 0.2s cubic-bezier(0.4, 0, 0.4, 1) 0.01s alternate forwards;
             animation: border-expand 0.2s cubic-bezier(0.4, 0, 0.4, 1) 0.01s alternate forwards;
     transition: all 1s cubic-bezier(0.4, 0, 1, 1); }
@@ -8823,7 +8821,7 @@ _:-ms-input-placeholder, :root .mdl-slider.mdl-slider.is-upgraded {
   .mdl-snackbar__action {
     background: transparent;
     border: none;
-    color: rgb(255,64,129);
+    color: #0088cc;
     float: right;
     text-transform: uppercase;
     padding: 14px 24px 14px 12px;
