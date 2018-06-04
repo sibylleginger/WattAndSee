@@ -1,7 +1,5 @@
+<h2><?php echo $pagetitle ?></h2>
 <div class="detailProjet">
-    <div class="mdl-card__title">
-        <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
-    </div>
     <div>
         <h5>Projets liés</h5>
         <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3 scroll">

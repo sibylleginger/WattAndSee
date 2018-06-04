@@ -63,39 +63,39 @@
                 <div id="divMontant">
                     <div id="checkboxMontant">
                         <p>Montant de</p>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetTotal">
-                            <input type="checkbox" id="budgetTotal" name="montant[]" value="budgetTotal" class="mdl-checkbox__input">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetTotal1">
+                            <input type="checkbox" id="budgetTotal1" name="montant[]" value="budgetTotal" class="mdl-checkbox__input">
                             <span class="mdl-checkbox__label">Budget total</span>
                         </label>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetEDF">
-                            <input type="checkbox" id="budgetEDF" name="montant[]" value="budgetEDF" class="mdl-checkbox__input">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetEDF1">
+                            <input type="checkbox" id="budgetEDF1" name="montant[]" value="budgetEDF" class="mdl-checkbox__input">
                             <span class="mdl-checkbox__label">Budget EDF</span>
                         </label>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionTotal">
-                            <input type="checkbox" id="subventionTotal" name="montant[]" value="subventionTotal" class="mdl-checkbox__input">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionTotal1">
+                            <input type="checkbox" id="subventionTotal1" name="montant[]" value="subventionTotal" class="mdl-checkbox__input">
                             <span class="mdl-checkbox__label">Subvention totale</span>
                         </label>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionEDF">
-                            <input type="checkbox" id="subventionEDF" name="montant[]" value="subventionEDF" class="mdl-checkbox__input">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionEDF1">
+                            <input type="checkbox" id="subventionEDF1" name="montant[]" value="subventionEDF" class="mdl-checkbox__input">
                             <span class="mdl-checkbox__label">Subvention EDF</span>
                         </label>
                     </div>
                     <div id="radioMontant">
                         <p>Montant de</p>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="budgetTotal">
-                            <input type="radio" id="budgetTotal" name="montant" value="budgetTotal" class="mdl-radio__button">
+                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="budgetTotal2">
+                            <input type="radio" id="budgetTotal2" name="montant" value="budgetTotal" class="mdl-radio__button">
                             <span class="mdl-radio__label">Budget total</span>
                         </label>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="budgetEDF">
-                            <input type="radio" id="budgetEDF" name="montant" value="budgetEDF" class="mdl-radio__button">
+                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="budgetEDF2">
+                            <input type="radio" id="budgetEDF2" name="montant" value="budgetEDF" class="mdl-radio__button">
                             <span class="mdl-radio__label">Budget EDF</span>
                         </label>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="subventionTotal">
-                            <input type="radio" id="subventionTotal" name="montant" value="subventionTotal" class="mdl-radio__button">
+                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="subventionTotal2">
+                            <input type="radio" id="subventionTotal2" name="montant" value="subventionTotal" class="mdl-radio__button">
                             <span class="mdl-radio__label">Subvention totale</span>
                         </label>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="subventionEDF">
-                            <input type="radio" id="subventionEDF" name="montant[]" value="subventionEDF" class="mdl-radio__button">
+                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="subventionEDF2">
+                            <input type="radio" id="subventionEDF2" name="montant[]" value="subventionEDF" class="mdl-radio__button">
                             <span class="mdl-radio__label">Subvention EDF</span>
                         </label>
                     </div>

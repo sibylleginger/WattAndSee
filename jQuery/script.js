@@ -11,8 +11,10 @@ $(function(){
         var checkboxMontant = $('#checkboxMontant');
         var radioStatut = $('#radioStatut');
         var checkboxStatut = $('#checkboxStatut');
+        var exceptionnel = $('#exceptionnel');
         $('#radioStatut').hide();
         $('#radioMontant').hide();
+        exceptionnel.hide();
         divMontant.hide();
         optionsType.change(function() {
             if(optionsType.val() == 'pie') {
@@ -30,6 +32,7 @@ $(function(){
         optionsData.change(function(){
             if(optionsData.val() == 2) {
                 divMontant.show();
+                exceptionnel.show();
                 if (optionsXAxis == 4) {
                     checkboxStatut.hide();
                     radioStatut.show();
@@ -39,6 +42,7 @@ $(function(){
                 }
             }else {
                 divMontant.hide();
+                exceptionnel.hide();
             }
             if (optionsXAxis == 2 || optionsXAxis == 3) {
                 checkboxMontant.hide();
@@ -70,6 +74,13 @@ $(function(){
         });
     });
 
+    /*
+     * Modifie le rôle de chef de projet selon la valeur initiale du contact dont le code est l'attribut classe de l'objet, impliqué dans le projet dont le code est l'attribut classe de la ligne
+     * Changes the role of project leader of the contact whose id is in the object's class attribute, involved in the project of which the id is the row's class attribute
+     * 
+     * Appelle l'action setChef du ControllerImplication
+     * Calls the setChef action from ControllerImplication
+    */
 	$(document).on('click','.setAsChef', function() {
 		var classContact = $(this).attr('class');
         var codeContact = classContact.split(' ')[1];
@@ -194,14 +205,13 @@ $(function(){
         var classContact = $(this).attr('class');
         var codeContact = classContact.split(' ')[1];
         var row = $(this).parent().parent();
-        var codeSource = '';
+        var codeSource = null;
         $.ajax({
             type:'POST',
             url:'index.php?controller=contact&action=updateSourceFin',
             data:{'codeContact':codeContact,'codeSourceFin':codeSource},
             success: function(data){
                  if(data=='true'){
-                    window.alert('OK');
                     row.fadeOut().remove();
                  }else{
                     window.alert(data);
@@ -229,7 +239,6 @@ $(function(){
             data:{'codeContact':codeContact,'codeSourceFin':codeSource},
             success: function(data){
                  if(data=="true"){
-                    window.alert('OK');
                     row.fadeOut().remove();
                  }else{
                     window.alert(data);
@@ -248,7 +257,7 @@ $(function(){
     */
     $(document).on('click','.deleteParticipant',function(){
         var classParticipant = $(this).attr('class');
-        var codeParticipant = classContact.split(' ')[1];
+        var codeParticipant = classParticipant.split(' ')[1];
         var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
         $.ajax({
@@ -257,7 +266,6 @@ $(function(){
             data:{'codeProjet':codeProjet, 'codeParticipant':codeParticipant},
             success: function(data){
                  if(data=="true"){
-                    window.alert('OK');
                     row.fadeOut().remove();
                  }else{
                  	window.alert(data);
@@ -276,7 +284,7 @@ $(function(){
     */
     $(document).on('click','.addParticipant',function(){
         var classParticipant = $(this).attr('class');
-        var codeParticipant = classContact.split(' ')[1];
+        var codeParticipant = classParticipant.split(' ')[1];
         var row = $(this).parent().parent();
         var codeProjet = row.attr('class');
         $.ajax({
@@ -285,7 +293,6 @@ $(function(){
             data:{'codeProjet':codeProjet, 'codeParticipant':codeParticipant},
             success: function(data){
                  if(data=="true"){
-                    window.alert('OK');
                     row.fadeOut().remove();
                  }else{
                  	window.alert(data);

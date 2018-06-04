@@ -29,19 +29,30 @@ class ControllerProjet
                 },
                 "trendLines": [],
                 "graphs": [';
-            foreach ($tabBar as $key => $value) {
-                $id = $key+1;
+            if (isset($tabBar)) {
+                foreach ($tabBar as $key => $value) {
+                    $id = $key+1;
+                    $function .= '{
+                        "balloonText": "'.$value.': [[value]]",
+                        "fillAlphas": 1,
+                        "id": "AmGraph-'.$id.'",
+                        "title": "'.$value.'",
+                        "type": "column",
+                        "valueField": "column-'.$id.'"
+                    },';
+                }
+                $function = rtrim($function, ',');
+                $function .= '],';
+            }else {
                 $function .= '{
-                    "balloonText": "'.$value.': [[value]]",
-                    "fillAlphas": 1,
-                    "id": "AmGraph-'.$id.'",
-                    "title": "'.$value.'",
-                    "type": "column",
-                    "valueField": "column-'.$id.'"
-                },';
+                        "balloonText": "[[title]] [[value]]",
+                        "fillAlphas": 1,
+                        "id": "AmGraph-1",
+                        "title": "Statut",
+                        "type": "column",
+                        "valueField": "column-1"
+                    }],';
             }
-            $function = rtrim($function, ',');
-            $function .= '],';
         }else {
             $function .= '"balloonText": "[[title]] [[value]] ([[percents]]%)",
                 "titleField": "category",
@@ -105,75 +116,6 @@ class ControllerProjet
                 return $function;
     }
 
-    public static function scriptPie($i,$title,$column1,$column2,$tabValues) {
-        $fonction = '
-        AmCharts.makeChart("graph'.$idGraph.'",
-        {
-            "type": "pie",
-            "balloonText": "[[title]]<br><span style=\'font-size:14px\'><b>[[value]]</b> ([[percents]]%)</span>",
-            "titleField": "category",
-            "valueField": "column-1",
-            "allLabels": [],
-            "balloon": {},
-            "legend": {
-                "enabled": true,
-                "align": "center",
-                "markerType": "circle"
-            },
-            "titles": [],
-            "dataProvider": [
-                {
-                    "category": "category 1",
-                    "column-1": 8
-                },
-                {
-                    "category": "category 2",
-                    "column-1": 6
-                },
-                {
-                    "category": "category 3",
-                    "column-1": 2
-                }
-            ]
-        }
-                        ';
-                        $data = '';
-                        foreach ($tabValues as $stat) {
-                            $data .= "['" . $stat['prim'] . "', " . $stat['quantity'] . "],";
-                        }
-                        $data = rtrim($data, ',');
-                        $fonction .= $data;
-                        $fonction .= '
-                        
-                    ]);
-                    var options = {
-                        title: \''.$title.'\',
-                        chartArea: {
-                            width: \'80%\'
-                        }
-                    };
-
-                    var chart = new google.visualization.PieChart(document.getElementById(\'graphPie'.$i.'\'));
-
-                    function drawToolbar() {
-                        var components = [
-                            {type: \'html\', datasource: \'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA\'},
-                            {type: \'csv\', datasource: \'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA\'},
-                            {type: \'htmlcode\', datasource: \'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA\',
-                                gadget: \'https://www.google.com/ig/modules/pie-chart.xml\',
-                                userprefs: {\'3d\': 1},
-                                style: \'width: 800px; height: 700px; border: 3px solid purple;\'}
-                        ];
-
-                        var container = document.getElementById(\'savePie'.$i.'\');
-                        google.visualization.drawToolbar(container, components);
-                    };
-
-                    chart.draw(data, options);
-                    drawToolbar();
-                }';
-        return $fonction;
-    }
     /**
      * Affiche la liste de tous les Projets
      */
@@ -559,11 +501,11 @@ class ControllerProjet
         if ($_POST['data']==1) {
             switch ($xAxis) {
                 case 1:
-                    $bar = null;
-                    $tab = ModelProjet::statStatutEtProjet();
-                    foreach ($tab as $key => $value) {
-                        array_push($tabCategorie, $value['prim']);
-                    }
+                        $bar = null;
+                        $tab = ModelProjet::statStatutEtProjet();
+                        foreach ($tab as $key => $value) {
+                            array_push($tabCategorie, $value['prim']);
+                        }
                     break;
                 case 2:
                     $bar = null;

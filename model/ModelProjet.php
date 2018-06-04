@@ -444,12 +444,12 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e;
+            return $e->getMessage();
         }
     }
 
     /**
-     * Retourne un tableau avec les entités et le nombre de projets par entités
+     * Retourne un tableau avec les entités et le nombre de projets par entités dont le statut = @param statut
      */
     public static function statEntiteEtProjet($statut)
     {
@@ -464,12 +464,12 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e;
+            return $e->getMessage();
         }
     }
 
     /**
-     * Retourne un tableau avec les entités et le nombre de projets par entités
+     * Retourne un tableau avec les programmes de financement (tab['prim']) et le nombre de projets par programme (tab['quantity']) dont le statut = @param statut
      */
     public static function statProgrammeEtProjet($statut)
     {
@@ -487,7 +487,9 @@ class ModelProjet extends Model
             return $e->getMessage();
         }
     }
-
+    /**
+     * Retourne un tableau avec les entités (tab['prim']) et le total des montants de @param $montant de tous les projets par entité (tab['quantity']) dont le statut = @param statut
+     */
     public static function statEntiteEtMontant($montant,$statut)
     {
         try {
@@ -505,6 +507,9 @@ class ModelProjet extends Model
         }
     }
 
+    /**
+     * Retourne un tableau avec l'année de dépot (tab['prim']), le statut des projets (tab['bar']) déterminé par @param $statuts et du nombre de projets par statut et par année (tab['quantity']) dont la date de dépot est comprise entre @param $startG et @param $endG
+     */
     public static function statNbProjet($startG,$endG,$statuts) //$sort = %Y pour année
     {
         try {
@@ -531,6 +536,10 @@ class ModelProjet extends Model
         }
     }
 
+    /**
+     * Retourne un tableau avec l'année de dépot (tab['prim']) et le total de chaque montants des projets (tab['valueX']) déterminés par @param $montants par année de dépot. La date de dépot des projets est comprise entre @param $startG et @param $endG, le statut = @param $statut.
+     * @param $exceptionnel est un booléen qui permet d'inclure les montants des projets exceptionnels ou non.
+     */
     public static function statMontantProjet($startG,$endG,$statut,$montants,$exceptionnel) //$sort = %Y pour année
     {
         try {
@@ -556,6 +565,10 @@ class ModelProjet extends Model
         }
     }
 
+    /**
+     * Retourne un tableau avec les statuts (tab['prim']) déterminés par @param $statuts, et le total de chaque montants des projets (tab['valueX']) déterminés par @param $montants répartis par statut. La date de dépot des projets est comprise entre @param $startG et @param $endG.
+     * @param $exceptionnel est un booléen qui permet d'inclure les montants des projets exceptionnels ou non.
+     */
     public static function statMontantStatutProjet($startG,$endG,$statuts,$montants,$exceptionnel) //$sort = %Y pour année
     {
         try {

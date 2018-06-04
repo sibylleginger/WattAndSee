@@ -1,20 +1,21 @@
 <div class="detailProjet">
-    <!--<div class="mdl-card mdl-shadow--2dp detailBatiment2">-->
-        <div>
-        <div class="mdl-card__title">
-            <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
+    <div class="demo-card-square mdl-card mdl-shadow--2dp projetPres">
+        <div class="mdl-card__title mdl-card--expand">
+            <h3><?php echo $pagetitle ?></h3>
         </div>
         <div class="mdl-card__supporting-text">
-            Nom : <?php echo $participant->getNomParticipant() ?><br>
-            Nationalité : <?php echo $participant->getNationalite() ?><br>
             <?php
-                if ($participant->getMailParticipant() != null) {
-                    echo "Adresse mail : ". $participant->getMailParticipant();
-                }
-                if ($participant->getAffiliation() != null) {
-                    echo 'Affiliation : '. $participant->getAffiliation();
-                }
+            if ($participant->getAffiliation() != null) {
+                echo('<b>Affiliation :</b> '.$participant->getAffiliation().'<br>');
+            }
+            if ($participant->getNomParticipant() != null) {
+                echo('<b>Nom :</b> '.$participant->getNomParticipant().'<br>');
+            }
+            if ($participant->getMailParticipant() != null) {
+                echo "<b>Adresse mail :</b> ". $participant->getMailParticipant().'<br>';
+            }
             ?>
+            <b>Nationalité :</b> <?php echo $participant->getNationalite() ?><br>
         </div>
         <div class="mdl-card__menu">
             <a href="index.php?controller=participant&action=update&codeParticipant=<?php echo htmlspecialchars($participant->getCodeParticipant()) ?>">
@@ -29,7 +30,6 @@
             </a>
         </div>
     </div>
-    <!--</div>-->
 
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
         <thead>

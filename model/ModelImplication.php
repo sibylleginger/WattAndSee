@@ -80,7 +80,15 @@ class ModelImplication
     }
 
     /**
-     * @return mixed
+     * Modifie le booléen chefProjet dans la table Implication pour attribuer ou destituer le rôle de chef de projet selon la valeur initiale
+     * Changes the boolean value of chefProjet in table Implication to set or unset the rôle of project leader
+     *
+     * @param $codeProjet int
+     * @param $codeContact int
+     *
+     * @return bool
+     *
+     * @uses ModelImplication::select($codeProjet,$codeContact)
      */
     public static function setChefProjet($codeProjet, $codeContact) {
         $implication = ModelImplication::select($codeProjet,$codeContact);
@@ -104,10 +112,9 @@ class ModelImplication
 
     /**
      * @deprecated
-     * Renvoie la liste des tous les enseignants
-     * TODO implémenter une fonction de page ?
+     * Renvoie la liste des toutes les implications
      *
-     * @return bool|array(ModelEnseigant)
+     * @return bool|array(ModelImplication)
      *
      * @uses  Model::selectAll()
      */

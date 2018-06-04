@@ -58,6 +58,7 @@ class ControllerParticipant
                 $participant = new ModelParticipant();
                 if (isset($_GET['codeProjet'])) {
                     $codeProjet = $_GET['codeProjet'];
+                    $participation = new ModelParticipation();
                 }
                 $view = 'update';
                 $pagetitle = 'Ajout d\'un nouveau participant';

@@ -4,8 +4,8 @@
         <h3><?php echo $projet->getNomProjet() ?></h3>
     </div>
     <div class="mdl-card__supporting-text">
-        Statut du projet : <?php echo $projet->getStatut() ?><br>
-        Programme de financement : 
+        <b>Statut du projet :</b> <?php echo $projet->getStatut() ?><br>
+        <b>Programme de financement :</b> 
         <?php
         if ($sourceFin == false) {
             echo "Inconnue<br>";
@@ -13,12 +13,16 @@
             echo '<a href="index.php?controller=sourceFin&action=read&codeSourceFin='.$sourceFin->getCodeSourceFin().'">'.$sourceFin->getNomSourceFin().'</a><br>';  
         }
         ?>
-        Date de dépôt du dossier : <?php list($year, $month, $day) = explode('-', $projet->getDateDepot());
+        <b>Date de dépôt du dossier :</b> <?php list($year, $month, $day) = explode('-', $projet->getDateDepot());
                         echo $day.'/'.$month.'/'.$year; ?> <br>
         <?php if ($projet->getDateReponse() != null) { ?>
-            Date de réponse : <?php list($year, $month, $day) = explode('-', $projet->getDateReponse());
-                        echo $day.'/'.$month.'/'.$year;;
-        }?> <br>
+            <b>Date de réponse :</b> <?php list($year, $month, $day) = explode('-', $projet->getDateReponse());
+                        echo $day.'/'.$month.'/'.$year.'<br>';
+        }
+        if ($theme != false) {
+            echo "<b>Thème :</b> ".$theme->getNomTheme().'<br>';
+        }
+        ?><b>Rôle EDF :</b> <?php echo $projet->getRole()?>
     </div>
     <div class="mdl-card__actions mdl-card--border">
         <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="index.php?controller=note&action=readAllByProjet&codeProjet=<?php echo $projet->getCodeProjet()?>">Commentaires du projet</a>
@@ -32,11 +36,6 @@
     <div class="mdl-card__supporting-text content">
         <h4>Description sommaire du projet:</h4>
         <div id="descProj"><?php echo $projet->getDescription(); ?></div>
-        <div><p><?php
-        if ($theme != false) {
-            echo "Thème : ".$theme->getNomTheme();
-        }
-        ?></p> <p>Rôle EDF : <?php echo $projet->getRole()?></p></div>
         <div class="detailProjet">
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
                 <thead>
@@ -134,7 +133,7 @@
                 echo '>
                     <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
                     <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                    <td class="mdl-data-table__cell--non-numeric">'.$entite->getNomEntite().'</td>
+                    <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=entite&action=read&codeEntite='.$contact->getCodeEntite().'">'.$entite->getNomEntite().'</a></td>
                     <td class="mdl-data-table__cell--non-numeric">'.$contact->getMail().'</td>
                 </tr>';
             }

@@ -13,10 +13,9 @@ class ControllerImplication
      * Set the role of projet leader to a contact of id @var $_POST['codeContact'] involved in the project of id @var $_POST['codeProject']. Return 'true' or false if error.  
      *
      * @uses ModelImplication::select($codeProjet,$codeContact)
-     * @uses ModelSalle::setChefProjet()
+     * @uses ModelImplication::setChefProjet()
      *
-     * @return 'true' string|array(ModelProjet)
-     * setters?
+     * @return 'true' string|error message string
      */
     public static function setChef() {
         if (isset($_SESSION['login'])) {

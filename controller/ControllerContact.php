@@ -176,7 +176,7 @@ class ControllerContact
                 $contact = new ModelContact();
                 if (isset($_GET['codeSourceFin'])) {
                     $codeSourceFin = $_GET['codeSourceFin'];
-                }else {
+                }elseif (isset($_GET['codeProjet'])) {
                     $codeProjet = $_GET['codeProjet'];
                 }
                 //$sourceFin = ModelSourceFin::select($Contact->getCodeSourceFin());
@@ -279,8 +279,13 @@ class ControllerContact
                     if (!$contact) {
                         echo 'Le contact n\'existe pas';
                     }else {
+                        if ($contact->getCodeSourceFin() != null) {
+                            $codeSourceFin = null;
+                        }else {
+                            $codeSourceFin = $_POST['codeSourceFin'];
+                        }
                         $data = array('codeContact' => $_POST['codeContact'],
-                                    'codeSourceFin' => $_POST['codeSourceFin']);
+                                    'codeSourceFin' => $codeSourceFin);
                         $res = ModelContact::update($data);
                         if ($res) {
                             echo 'true';

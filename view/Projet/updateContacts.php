@@ -1,7 +1,7 @@
-<div class="detailProjet">
         <div class="mdl-card__title">
             <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
         </div>
+<div class="detailProjet">
         <div >
         <div class="updateContactBox">
             <h5>Contacts EDF</h5>
@@ -139,7 +139,7 @@
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp users scroll" id="tableConsortium">
                 <thead>
                 <tr>
-                    <th class="mdl-data-table__cell--non-numeric">Nom</th>
+                    <th class="mdl-data-table__cell--non-numeric">Affiliation</th>
                     <th class="mdl-data-table__cell--non-numeric">Nationalité</th>
                     <th class="mdl-data-table__cell--non-numeric">Budget</th>
                     <th class="mdl-data-table__cell--non-numeric">Modifier</th>
@@ -155,7 +155,7 @@
                             echo ' style="background-color: #b9e2f7;"';
                         }
                         echo '>
-                            <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
+                            <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getAffiliation().'</a></td>
                                 <td class="mdl-data-table__cell--non-numeric">'.$participant->getNationalite().'</td>
                                 <td class="mdl-data-table__cell--non-numeric">'.$participation->getBudget().'</td>
                                 <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=update&codeProjet='.$projet->getCodeProjet().'&codeParticipant='.$participant->getCodeParticipant().'"><i class="material-icons">edit</i></a></td>
@@ -179,7 +179,11 @@
 
                 foreach ($allParticipant as $participant) {
                     echo '<tr class="'.$projet->getCodeProjet().'">
-                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
+                        <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">';
+                    if ($participant->getAffiliation() != null) {
+                        echo $participant->getAffiliation();
+                    }else echo $participant->getNomParticipant();
+                    echo '</a></td>
                         <td class="mdl-data-table__cell--non-numeric">'.$participant->getNationalite().'</td>
                         <td class="mdl-data-table__cell--non-numeric"><a class="addParticipant '.$participant->getCodeParticipant().'" href=""><i class="material-icons">add</i></a></td>
                     </tr>';

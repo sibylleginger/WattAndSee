@@ -37,7 +37,7 @@
 
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="notMembre">
                 <label class="select" for="codeSourceFin">Programme de financement</label>
-                <select style="display: block;" id="codeSourceFin" name="codeSourceFin">
+                <select  id="codeSourceFin" name="codeSourceFin">
                     <option value=""></option>
                     <?php
                     foreach ($tabSourceFin as $value) {
@@ -54,7 +54,7 @@
 
             <div id="membreEDF">
             <label class="select" for="codeEntite">Entité EDF</label>
-            <select style="display: block;" id="codeEntite" name="codeEntite">
+            <select id="codeEntite" name="codeEntite">
                 <option value=""></option>
                 <?php
                 foreach ($tabEntite as $value) {

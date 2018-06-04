@@ -6,11 +6,16 @@
             <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
         </div>
         <div class="mdl-card__supporting-text">
-
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input"
+                       value="<?php echo htmlspecialchars($participant->getAffiliation()) ?>"
+                       type="text" id="affiliation" name="affiliation" required>
+                <label class="mdl-textfield__label" for="affiliation">Affiliation</label>
+            </div>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input"
                        value="<?php echo htmlspecialchars($participant->getNomParticipant()) ?>"
-                       type="text" id="nomParticipant" name="nomParticipant" required>
+                       type="text" id="nomParticipant" name="nomParticipant">
                 <label class="mdl-textfield__label" for="nomParticipant">Nom</label>
                 <span class="mdl-textfield__error">Veuillez rentrer un nom</span>
             </div>
@@ -19,12 +24,6 @@
                        value="<?php echo htmlspecialchars($participant->getNationalite()) ?>"
                        type="text" id="nationalite" name="nationalite">
                 <label class="mdl-textfield__label" for="nationalite">Nationalité</label>
-            </div>
-            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <input class="mdl-textfield__input"
-                       value="<?php echo htmlspecialchars($participant->getAffiliation()) ?>"
-                       type="text" id="affiliation" name="affiliation">
-                <label class="mdl-textfield__label" for="affiliation">Affiliation</label>
             </div>
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input"
@@ -46,7 +45,7 @@
                         <span class="mdl-checkbox__label" for="coordinateur">Coordinateur du consortium</span>
                     </label>
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <input class="mdl-textfield__input" type="number" value="'.$participation->getBudget().'" id="budget" name="budget">
+                        <input class="mdl-textfield__input" type="number" value="'.$participation->getBudget(). '" id="budget" name="budget">
                         <label class="mdl-textfield__label" for="budget">Budget</label>
                     </div>';
             }

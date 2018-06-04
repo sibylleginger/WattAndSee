@@ -1,27 +1,29 @@
 <div class="detailProjet">
-    <!--<div class="mdl-card mdl-shadow--2dp detailBatiment2">-->
-        <div>
-        <div class="mdl-card__title">
-            <h2 class="mdl-card__title-text"><?php echo $pagetitle ?></h2>
+    <div class="demo-card-square mdl-card mdl-shadow--2dp projetPres">
+        <div class="mdl-card__title mdl-card--expand">
+            <h3><?php echo $pagetitle ?></h3>
         </div>
         <div class="mdl-card__supporting-text">
-            Nom : <?php echo $contact->getNomContact() ?><br>
-            Prénom : <?php echo $contact->getPrenomContact() ?><br>
+            <b>Nom :</b> <?php echo $contact->getNomContact() ?><br>
+            <b>Prénom :</b> <?php echo $contact->getPrenomContact() ?><br>
             <?php
                 if ($entite == false) {
                     if (!$sourceFin) {
                         echo 'Pas d\'affiliation';
                     }else {
-                        echo "Affiliation : ". $sourceFin->getNomSourceFin();
+                        echo "<b>Affiliation :</b> ". $sourceFin->getNomSourceFin()."<br>";
                     }
                 }else {
-                    echo "Entité EDF : <a href=\"index.php?controller=entite&action=read&codeEntite=". $entite->getCodeEntite()."\">".$entite->getNomEntite()."</a><br>";
+                    echo "<b>Entité EDF :</b> <a href=\"index.php?controller=entite&action=read&codeEntite=". $entite->getCodeEntite()."\">".$entite->getNomEntite()."</a><br>";
                     if ($departement != false) {
-                        echo "Département : ". $departement->getNomDepartement()."<br>";
+                        echo "<b>Département :</b> ". $departement->getNomDepartement()."<br>";
                     }
                 }
+                echo "<b>Adresse mail :</b> ";
                 if ($contact->getMail() != null) {
-                    echo "Adresse mail : ". $contact->getMail();
+                    echo $contact->getMail();
+                }else {
+                    echo 'Inconnue';
                 }
             ?>
         </div>

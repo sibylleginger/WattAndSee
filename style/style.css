@@ -67,6 +67,10 @@ div > div.list {
   min-width: 20%;
 }
 
+.detailProjet > div:nth-child(2) {
+  min-width: 70%;
+}
+
 .content {
   margin: 20px;
 }
@@ -90,6 +94,10 @@ table.scroll tbody {
 
 table {
   margin: auto;
+}
+
+form {
+  align-items: center;
 }
 
 #tableEDF td:first-of-type {
@@ -121,6 +129,7 @@ a {
 
 #descProj {
   border-left: 3px solid #0088cc;
+  margin-bottom: 30px;
   padding: 10px;
   background-color: #b9e2f7;
   min-width: 62%;
@@ -158,6 +167,7 @@ body {
 
 .page-content {
   align-items: center;
+  padding: 10px;
 }
 
 /* Disable ugly boxes around images in IE10 */
