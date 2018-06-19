@@ -1,19 +1,19 @@
 <?php
-
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 
 /**
- * Class ModelUser
+ * Class ModelDeadLine
  */
 class ModelDeadLine extends Model
 {
 
     /**
-     * @var string
+     * @var string nom de la table
      */
     protected static $object = 'DeadLine';
     /**
-     * @var string
+     * @var string clé primaire
      */
     protected static $primary = 'codeDeadLine';
 
@@ -44,32 +44,11 @@ class ModelDeadLine extends Model
         return $this->codeProjet;
     }
     /**
-     * @param mixed $activated
-     */
-    public function setCodeDeadLine($codeDeadLine)
-    {
-        $this->codeDeadLine = $codeDeadLine;
-    }
-    /**
-     * @param mixed $activated
-     */
-    public function setCodeProjet($codeProjet)
-    {
-        $this->codeProjet = $codeProjet;
-    }
-    /**
      * @return mixed
      */
     public function getNomDeadLine()
     {
         return $this->nomDeadLine;
-    }
-    /**
-     * @param mixed $activated
-     */
-    public function setNomDeadLin($nomDeadLine)
-    {
-        $this->nomDeadLine = $nomDeadLine;
     }
     /**
      * @return mixed
@@ -78,14 +57,13 @@ class ModelDeadLine extends Model
     {
         return $this->dateDeadLine;
     }
-    /**
-     * @param mixed $activated
-     */
-    public function setDateDeadLine($dateDeadLine)
-    {
-        $this->dateDeadLine = $dateDeadLine;
-    }
 
+    /**
+     * Renvoie un tableau des toutes les échéances du projet
+     *
+     * @param $codeProjet int code du projet
+     * @return bool|array(ModelDeadLine)
+     */
     public static function selectAllByProjet($codeProjet) {
         try {
             $sql = 'SELECT * FROM DeadLine WHERE codeProjet=:codeProjet';
@@ -100,6 +78,11 @@ class ModelDeadLine extends Model
         }
     }
 
+    /**
+     * Supprime les échéances dont la date est passée
+     *
+     * @return bool|array(ModelDocument)
+     */
     public static function updateTable() {
         try {
             $sql = 'DELETE FROM DeadLine WHERE dateDeadLine<=:dateDeadLine';
@@ -114,9 +97,8 @@ class ModelDeadLine extends Model
 
     /**
      * Retourne toutes les dates disctinctes où il y a une échéance
-     * Return all the distinct dates where there is a deadline
      *
-     * @return bool|array(ModelDeadLine) with only field 'dateDeadLine' format: 'YYY-MM-DD'
+     * @return bool|array(ModelDeadLine) avec une seul champ 'dateDeadLine' format: 'YYY-MM-DD'
      */
     public static function selectDates() {
         try {

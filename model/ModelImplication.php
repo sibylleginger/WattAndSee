@@ -1,4 +1,5 @@
 <?php
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 require_once File::build_path(array('model', 'ModelImplication.php'));
 require_once File::build_path(array('model', 'ModelProjet.php'));
@@ -32,14 +33,6 @@ class ModelImplication
     }
 
     /**
-     * @param mixed $codeDepartement
-     */
-    public function setCodeContact($codeContact)
-    {
-        $this->codeContact = $codeContact;
-    }
-
-    /**
      * @return mixed
      */
     public function getCodeProjet()
@@ -48,20 +41,11 @@ class ModelImplication
     }
 
     /**
-     * @param mixed $codeStatut
-     */
-    public function setCodeProjet($codeProjet)
-    {
-        $this->codeProjet = $codeProjet;
-    }
-
-    /**
-     * Retourne l'enseignant désigné par son code Enseignant, false s'il y a une erreur ou qu'il n'existe pas
+     * Retourne l'implication d'un contact à un projet, false s'il y a une erreur ou qu'il n'existe pas
      *
-     * @param $primary_value
-     * @return bool|ModelEnseignant
-     *
-     * @uses  Model::select()
+     * @param $codeProjet int code du projet
+     * @param $codeContact int code du contact
+     * @return bool|ModelParticipation
      */
     public static function select($codeProjet, $codeContact)
     {
@@ -86,7 +70,7 @@ class ModelImplication
      * @param $codeProjet int
      * @param $codeContact int
      *
-     * @return bool
+     * @return bool|Exception
      *
      * @uses ModelImplication::select($codeProjet,$codeContact)
      */
@@ -106,33 +90,15 @@ class ModelImplication
             $rep->execute($values);
             return true;
         } catch (Exception $e) {
-            return false;
+            return $e->getMessage();
         }
     }
 
     /**
-     * @deprecated
-     * Renvoie la liste des toutes les implications
+     * Renvoie tous les contacts impliqué dans un projet, false s'il y a une erreur
      *
-     * @return bool|array(ModelImplication)
-     *
-     * @uses  Model::selectAll()
-     */
-    public static function selectAll()
-    {
-        $retourne = parent::selectAll();
-        foreach ($retourne as $cle => $item) {
-            $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-            $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-        }
-        return $retourne;
-    }
-
-    /**
-     * Renvoie tous les enseignants appartenant à un département, false s'il y a une erreur
-     *
-     * @param $codeDepartement string(1)
-     * @return bool|array(ModelEnseignant)
+     * @param $codeProjet int code du projet
+     * @return bool|array(ModelContact)
      */
     public static function selectAllByProjet($codeProjet)
     {
@@ -151,6 +117,12 @@ class ModelImplication
         }
     }
 
+    /**
+     * Renvoie tous les projets où le contact est impliqué, false s'il y a une erreur
+     *
+     * @param $codeContact int code du contact
+     * @return bool|array(ModelProjet)
+     */
     public static function selectAllByContact($codeContact)
     {
         try {
@@ -168,6 +140,12 @@ class ModelImplication
         }
     }
 
+    /**
+     * Retourne le chef du projet, false s'il y a une erreur
+     *
+     * @param $codeProjet int code du projet
+     * @return bool|ModelContact
+     */
     public static function selectChef($codeProjet) {
         try {
             $sql = 'SELECT * FROM Contact C
@@ -181,10 +159,16 @@ class ModelImplication
             if (empty($retourne)) return false;
             return $retourne[0];
         } catch (Exception $e) {
-            
+            return false;
         }
     }
 
+    /**
+     * Supprime l'implication d'un contact à un projet
+     *
+     * @param $codeProjet, $codeContact int code du projet/contact
+     * @return bool|Exception
+     */
     public static function delete($codeProjet, $codeContact) {
         try {
             $sql = 'DELETE FROM Implication WHERE codeProjet=:codeProjet AND codeContact=:codeContact';
@@ -198,6 +182,13 @@ class ModelImplication
         }
     }
 
+    /**
+     * Ajoute l'implication d'un contact à un projet
+     *
+     * @param $codeProjet, $codeContact int code du projet/contact
+     * @param $chefProjet boolean rôle du contat
+     * @return bool|Exception
+     */
     public static function add($codeProjet, $codeContact, $chefProjet) {
         try {
             $sql = 'INSERT INTO Implication VALUES (:codeProjet,:codeContact,:chefProjet)';

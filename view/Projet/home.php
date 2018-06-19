@@ -41,6 +41,7 @@
                     <option value="Accepté">Accepté</option>
                     <option value="Refusé">Refusé</option>
                     <option value="Déposé">Déposé</option>
+                    <option value="En cours de montage">En cours de montage</option>
                 </select>
                 <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect bouton" type="submits">
                     <i class="material-icons">send</i>
@@ -52,10 +53,26 @@
 
 <div class="mdl-card mdl-shadow--2dp" style="width: 500px; margin: 0px 15px 15px 15px">
     <div class="mdl-card__title">
-        <h2 class="mdl-card__title-text">Répartitions des enseignants par statut</h2>
+        <h2 class="mdl-card__title-text">Répartitions des projets par statut</h2>
     </div>
     <div class="mdl-card__supporting-text mdl-card--border">
-        <div id="statut" style="width: 500px; height: 250px;"></div>
+        <div id="graphSP" style="width: 500px; height: 250px;"></div>
+    </div>
+</div>
+<div class="mdl-card mdl-shadow--2dp" style="width: 500px; margin: 0px 15px 15px 15px">
+    <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">Répartitions des projets par entité</h2>
+    </div>
+    <div class="mdl-card__supporting-text mdl-card--border">
+        <div id="graphEP" style="width: 500px; height: 250px;"></div>
+    </div>
+</div>
+<div class="mdl-card mdl-shadow--2dp" style="width: 500px; margin: 0px 15px 15px 15px">
+    <div class="mdl-card__title">
+        <h2 class="mdl-card__title-text">Montant des budgets EDF par entité</h2>
+    </div>
+    <div class="mdl-card__supporting-text mdl-card--border">
+        <div id="graphEM" style="width: 500px; height: 250px;"></div>
     </div>
 </div>
 

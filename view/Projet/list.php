@@ -18,7 +18,7 @@
                     <option></option>
                     <?php foreach ($tabEntite as $entite) {
                         echo '<option value="' . $entite->getCodeEntite() . '"';
-                        echo '>' . $entite->getNomEntite() . '</option>';
+                        echo '>' . htmlspecialchars($entite->getNomEntite()) . '</option>';
                     }
                     ?>
                 </select>
@@ -29,7 +29,7 @@
                     <option></option>
                     <?php foreach ($tabTheme as $theme) {
                         echo '<option value="' . $theme->getCodeTheme() . '"';
-                        echo '>' . $theme->getNomTheme() . '</option>';
+                        echo '>' . htmlspecialchars($theme->getNomTheme()) . '</option>';
                     }
                     ?>
                 </select>
@@ -122,8 +122,6 @@ if ($_GET['action']=='readAll') {
 }
 }
 ?>
-<a href="index.php?controller=projet&action=create">
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
-        <i class="material-icons">add</i>
-    </button>
+<a href="index.php?controller=projet&action=create" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
+    <i class="material-icons">add</i>
 </a>

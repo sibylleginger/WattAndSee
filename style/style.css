@@ -35,6 +35,7 @@
 .horizontal > div {
   display: flex;
   flex-direction: column;
+  justify-content: center;
 }
 
 .mdl-card__title-text > a:hover {
@@ -64,23 +65,26 @@ div > div.list {
 }
 
 .detailProjet > div.mdl-card:first-child {
-  min-width: 20%;
-}
-
-.detailProjet > div:nth-child(2) {
-  min-width: 70%;
+  min-width: 232px;
 }
 
 .content {
   margin: 20px;
+  min-width: 70%;
 }
 
 .commentHeader {
   display: flex;
   justify-content: space-between;
+  max-height: 42px;
+}
+
+.comment {
+  margin: 10px auto;
 }
 
 table.scroll thead {
+  width: 100%;
   display: block;
   justify-content: space-around;
 }
@@ -94,6 +98,15 @@ table.scroll tbody {
 
 table {
   margin: auto;
+}
+
+table tr {
+  width: 100%;
+  justify-content: space-around;
+}
+
+table td {
+  min-width: 70px;
 }
 
 form {
@@ -119,6 +132,11 @@ form {
 .updateContactBox {
   display: flex;
   justify-content: space-around;
+}
+
+.addNewContactBox {
+  display: flex;
+  align-items: center;
 }
 
 a {
@@ -154,11 +172,11 @@ div > .projetPres {
     bottom: 15px;
     right: 15px;
     z-index: 100;
-    background-color: #0088cc;
 }
 
 .addNew {
   text-decoration: none;
+  padding: 0;
 }
 
 body {
@@ -694,3 +712,4 @@ a img{
     display: none;
   }
 }
+	

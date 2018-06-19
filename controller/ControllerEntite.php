@@ -1,4 +1,5 @@
 <?php
+//DONE
 require_once File::build_path(array('model', 'ModelEntite.php'));
 require_once File::build_path(array('model', 'ModelContact.php'));
 
@@ -7,10 +8,9 @@ class ControllerEntite
     protected static $object = 'Entite';
 
     /**
-     * Redirige vers le centre de recherche des enseignants
+     * Affiche toutes les entités
      *
-     * @uses ModelDepartement::selectAll()
-     * @uses ModelEnseignant::selectAll()
+     * @uses ModelEntite::selectAll()
      */
     public static function readAll()
     {
@@ -23,11 +23,11 @@ class ControllerEntite
     }
 
     /**
-     * Redirige vers la fiche détaillé d'un enseignant désigné par @var $_GET ['codeEns']
+     * Redirige vers la page des détails de l'entité 
+     * Affiche aussi ses statistiques
      *
-     * Affiche aussi tous les modules dans lesquels il a enseigné
-     *
-     * @uses ModelEnseignant::select()
+     * @var $_GET ['codeEntite'] int code de l'entité
+     * @uses ModelEntite::select()
      */
     public static function read()
     {
@@ -61,10 +61,7 @@ class ControllerEntite
     }
 
     /**
-     * Redirige vers le formulaire de création d'un enseignant
-     *
-     * @uses ModelDepartement::selectAll()
-     * @uses ModelStatutEnseignant::selectAll()
+     * Redirige vers le formulaire de création d'une entité
      */
     public static function create()
     {
@@ -79,10 +76,10 @@ class ControllerEntite
     }
 
     /**
-     * Crée un enseignant en récupérant les données du formulaire passé en méthode POST
+     * Crée une entité en récupérant les données du formulaire passé en méthode POST
      *
-     * @uses ModelEnseignant::save()
-     * @see  ControllerEnseignant::create()
+     * @uses ModelEntite::save()
+     * @see  ControllerEntite::readAll()
      */
     public static function created()
     {
@@ -99,9 +96,11 @@ class ControllerEntite
     }
 
     /**
-     * Supprime l'enseignant désigné par @var $_GET ['codeEns']
+     * Supprime une entité
      *
-     * @uses ModelEnseignant::delete()
+     * @var $_GET['codeEntite'] int code de l'entité
+     * @uses ModelEntite::delete()
+     * @see ControllerEntite::readAll()
      */
     public static function delete()
     {
@@ -118,13 +117,12 @@ class ControllerEntite
     }
 
     /**
-     * Redirige vers le formulaire de mise à jour des informations d'un enseignant
+     * Redirige vers le formulaire de mise à jour des informations d'une entité
      *
-     * Si l'enseignant n'existe pas, l'utilisateur est redirigé vers une erreur
+     * Si l'entité n'existe pas, l'utilisateur est redirigé vers une erreur
      *
-     * @uses ModelEnseignant::select();
-     * @uses ModelDepartement::selectAll()
-     * @uses ModelStatutEnseignant::selectAll()
+     * @var $_GET['codeEntite'] int code de l'entité
+     * @uses ModelEntite::select();
      */
     public static function update()
     {
@@ -144,13 +142,14 @@ class ControllerEntite
     }
 
     /**
-     * Met à jour les informations d'un enseignant avec les informations fournies via la méthode POST
+     * Met à jour les informations d'une entite avec les informations fournies via la méthode POST
      *
      * S'il manque des information, l'utilisateur est redirigé vers une erreur
      * Si la maj ne marche pas, l'utilisateur est redirigé vers une erreur
      *
-     * @see  ControllerEnseignant::update()
-     * @uses ModelEnseignant::update()
+     * @var $_POST['codeEntite'] int code de l'entité
+     * @uses ModelEntite::update()
+     * @see  ControllerEntite::readAll()
      */
     public static function updated()
     {

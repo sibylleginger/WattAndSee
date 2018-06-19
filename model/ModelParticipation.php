@@ -1,4 +1,5 @@
 <?php
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 require_once File::build_path(array('model', 'ModelProjet.php'));
 require_once File::build_path(array('model', 'ModelParticipant.php'));
@@ -22,27 +23,11 @@ class ModelParticipation
     }
 
     /**
-     * @param mixed $codeDepartement
-     */
-    public function setCoordinateur($coordinateur)
-    {
-        $this->coordinateur = $coordinateur;
-    }
-
-    /**
      * @return mixed
      */
     public function getCodeParticipant()
     {
         return $this->codeParticipant;
-    }
-
-    /**
-     * @param mixed $codeDepartement
-     */
-    public function setCodeParticipant($codeParticipant)
-    {
-        $this->codeParticipant = $codeParticipant;
     }
 
     /**
@@ -62,20 +47,11 @@ class ModelParticipation
     }
 
     /**
-     * @param mixed $codeStatut
-     */
-    public function setBudget($budget)
-    {
-        $this->budget = $budget;
-    }
-
-    /**
-     * Retourne l'enseignant désigné par son code Enseignant, false s'il y a une erreur ou qu'il n'existe pas
+     * Retourne la participation d'un contact à un consortium de projet, false s'il y a une erreur ou qu'il n'existe pas
      *
-     * @param $primary_value
-     * @return bool|ModelEnseignant
-     *
-     * @uses  Model::select()
+     * @param $codeProjet int code du projet
+     * @param $codeParticipant int code du participant
+     * @return bool|ModelParticipation
      */
     public static function select($codeProjet, $codeParticipant)
     {
@@ -95,7 +71,14 @@ class ModelParticipation
     }
 
     /**
-     * @return mixed
+     * Modifie le booléen coordinateur dans la table Participations pour attribuer ou destituer le rôle de coordinateur selon la valeur initiale
+     *
+     * @param $codeProjet int code du projet
+     * @param $codeContact int code du participant
+     *
+     * @return bool|Exception
+     *
+     * @uses ModelParticipation::select($codeProjet,$codeContact)
      */
     public static function setCoordinateurProjet($codeProjet, $codeParticipant) {
         $participation = ModelParticipation::select($codeProjet,$codeParticipant);
@@ -119,7 +102,6 @@ class ModelParticipation
 
     /**
      * Renvoie tous les participants du consortium du projet, false s'il y a une erreur
-     * Return all the participants of the project, false if error
      *
      * @param $codeProjet int
      * @return bool|array(ModelParticipant)
@@ -143,7 +125,6 @@ class ModelParticipation
 
     /**
      * Renvoie tous les projets auquel participe le participant, false s'il y a une erreur
-     * Return all the projects where the participant is involved, false if error
      *
      * @param $codeParticipant int
      * @return bool|array(ModelProjet)
@@ -166,10 +147,9 @@ class ModelParticipation
     }
 
     /**
-     * Renvoie le coordinateur du consortium du projet, false s'il y a une erreur
-     * Return the coordinator of the project, false if error
+     * Retourne le coordinateur du consortium du projet, false s'il y a une erreur
      *
-     * @param $codeProjet int
+     * @param $codeProjet int code du projet
      * @return bool|ModelParticipant
      */
     public static function selectCoordinateur($codeProjet) {
@@ -185,14 +165,14 @@ class ModelParticipation
             if (empty($retourne)) return false;
             return $retourne[0];
         } catch (Exception $e) {
-            
+            return false;
         }
     }
 
     /**
-     * Delete delete the participation from the table, error message if error
+     * Supprime la participation d'un participant à un projet
      *
-     * @param $codeProjet, $codeParticipant int
+     * @param $codeProjet, $codeParticipant int code du projet/participant
      * @return bool|Exception
      */
     public static function delete($codeProjet, $codeParticipant) {
@@ -208,6 +188,12 @@ class ModelParticipation
         }
     }
 
+    /**
+     * Ajoute la participation d'un participant à un projet
+     *
+     * @param $codeProjet, $codeParticipant int code du projet/participant
+     * @return bool|Exception
+     */
     public static function add($codeProjet,$codeParticipant,$coordinateur,$budget) {
         try {
             $sql = 'INSERT INTO Participation VALUES (:codeProjet,:codeParticipant,:coordinateur,:budget)';
@@ -223,6 +209,14 @@ class ModelParticipation
         }
     }
 
+    /**
+     * Modifier la participation d'un participant à un projet
+     *
+     * @param $codeProjet, $codeParticipant int code du projet/participant
+     * @param $coordinateur boolean rôle du participant
+     * @param $budget int montant de la participation
+     * @return bool|Exception
+     */
     public static function update($codeProjet,$codeParticipant,$coordinateur,$budget) {
         try {
             $sql = 'UPDATE Participation SET coordinateur=:coordinateur, budget=:budget

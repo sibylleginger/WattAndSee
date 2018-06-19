@@ -29,9 +29,6 @@
         </tbody>
     </table>
 </div>
-
-<a href="index.php?controller=participant&action=create">
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
-        <i class="material-icons">add</i>
-    </button>
+<a href="index.php?controller=participant&action=create" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
+    <i class="material-icons">add</i>
 </a>

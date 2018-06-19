@@ -30,7 +30,7 @@
                         </select>
                     </div>
                 </div>
-                <div id="checkboxStatut">
+                <div>
                 <p>Quel(s) type(s) de projet</p>
                 <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="accepte">
                     <input type="checkbox" id="accepte" name="statut[]" value="Accepté" class="mdl-checkbox__input">
@@ -45,69 +45,33 @@
                     <span class="mdl-checkbox__label">Déposés</span>
                 </label>
                 </div>
-                <div id="radioStatut">
-                <p>Quel(s) type(s) de projet</p>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="accepte">
-                    <input type="radio" id="accepte" class="mdl-radio__button" name="statut" value="Accepté">
-                    <span class="mdl-radio__label">Acceptés</span>
-                </label>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="refuse">
-                    <input type="radio" id="refuse" class="mdl-radio__button" name="statut" value="Refusé">
-                    <span class="mdl-radio__label">Refusés</span>
-                </label>
-                <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="depose">
-                    <input type="radio" id="depose" class="mdl-radio__button" name="statut" value="Déposé">
-                    <span class="mdl-radio__label">Déposés</span>
-                </label>
-                </div>
                 <div id="divMontant">
-                    <div id="checkboxMontant">
-                        <p>Montant de</p>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetTotal1">
-                            <input type="checkbox" id="budgetTotal1" name="montant[]" value="budgetTotal" class="mdl-checkbox__input">
-                            <span class="mdl-checkbox__label">Budget total</span>
-                        </label>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetEDF1">
-                            <input type="checkbox" id="budgetEDF1" name="montant[]" value="budgetEDF" class="mdl-checkbox__input">
-                            <span class="mdl-checkbox__label">Budget EDF</span>
-                        </label>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionTotal1">
-                            <input type="checkbox" id="subventionTotal1" name="montant[]" value="subventionTotal" class="mdl-checkbox__input">
-                            <span class="mdl-checkbox__label">Subvention totale</span>
-                        </label>
-                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionEDF1">
-                            <input type="checkbox" id="subventionEDF1" name="montant[]" value="subventionEDF" class="mdl-checkbox__input">
-                            <span class="mdl-checkbox__label">Subvention EDF</span>
-                        </label>
-                    </div>
-                    <div id="radioMontant">
-                        <p>Montant de</p>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="budgetTotal2">
-                            <input type="radio" id="budgetTotal2" name="montant" value="budgetTotal" class="mdl-radio__button">
-                            <span class="mdl-radio__label">Budget total</span>
-                        </label>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="budgetEDF2">
-                            <input type="radio" id="budgetEDF2" name="montant" value="budgetEDF" class="mdl-radio__button">
-                            <span class="mdl-radio__label">Budget EDF</span>
-                        </label>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="subventionTotal2">
-                            <input type="radio" id="subventionTotal2" name="montant" value="subventionTotal" class="mdl-radio__button">
-                            <span class="mdl-radio__label">Subvention totale</span>
-                        </label>
-                        <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="subventionEDF2">
-                            <input type="radio" id="subventionEDF2" name="montant[]" value="subventionEDF" class="mdl-radio__button">
-                            <span class="mdl-radio__label">Subvention EDF</span>
-                        </label>
-                    </div>
+                    <p>Montant de</p>
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetTotal1">
+                        <input type="checkbox" id="budgetTotal1" name="montant[]" value="budgetTotal" class="mdl-checkbox__input">
+                        <span class="mdl-checkbox__label">Budget total</span>
+                    </label>
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="budgetEDF1">
+                        <input type="checkbox" id="budgetEDF1" name="montant[]" value="budgetEDF" class="mdl-checkbox__input">
+                        <span class="mdl-checkbox__label">Budget EDF</span>
+                    </label>
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionTotal1">
+                        <input type="checkbox" id="subventionTotal1" name="montant[]" value="subventionTotal" class="mdl-checkbox__input">
+                        <span class="mdl-checkbox__label">Subvention totale</span>
+                    </label>
+                    <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="subventionEDF1">
+                        <input type="checkbox" id="subventionEDF1" name="montant[]" value="subventionEDF" class="mdl-checkbox__input">
+                        <span class="mdl-checkbox__label">Subvention EDF</span>
+                    </label>
                 </div>
                 <div>
                 <p>Intervalle d'année</p>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" name="start" type="number" id="start">
+                    <input class="mdl-textfield__input" name="start" type="number" id="start" required>
                     <label class="mdl-textfield__label" for="start">Entre</label>
                 </div>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <input class="mdl-textfield__input" name="end" type="number" id="end">
+                    <input class="mdl-textfield__input" name="end" type="number" id="end" required>
                     <label class="mdl-textfield__label" for="end">Et</label>
                 </div>
                 </div>
@@ -132,9 +96,9 @@
             </form>
         </div>
 
-<h3><a href="index.php?controller=entite&action=readAll">Voir les statistiques par entités</a></h3>
+<h3 style="text-align: center;"><a href="index.php?controller=entite&action=readAll">Voir les statistiques par entités</a></h3>
 <h3>Le réseau Enfin c'est :</h3>
-<div class="list">
+<div>
     <div class="mdl-card mdl-shadow--2dp graph">
         <div class="mdl-card__supporting-text mdl-card--border">
             <div id="graph1" class="graph"></div>
@@ -168,7 +132,7 @@
 </div>
 
 <h3>EDF R&D c'est :</h3>
-<div class="list">
+<div>
 <div class="mdl-card mdl-shadow--2dp graph">
     <div class="mdl-card__supporting-text mdl-card--border">
         <div id="graph7" class="graph"></div>
@@ -181,10 +145,3 @@
 </div>
 </div>
 </div>
-<a href="index.php?controller=enseignant&action=create" class="new">
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
-        <i class="material-icons">add</i>
-    </button>
-</a>
-
-

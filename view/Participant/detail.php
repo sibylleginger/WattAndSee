@@ -1,21 +1,21 @@
 <div class="detailProjet">
     <div class="demo-card-square mdl-card mdl-shadow--2dp projetPres">
         <div class="mdl-card__title mdl-card--expand">
-            <h3><?php echo $pagetitle ?></h3>
+            <h3><?php echo htmlspecialchars($pagetitle) ?></h3>
         </div>
         <div class="mdl-card__supporting-text">
             <?php
             if ($participant->getAffiliation() != null) {
-                echo('<b>Affiliation :</b> '.$participant->getAffiliation().'<br>');
+                echo('<b>Affiliation :</b> '.htmlspecialchars($participant->getAffiliation()).'<br>');
             }
             if ($participant->getNomParticipant() != null) {
-                echo('<b>Nom :</b> '.$participant->getNomParticipant().'<br>');
+                echo('<b>Nom :</b> '.htmlspecialchars($participant->getNomParticipant()).'<br>');
             }
             if ($participant->getMailParticipant() != null) {
-                echo "<b>Adresse mail :</b> ". $participant->getMailParticipant().'<br>';
+                echo "<b>Adresse mail :</b> ".htmlspecialchars($participant->getMailParticipant()).'<br>';
             }
             ?>
-            <b>Nationalité :</b> <?php echo $participant->getNationalite() ?><br>
+            <b>Nationalité :</b> <?php echo htmlspecialchars($participant->getNationalite()) ?><br>
         </div>
         <div class="mdl-card__menu">
             <a href="index.php?controller=participant&action=update&codeParticipant=<?php echo htmlspecialchars($participant->getCodeParticipant()) ?>">
@@ -59,9 +59,6 @@
     </table>
 
 </div>
-
-<a href="index.php?controller=Participant&action=create" class="new">
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
-        <i class="material-icons">add</i>
-    </button>
+<a href="index.php?controller=participant&action=create" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
+    <i class="material-icons">add</i>
 </a>

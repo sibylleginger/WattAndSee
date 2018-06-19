@@ -1,20 +1,20 @@
 <?php
-
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 require_once File::build_path(array('model', 'ModelProjet.php'));
 
 /**
- * Class ModelUser
+ * Class ModelDocument
  */
 class ModelDocument extends Model
 {
 
     /**
-     * @var string
+     * @var string nom de la table
      */
     protected static $object = 'Document';
     /**
-     * @var string
+     * @var string nom de la clé
      */
     protected static $primary = 'namePJ';
 
@@ -43,20 +43,7 @@ class ModelDocument extends Model
     {
         return $this->codeProjet;
     }
-    /**
-     * @param mixed $activated
-     */
-    public function setNamePJ($namePJ)
-    {
-        $this->namePJ = $namePJ;
-    }
-    /**
-     * @param mixed $activated
-     */
-    public function setCodeProjet($codeProjet)
-    {
-        $this->codeProjet = $codeProjet;
-    }
+
     /**
      * @return mixed
      */
@@ -64,14 +51,13 @@ class ModelDocument extends Model
     {
         return $this->titre;
     }
-    /**
-     * @param mixed $activated
-     */
-    public function setTitre($titre)
-    {
-        $this->titre = $titre;
-    }
 
+    /**
+     * Renvoie un tableau des tous les documents du projet
+     *
+     * @param $codeProjet int code du projet
+     * @return bool|array(ModelDocument)
+     */
     public static function selectAllByProjet($codeProjet) {
         try {
             $sql = 'SELECT * FROM Document WHERE codeProjet=:codeProjet';
@@ -79,6 +65,24 @@ class ModelDocument extends Model
             $values = array('codeProjet' => $codeProjet);
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelDocument');
+            $retourne = $rep->fetchAll();
+            return $retourne;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Renvoie un tableau du nom de chaque fichier téléchargés
+     *
+     * @return bool|array([namePJ])
+     */
+    public static function selectAllNames() {
+        try {
+            $sql = 'SELECT namePJ FROM Document';
+            $rep = Model::$pdo->prepare($sql);
+            $rep->execute();
+            $rep->setFetchMode(PDO::FETCH_ASSOC);
             $retourne = $rep->fetchAll();
             return $retourne;
         } catch (Exception $e) {

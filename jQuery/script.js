@@ -6,14 +6,6 @@ $(function(){
         var optionsType = $('#type');
         var divMontant = $('#divMontant');
         var optionsData = $('#data');
-        var optionsXAxis = $('#xAxis');
-        var radioMontant = $('#radioMontant');
-        var checkboxMontant = $('#checkboxMontant');
-        var radioStatut = $('#radioStatut');
-        var checkboxStatut = $('#checkboxStatut');
-        var exceptionnel = $('#exceptionnel');
-        $('#radioStatut').hide();
-        $('#radioMontant').hide();
         exceptionnel.hide();
         divMontant.hide();
         optionsType.change(function() {
@@ -28,48 +20,14 @@ $(function(){
                     optionsBar.show();
                 
             }
-        })
+        });
         optionsData.change(function(){
             if(optionsData.val() == 2) {
                 divMontant.show();
                 exceptionnel.show();
-                if (optionsXAxis == 4) {
-                    checkboxStatut.hide();
-                    radioStatut.show();
-                }else {
-                    radioStatut.hide();
-                    checkboxStatut.show();
-                }
             }else {
                 divMontant.hide();
                 exceptionnel.hide();
-            }
-            if (optionsXAxis == 2 || optionsXAxis == 3) {
-                checkboxMontant.hide();
-                radioMontant.show();
-                checkboxStatut.hide();
-                radioStatut.show();
-            }else {
-                radioMontant.hide();
-                radioStatut.hide();
-                checkboxStatut.show();
-                checkboxMontant.show();
-            }
-        });
-        optionsXAxis.change(function() {
-            if(optionsXAxis.val() == 2 || optionsXAxis.val() == 3) {
-                checkboxMontant.hide();
-                radioMontant.show();
-                checkboxStatut.hide();
-                radioStatut.show();
-            }else if(optionsData == 2 && optionsXAxis.val() == 4) {
-                checkboxStatut.hide();
-                radioStatut.show();
-            }else {
-                radioMontant.hide();
-                radioStatut.hide();
-                checkboxStatut.show();
-                checkboxMontant.show();
             }
         });
     });
@@ -99,43 +57,14 @@ $(function(){
         });
 	});
 
-	$(document).on('change', '#codeEntite', function() {
-		var isRD = $('#isRD');
-		var selectedOption = $('#codeEntite option:selected').val();
-		if(selectedOption == 15) {
-	    	isRD.css("display", "block");
-	    } else {
-	    	isRD.css("display", "none");
-	    }
-	});
-
-	$(document).on('change', '#isEDF', function() {
-		var membreEDF = $('#membreEDF');
-		var isRD = $('#isRD')
-		var notMembre = $('#notMembre');
-		if($(this).is(':checked')) {
-	    	notMembre.css("display", "none");
-			membreEDF.css("display", "block");
-	    } else {
-	    	isRD.css("display", "none");
-	    	membreEDF.css("display", "none");
-			notMembre.css("display", "block");
-	    }
-	});
-
 	$(document).on('click','.deleteDate',function(){
         var codeDeadLine = $(this).attr('id');
         $.ajax({
             type:'POST',
             url:'index.php?controller=deadLine&action=delete',
-            data:{'codeDeadLine':codeDeadLine},
             success: function(data){
-                if(data=='true'){
-                    window.alert('EHOH');;
-                }else{
-                 	window.alert(codeDeadLine);
-                }
-             }
+                var tabProjet = data;    
+            }
 
         });
     });

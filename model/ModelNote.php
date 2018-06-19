@@ -1,19 +1,19 @@
 <?php
-
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 
 /**
- * Class ModelUser
+ * Class ModelNote
  */
 class ModelNote extends Model
 {
 
     /**
-     * @var string
+     * @var string nom de la table
      */
     protected static $object = 'Note';
     /**
-     * @var string
+     * @var string clé primaire
      */
     protected static $primary = 'codeNote';
 
@@ -45,32 +45,11 @@ class ModelNote extends Model
         return $this->codeProjet;
     }
     /**
-     * @param mixed $activated
-     */
-    public function setCodeNote($codeNote)
-    {
-        $this->codeNote = $codeNote;
-    }
-    /**
-     * @param mixed $activated
-     */
-    public function setCodeProjet($codeProjet)
-    {
-        $this->codeProjet = $codeProjet;
-    }
-    /**
      * @return mixed
      */
     public function getComment()
     {
         return $this->comment;
-    }
-    /**
-     * @param mixed $activated
-     */
-    public function setComment($comment)
-    {
-        $this->comment = $comment;
     }
     /**
      * @return mixed
@@ -80,28 +59,19 @@ class ModelNote extends Model
         return $this->dateNote;
     }
     /**
-     * @param mixed $activated
-     */
-    public function setDateNote($dateNote)
-    {
-        $this->dateNote = $dateNote;
-    }
-    /**
      * @return mixed
      */
     public function getMailUser()
     {
         return $this->mailUser;
     }
+
     /**
-     * @param mixed $activated
+     * Renvoie un tableau des tous les commentaires du projet
+     *
+     * @param $codeProjet int code du projet
+     * @return bool|array(ModelNote)
      */
-    public function setMailUser($mailUser)
-    {
-        $this->mailUser = $mailUser;
-    }
-
-
     public static function selectAllByProjet($codeProjet) {
         try {
             $sql = 'SELECT * FROM Note WHERE codeProjet=:codeProjet ORDER BY dateNote DESC';

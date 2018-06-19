@@ -1,6 +1,6 @@
 <div class="detailProjet">
     <div>
-    <h2><?php echo $pagetitle ?></h2>
+    <h2><?php echo htmlspecialchars($pagetitle) ?></h2>
     <h3>Contacts</h3>
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3 scroll">
         <thead>
@@ -50,9 +50,6 @@
             </a>
         </div>
 </div>
-
-<a href="index.php?controller=Entite&action=create" class="new">
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
-        <i class="material-icons">add</i>
-    </button>
+<a href="index.php?controller=entite&action=create" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
+    <i class="material-icons">add</i>
 </a>

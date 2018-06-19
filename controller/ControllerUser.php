@@ -1,5 +1,5 @@
 <?php
-
+//delete confirm
 require_once File::build_path(array('model', 'ModelUser.php'));
 require_once File::build_path(array('lib', 'Security.php'));
 
@@ -10,7 +10,7 @@ class ControllerUser
 {
 
     /**
-     * @var string
+     * @var string nom de la table
      */
     protected static $object = 'user';
 
@@ -95,7 +95,7 @@ class ControllerUser
             if ($user == false) {
                 ControllerMain::erreur("Cet utilisateur n'existe pas");
             } else {
-                header('Location: index.php');
+                ControllerUser::readAll();
             }
         } else {
             ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
@@ -143,10 +143,10 @@ class ControllerUser
                             var_dump($test);
                             ControllerMain::erreur("Impossible d'inscrire l'utilisateur");
                         } else {
-                            ControllerUser::connect();
+                            ControllerUser::readAll();
                         }
                     } else {
-                        ControllerUser::create();
+                        ControllerMain::erreur('Les mots de passe ne sont pas identiques');
                     }
                 }
             } else {
@@ -235,7 +235,6 @@ class ControllerUser
                     $user = ModelUser::select($_POST['login']);
                     $_SESSION['login'] = $user->getMailUser();
                     $_SESSION['is_admin'] = $user->getAdmin();
-                    if (isset($_POST['save'])) setcookie('login', $_POST['login'], time() + 7257600); // 12 semaines
                     $view = 'detail';
                     $pagetitle = 'Mon profil';
                     require_once File::build_path(array('view', 'view.php'));

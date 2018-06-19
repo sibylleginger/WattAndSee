@@ -1,15 +1,19 @@
 <?php
-
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 
 class ModelEntite extends Model
 {
 
     // Nom de la table
+    //Table name
     protected static $object = 'Entite';
+    //clé de la table
+    //table key
     protected static $primary = 'codeEntite';
 
     // Données
+    // Data
     private $codeEntite;
     private $nomEntite;
 
@@ -27,22 +31,17 @@ class ModelEntite extends Model
     public function getNomEntite()
     {
         return $this->nomEntite;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function setNomEntite($nomEntite)
-    {
-        $this->nomEntite = $nomEntite;
-    }    
+    }   
 
 
     /**
      * Renvoie l'entite avec son code donné en paramètre, false s'il y a une erreur
+     * Return the entity whose code is the argument of the function, false is there's an error
      *
      * @param $primary_value string codeEntite
      * @return bool|ModelEntite
+     *
+     * @uses Model::select()
      */
     public static function select($primary_value)
     {
@@ -52,9 +51,12 @@ class ModelEntite extends Model
     }
 
     /**
-     * Retourne toutes les Entités, false s'il y a une erreur
+     * Retourne toutes les entités, false s'il y a une erreur
+     * Return all entities, false if there's an error
      *
      * @return bool|array(ModelEntite)
+     *
+     * @uses Model::selectAll()
      */
     public static function selectAll()
     {
@@ -65,30 +67,11 @@ class ModelEntite extends Model
     }
 
     /**
-     * Retourne l'objet Entite avec son nom donné en paramètre, false s'il y a une erreur ou qu'il n'existe pas
+     * Retourne un tableau avec les statuts et le nombre de projets par statut associés à une entité
+     * Return a table with the status and the number of projects per status linked to an entity
      *
-     * @param $nomEntite string
-     * @return bool|ModelEntite
-     */
-    public static function selectByName($nomEntite)
-    {
-        try {
-            $sql = 'SELECT * FROM '.self::$object.' WHERE nomEntite=:nomEntite';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array(
-                'nomEntite' => $nomEntite);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelEntite');
-            $retourne = $rep->fetchAll();
-            if(empty($retourne)) return false;
-            return $retourne[0];
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Retourne un tableau avec les statuts et le nombre de projets par statut
+     * @param $codeEntite int codeEntite
+     * @return bool|array([prim][quantity])
      */
     public static function statStatutEtProjet($codeEntite)
     {
@@ -104,10 +87,17 @@ class ModelEntite extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e;
+            return $false;
         }
     }
 
+    /**
+     * Retourne un tableau avec l'année de dépot, le statut des projets et le nombre de projets par statut et par année. Les projets sont associés à une entité
+     * Return a table with the submission year, the projects' status and the number of projects per status and per year. The projects are linked to an entity
+     *
+     * @param $codeEntite int code de l'entite, $starG/$endG date début/fin, $statuts array(string)
+     * @return bool|array([prim][bar][quantity])
+     */
     public static function statNbProjet($startG,$endG,$statuts,$codeEntite)
     {
         $entite = ModelEntite::select($codeEntite);
@@ -132,10 +122,17 @@ class ModelEntite extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $sql;
+            return false;
         }
     }
 
+    /**
+     * Retourne un tableau avec l'année de dépot et le total des montants des projets par année de dépot. Les projets sont associés à  une entité, et on le même statut
+     * Return a table with the submission year and the projects' amounts per year. The projects are linked to an entity, and have the same statuts
+     *
+     * @param $codeEntite int code de l'entité, $starG/$endG date début/fin, $montants array(string) montants à calculer, $statut string
+     * @return bool|array([prim][valueX]...)
+     */
     public static function statMontantProjet($startG,$endG,$statut,$montants,$codeEntite) //$sort = %Y pour année
     {
         $entite = ModelEntite::select($codeEntite);
@@ -156,7 +153,7 @@ class ModelEntite extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $sql;
+            return false;
         }
     }
 

@@ -1,16 +1,15 @@
 <?php
 require_once File::build_path(array('model', 'ModelSourceFin.php'));
-
+//DONE
 class ControllerSourceFin
 {
 
     protected static $object = 'sourceFin';
 
     /**
-     * Redirige vers le centre de recherche des enseignants
+     * Affiche tous les programmes de financement
      *
-     * @uses ModelDepartement::selectAll()
-     * @uses ModelEnseignant::selectAll()
+     * @uses ModelSourceFin::selectAll()
      */
     public static function readAll()
     {
@@ -23,11 +22,11 @@ class ControllerSourceFin
     }
 
     /**
-     * Redirige vers la fiche détaillé d'un enseignant désigné par @var $_GET ['codeEns']
+     * Affiche les détails d'un programme de financement avec ses projets et ses contacts
      *
-     * Affiche aussi tous les modules dans lesquels il a enseigné
-     *
-     * @uses ModelEnseignant::select()
+     * @uses ModelSourceFin::select()
+     * @uses ModelProjet::selectAllBySource(codeSourceFin)
+     * @uses ModelContact::selectAllBySource(codeSourceFin)
      */
     public static function read()
     {
@@ -47,101 +46,103 @@ class ControllerSourceFin
     }
 
     /**
-     * Redirige vers le formulaire de création d'un enseignant
-     *
-     * @uses ModelDepartement::selectAll()
-     * @uses ModelStatutEnseignant::selectAll()
+     * Redirige vers le formulaire de création d'un programme
      */
     public static function create()
     {
         if (isset($_SESSION['login'])) {
-            $sourceFin = new ModelSourceFin();
-            $view = 'update';
-            $pagetitle = 'Créer un programme de financement';
-            require_once File::build_path(array('view', 'view.php'));
+            if ($_SESSION['is_admin']) {
+                $sourceFin = new ModelSourceFin();
+                $view = 'update';
+                $pagetitle = 'Créer un programme de financement';
+                require_once File::build_path(array('view', 'view.php'));
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 
     /**
-     * Crée un enseignant en récupérant les données du formulaire passé en méthode POST
+     * Crée un programme en récupérant les données du formulaire passé en méthode POST
      *
-     * @uses ModelEnseignant::save()
-     * @see  ControllerEnseignant::create()
+     * @uses ModelSourceFin::save()
+     * @see  ControllerSourceFin::readAll()
      */
     public static function created()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['nomSourceFin'])) {
-                $data = array(
-                    'nomSourceFin' => $_POST['nomSourceFin']);
-                if (!ModelSourceFin::save($data)) ControllerMain::erreur("Impossible d'enregistrer le programme");
-                else ControllerSourceFin::readAll();
-            } else ControllerMain::erreur("Il manque des informations");
+            if ($_SESSION['is_admin']) {
+                if (isset($_POST['nomSourceFin'])) {
+                    $data = array(
+                        'nomSourceFin' => $_POST['nomSourceFin']);
+                    if (!ModelSourceFin::save($data)) ControllerMain::erreur("Impossible d'enregistrer le programme");
+                    else ControllerSourceFin::readAll();
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 
     /**
-     * Supprime l'enseignant désigné par @var $_GET ['codeEns']
+     * Supprime un programme
      *
-     * @uses ModelEnseignant::delete()
+     * @var $_GET['codeSourceFin'] int code du programme
+     * @uses ModelSourceFin::delete()
+     * @see ControllerSourceFin::readAll()
      */
     public static function delete()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeSourceFin'])) {
-                if (!ModelSourceFin::delete($_GET["codeSourceFin"])) ControllerMain::erreur("Impossible de supprimer le programme");
-                else {
-                    ControllerSourceFin::readAll();
-                }
-            } else ControllerMain::erreur("Il manque des informations");
+            if ($_SESSION['is_admin']) {
+                if (isset($_GET['codeSourceFin'])) {
+                    if (!ModelSourceFin::delete($_GET["codeSourceFin"])) ControllerMain::erreur("Impossible de supprimer le programme");
+                    else {
+                        ControllerSourceFin::readAll();
+                    }
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 
     /**
-     * Redirige vers le formulaire de mise à jour des informations d'un enseignant
+     * Redirige vers le formulaire de mise à jour des informations d'un programme
      *
-     * Si l'enseignant n'existe pas, l'utilisateur est redirigé vers une erreur
-     *
-     * @uses ModelEnseignant::select();
-     * @uses ModelDepartement::selectAll()
-     * @uses ModelStatutEnseignant::selectAll()
+     * @uses ModelSourceFin::select()
      */
     public static function update()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_GET['codeSourceFin'])) {
-                $sourceFin = ModelSourceFin::select($_GET['codeSourceFin']);
-                if (!$sourceFin) ControllerMain::erreur("Le programme n'existe pas");
-                else {
-                    $view = 'update';
-                    $pagetitle = 'Modification de : ' . $sourceFin->getNomSourceFin();
-                    require_once File::build_path(array('view', 'view.php'));
-                }
-            }
+            if ($_SESSION['is_admin']) {
+                if (isset($_GET['codeSourceFin'])) {
+                    $sourceFin = ModelSourceFin::select($_GET['codeSourceFin']);
+                    if (!$sourceFin) ControllerMain::erreur("Le programme n'existe pas");
+                    else {
+                        $view = 'update';
+                        $pagetitle = 'Modification de : ' . $sourceFin->getNomSourceFin();
+                        require_once File::build_path(array('view', 'view.php'));
+                    }
+                } else ControllerMain::erreur("Il manque des informations");
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 
     /**
-     * Met à jour les informations d'un enseignant avec les informations fournies via la méthode POST
+     * Met à jour les informations d'un programme avec les informations fournies via la méthode POST
      *
-     * S'il manque des information, l'utilisateur est redirigé vers une erreur
-     * Si la maj ne marche pas, l'utilisateur est redirigé vers une erreur
-     *
-     * @see  ControllerEnseignant::update()
-     * @uses ModelEnseignant::update()
+     * @see  ControllerSourceFin::readAll()
+     * @uses ModelSourceFin::update(data)
      */
     public static function updated()
     {
         if (isset($_SESSION['login'])) {
-            if (isset($_POST['codeSourceFin']) && $_POST['nomSourceFin']) {
-                $data = array(
-                    'codeSourceFin' => $_POST['codeSourceFin'],
-                    'nomSourceFin' => $_POST['nomSourceFin']);
-                if (!ModelSourceFin::update($data)) ControllerMain::erreur("Impossible de modifier le programme");
-                else {
-                    ControllerSourceFin::readAll();
-                }
-            } else ControllerMain::erreur("Il manque des informations");
+            if ($_SESSION['is_admin']) {
+                if (isset($_POST['codeSourceFin']) && $_POST['nomSourceFin']) {
+                    $data = array(
+                        'codeSourceFin' => $_POST['codeSourceFin'],
+                        'nomSourceFin' => $_POST['nomSourceFin']);
+                    if (!ModelSourceFin::update($data)) ControllerMain::erreur("Impossible de modifier le programme");
+                    else {
+                        ControllerSourceFin::readAll();
+                    }
+                } else ControllerMain::erreur("Il manque des informations");   
+            }else ControllerMain::erreur("Vous n'avez pas le droit de voir cette page");
         } else ControllerUser::connect();
     }
 }

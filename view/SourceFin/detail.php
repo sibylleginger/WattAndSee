@@ -1,4 +1,4 @@
-<h2><?php echo $pagetitle ?></h2>
+<h2><?php echo htmlspecialchars($pagetitle) ?></h2>
 <div class="detailProjet">
     <div>
         <h5>Projets liés</h5>
@@ -10,10 +10,12 @@
             </thead>
             <tbody>
                 <?php
-                foreach ($tabProjet as $projet) {
-                    echo '<tr>
-                            <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=projet&action=read&codeProjet='.$projet->getCodeProjet().'">'.$projet->getNomProjet().'</a></td>
-                        </tr>';
+                if (isset($tabProjet)) {
+                    foreach ($tabProjet as $projet) {
+                        echo '<tr>
+                                <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=projet&action=read&codeProjet='.$projet->getCodeProjet().'">'.$projet->getNomProjet().'</a></td>
+                            </tr>';
+                    }
                 }
                 ?>
             </tbody>
@@ -22,11 +24,11 @@
     <div>
         <div class="updateContactBox">
         <h5>Contacts du programme de financement</h5>
-            <a href="index.php?controller=contact&action=create&codeSourceFin=<?php echo $projet->getCodeSourceFin() ?>" class="addNew">
+            <a href="index.php?controller=contact&action=create&codeSourceFin=<?php echo $sourceFin->getCodeSourceFin() ?>" class="addNew">
                 <i class="material-icons">add</i>
             </a>
         </div>
-        <div class="updateContactBox" id="<?php echo $projet->getCodeProjet()?>">
+        <div class="updateContactBox" id="<?php echo $sourceFin->getCodeSourceFin()?>">
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp users scroll" id="tableHorsEDF">
                 <thead>
                     <tr>
@@ -38,13 +40,15 @@
                 </thead>
                 <tbody>
                     <?php
-                    foreach ($tabContact as $contact) {
-                        echo '<tr>
-                                <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
-                                <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
-                                <td class="mdl-data-table__cell--non-numeric">'.$contact->getMail().'</td>
-                                <td class="mdl-data-table__cell--non-numeric"><a id="'.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
-                            </tr>';
+                    if (isset($tabContact)) {
+                        foreach ($tabContact as $contact) {
+                            echo '<tr class="'.$sourceFin->getCodeSourceFin().'">
+                                    <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=contact&action=read&codeContact='.$contact->getCodeContact().'">'.$contact->getNomContact().'</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric">'.$contact->getPrenomContact().'</td>
+                                    <td class="mdl-data-table__cell--non-numeric">'.$contact->getMail().'</td>
+                                    <td class="mdl-data-table__cell--non-numeric"><a class="deleteContactSource '.$contact->getCodeContact().'" href=""><i class="material-icons">delete</i></a></td>
+                                </tr>';
+                        }
                     }
                     ?>
                 </tbody>
@@ -65,8 +69,6 @@
         </div>
 </div>
 
-<a href="index.php?controller=sourceFin&action=create" class="new">
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
-        <i class="material-icons">add</i>
-    </button>
+<a href="index.php?controller=sourceFin&action=create" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
+    <i class="material-icons">add</i>
 </a>

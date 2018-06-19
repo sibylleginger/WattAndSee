@@ -1,21 +1,22 @@
 <?php
+//DONE
 require_once File::build_path(array('model', 'ModelParticipant.php'));
 require_once File::build_path(array('model', 'ModelParticipation.php'));
 
 class ControllerParticipant
 {
 
-    public static $object = 'participant';
+    public static $object = 'Participant';
 
     /**
-     * Affiche les détails d'un UE grace à son idUE @var $_GET ['nUE']
+     * Affiche les détails d'un participant et les projets où il a participé
      *
-     * Il affiche aussi les Modules lié à cet UE
-     * S'il manque l'idUE, l'utilisateur est redirigé vers une erreur
-     * Si l'UE n'existe pas, l'utilisateur est redirigé vers une erreur
+     * S'il manque le codeParticipant, l'utilisateur est redirigé vers une erreur
+     * Si le participant n'existe pas, l'utilisateur est redirigé vers une erreur
      *
-     * @uses ModelUniteDEnseignement::select()
-     * @uses ModelModule::selectAllByNUE()
+     * @var $_GET['codeParticipant'] int code du participant
+     * @uses ModelParticipant::select(codeParticipant)
+     * @uses ModelParticipation::selectByParticipant()
      */
     public static function read()
     {
@@ -34,7 +35,7 @@ class ControllerParticipant
     }
 
     /**
-     * Envoie vers la page d'importation du fichier .csv
+     * Affiche la liste de tous les participants
      */
      public static function readAll()
     {
@@ -47,9 +48,7 @@ class ControllerParticipant
     }
 
     /**
-     * Affiche le formulaire de création d'un UE
-     *
-     * @uses ModelDiplome::selectAllOrganizedByDep()
+     * Affiche le formulaire de création d'un participant
      */
     public static function create()
     {
@@ -67,6 +66,15 @@ class ControllerParticipant
         } else ControllerUser::connect();
     }
 
+    /**
+     * Créé un participant à partir des informations du formulaire via la méthode POST et si un code de projet est précisé, il automatiquement impliqué dans le consortium du projet
+     *
+     * @uses ModelParticipant::save()
+     * @uses ModelParticipation::add(codeProjet,codeParticipant,coordinateur,budget)
+     *
+     * @see ControllerParticipant::readAll()
+     * @see ControllerProjet::updateContacts()
+     */
     public static function created()
     {
         if (isset($_SESSION['login'])) {
@@ -100,6 +108,15 @@ class ControllerParticipant
         } else ControllerUser::connect();
     }
 
+    /**
+     * Supprime un participant
+     * S'il n'y a pas de codeParticipant, l'utilisateur sera redirigé vers une erreur
+     * Si la suppression ne fonctionne pas, l'utilisateur sera redirigé vers une erreur
+     *
+     * @var $_GET['codeParticipant'] int code du participant
+     * @uses ModelParticipant::delete(codeParticipant)
+     * @uses ControllerParticipant::readAll()
+     */
     public static function delete()
     {
         if(isset($_SESSION['login'])) {
@@ -113,10 +130,10 @@ class ControllerParticipant
     }
 
     /**
-     * Afficher le formulaire de maj d'un UE avec les champs présélectionné/déjà remplit
+     * Afficher le formulaire de maj d'un participant
      *
-     * @uses ModelUniteDEnseignement::select()
-     * @uses ModelDiplome::selectAllOrganizedByDep()
+     * @uses ModelParticipant::select(codeParticipant)
+     * @uses ModelParticipation::select(codeProjet,codeParticipant)
      */
     public static function update()
     {
@@ -138,6 +155,17 @@ class ControllerParticipant
         } else ControllerUser::connect();
     }
 
+    /**
+     * Met à jour les informations d'un participant avec les informations fournies via la méthode POST et si un code de projet est précisé, il automatiquement impliqué dans le consortium du projet
+     * S'il manque des information, l'utilisateur est redirigé vers une erreur
+     * Si la maj ne marche pas, l'utilisateur est redirigé vers une erreur
+     *
+     * @var $_POST['codeParticipant'] int code du participant
+     * @uses ModelParticipant::update(data)
+     * @uses ModelParticipation::update(codeProjet,codeParticipant,coordinateur,budget)
+     * @see ControllerParticipant::readAll()
+     * @see ControllerProjet::updateContacts()
+     */
     public static function updated()
     {
         if (isset($_SESSION['login'])) {

@@ -1,27 +1,29 @@
 <?php
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 require_once File::build_path(array('model', 'ModelEntite.php'));
 require_once File::build_path(array('model', 'ModelDepartement.php'));
 
 class ModelContact extends Model
 {
-
+    /**
+     * @var $object nom de la table
+     */
     protected static $object = 'Contact';
+    /**
+     * @var $primary clé primaire
+     */
     protected static $primary = 'codeContact';
 
     private $codeContact;
     private $nomContact;
     private $prenomContact;
     private $mail;
-    private $codeSourceFin;
+    private $affiliation;
+    private $telephone;
 
-    /**
-     * @var $codeEntite ModelEntite
-     */
+    private $codeSourceFin;
     private $codeEntite;
-    /**
-     * @var $codeDepartement ModelDepartement
-     */
     private $codeDepartement;
 
     /**
@@ -30,14 +32,6 @@ class ModelContact extends Model
     public function getCodeDepartement()
     {
         return $this->codeDepartement;
-    }
-
-    /**
-     * @param mixed $codeDepartement
-     */
-    public function setCodeDepartement($codeDepartement)
-    {
-        $this->codeDepartement = $codeDepartement;
     }
 
     /**
@@ -57,27 +51,11 @@ class ModelContact extends Model
     }
 
     /**
-     * @param mixed $codeEntite
-     */
-    public function setCodeEntite($codeEntite)
-    {
-        $this->codeEntite = $codeEntite;
-    }
-
-    /**
      * @return mixed
      */
     public function getMail()
     {
         return $this->mail;
-    }
-
-    /**
-     * @param mixed $codeEntite
-     */
-    public function setMail($mail)
-    {
-        $this->mail = $mail;
     }
 
     /**
@@ -97,11 +75,19 @@ class ModelContact extends Model
     }
 
     /**
-     * @param mixed $codeEntite
+     * @return mixed
      */
-    public function setCodeSourceFin($codeSourceFin)
+    public function getAffiliation()
     {
-        $this->codeSourceFin = $codeSourceFin;
+        return $this->affiliation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTelephone()
+    {
+        return $this->telephone;
     }
 
     /**
@@ -113,10 +99,10 @@ class ModelContact extends Model
     }
 
     /**
-     * Retourne l'enseignant désigné par son code Enseignant, false s'il y a une erreur ou qu'il n'existe pas
+     * Retourne un contact, false s'il y a une erreur ou qu'il n'existe pas
      *
-     * @param $primary_value
-     * @return bool|ModelEnseignant
+     * @param $primary_value int code du contact
+     * @return bool|ModelContact
      *
      * @uses  Model::select()
      */
@@ -127,51 +113,44 @@ class ModelContact extends Model
         return $retourne;
     }
 
+    /**
+     * Créé un nouveau contact et retourne son codeContact, false si la requête n'a pas fonctionnée
+     *
+     * @param $data array() valeurs des champs du contact
+     * @return bool|int
+     *
+     * @uses  Model::save()
+     */
     public static function save($data) {
         if (parent::save($data)) {
             return Model::$pdo->lastInsertId();
         }else return false;
     }
-    
-    /**
-     * @deprecated
-     * Renvoie la liste des tous les enseignants
-     * TODO implémenter une fonction de page ?
-     *
-     * @return bool|array(ModelEnseigant)
-     *
-     * @uses  Model::selectAll()
-     */
-    public static function selectAll()
-    {
-        $retourne = parent::selectAll();
-        return $retourne;
-    }
 
     /**
-     * Renvoie tous les enseignants appartenant à un département, false s'il y a une erreur
+     * Renvoie tous les contacts n'appartenant pas à un programme de financement, false s'il y a une erreur
      *
-     * @param $codeDepartement string(1)
-     * @return bool|array(ModelEnseignant)
+     * @return bool|array(ModelContact)
      */
-    public static function selectAllEDF()
+    public static function selectAllHorsSF()
     {
         try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite IS NOT NULL ORDER BY nomContact ASC';
+            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeSourceFin IS NULL ORDER BY nomContact ASC';
             $rep = Model::$pdo->prepare($sql);
             $rep->execute();
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }
 
+    /**
+     * Renvoie tous les contacts n'appartenant pas à une entité EDF, false s'il y a une erreur
+     *
+     * @return bool|array(ModelContact)
+     */
     public static function selectAllHorsEDF()
     {
         try {
@@ -180,16 +159,18 @@ class ModelContact extends Model
             $rep->execute();
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
         }
     }  
 
+    /**
+     * Renvoie tous les contacts appartenant à un programme de financement, false s'il y a une erreur
+     *
+     * @param $codeSourceFin int code du programme de financment
+     * @return bool|array(ModelContact)
+     */
     public static function selectAllBySource($codeSourceFin)
     {
         try {
@@ -199,100 +180,9 @@ class ModelContact extends Model
             $rep->execute($values);
             $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
             $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                //$retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                //$retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
             return $retourne;
         } catch (Exception $e) {
             return false;
-        }
-    }
-
-    /**
-     * Renvoie tous les enseignant appartenant à un statut, false s'il y a une erreur
-     *
-     * @param $codeEntite string (techniquement c'est un string mais c'est un nombre)
-     * @return bool|array(ModelEnseigant)
-     */
-    public static function selectAllByStatut($codeEntite)
-    {
-        try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeStatut=:codeStatut';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array('codeStatut' => $codeEntite);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelEnseignant');
-            $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
-            return $retourne;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    public static function selectAllByEntite($codeEntite)
-    {
-        try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE codeEntite=:codeEntite ORDER BY nomContact ASC';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array('codeEntite' => $codeEntite);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelContact');
-            $retourne = $rep->fetchAll();
-            return $retourne;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Retourne tous les enseignants avec un nom/prenom proche de $npEns
-     * TODO supprimer l'attribut prénom
-     *
-     * @param $npEns string nom/prenom d'un enseigant
-     * @return bool|array(ModelEnseignant)
-     */
-    public static function selectAllByName($npEns)
-    {
-        try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE nomEns LIKE CONCAT(\'%\',:npEns,\'%\')';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array('npEns' => $npEns);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelEnseignant');
-            $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                $retourne[$cle]->setCodeStatut(ModelStatutEnseignant::select($retourne[$cle]->getCodeStatut()));
-                $retourne[$cle]->setCodeDepartement(ModelDepartement::select($item->getCodeDepartement()));
-            }
-            return $retourne;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
-    /**
-     * Retourne un tableau avec les statuts et le nombre de professeurs par statuts
-     */
-    public static function statStatutEtEnseignant()
-    {
-        try {
-            $sql = 'SELECT
-                      statut,
-                      count(codeEns) as quantity
-                    FROM StatutEnseignant
-                      JOIN Enseignant E ON StatutEnseignant.codeStatut = E.codeStatut
-                    GROUP BY E.codeStatut,statut;';
-            $rep = Model::$pdo->prepare($sql);
-            $rep->execute();
-            $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
-            return $retourne;
-        } catch (Exception $e) {
-            return $e;
         }
     }
 }

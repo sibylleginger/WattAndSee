@@ -1,4 +1,5 @@
 <?php
+//DONE
 require_once File::build_path(array('model', 'Model.php'));
 require_once File::build_path(array('model', 'ModelDocument.php'));
 require_once File::build_path(array('model', 'ModelSourceFin.php'));
@@ -6,19 +7,26 @@ require_once File::build_path(array('model', 'ModelTheme.php'));
 
 class ModelProjet extends Model
 {
-    //WAS Projet
+    //Nom de la table
+    //Table name
     protected static $object = 'Projet';
+    //Clé de la table
+    //Table key
     protected static $primary = 'codeProjet';
+    //nombre de projets à afficher par page
+    //Number of project to display per page
     protected static $valeursParPage = 30;
 
+    //Données
+    //Data
     private $codeProjet;
     /**
      * @var $statut ModelStatutProjet
      */
     private $nomProjet;
     private $description;
-    private $dateDepot;
-    private $dateReponse;
+    private $dateDepot; //YYYY-MM-DD
+    private $dateReponse; //YYYY-MM-DD
     private $statut; //accepté/refusé/déposé
     private $role; //coordinateur ou partenaire
     private $budgetTotal;
@@ -27,16 +35,12 @@ class ModelProjet extends Model
     private $subventionEDF;
     private $isExceptionnel;
     /**
-     * @var $codeAAP ModelAAP
+     * @var $codeSourceFin ModelSourceFin
      */
-    //private $codeAAP;
-    //ou
     private $codeSourceFin;
-
-    //private $codeType;
-    //private $codeContactEDF;
-    //private $codeContactExterne;
-    private $codeConsultant;
+    /**
+     * @var $codeTheme ModelTheme
+     */
     private $codeTheme;
 
     /**
@@ -48,43 +52,11 @@ class ModelProjet extends Model
     }
 
     /**
-     * @param mixed $codeAAP
-     */
-    public function setCodeTheme($codeTheme)
-    {
-        $this->codeTheme = $codeTheme;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCodeConsultant()
-    {
-        return $this->codeConsultant;
-    }
-
-    /**
-     * @param mixed $codeConsultant
-     */
-    public function setCodeConsultant($codeConsultant)
-    {
-        $this->codeConsultant = $codeConsultant;
-    }
-
-    /**
      * @return mixed
      */
     public function getBudgetTotal()
     {
         return $this->budgetTotal;
-    }
-
-    /**
-     * @param mixed $codeAAP
-     */
-    public function setBudgetTotal($budgetTotal)
-    {
-        $this->budgetTotal = $budgetTotal;
     }
 
     /**
@@ -96,27 +68,11 @@ class ModelProjet extends Model
     }
 
     /**
-     * @param mixed $codeAAP
-     */
-    public function setBudgetEDF($budgetEDF)
-    {
-        $this->budgetEDF = $budgetEDF;
-    }
-
-    /**
      * @return mixed
      */
     public function getSubventionTotal()
     {
         return $this->subventionTotal;
-    }
-
-    /**
-     * @param mixed $codeAAP
-     */
-    public function setSubventionTotal($subventionTotal)
-    {
-        $this->subventionTotal = $subventionTotal;
     }
 
     /**
@@ -128,35 +84,11 @@ class ModelProjet extends Model
     }
 
     /**
-     * @param mixed $codeAAP
-     */
-    public function setSubventionEDF($subventionEDF)
-    {
-        $this->subventionEDF = $subventionEDF;
-    }
-
-    /**
-     * @return mixed
-     
-    public function getContactEDF()
-    {
-        return $this->codeContactEDF;
-    }
-
-    /**
      * @return mixed
      */
     public function getRole()
     {
         return $this->role;
-    }
-
-    /**
-     * @param mixed $role
-     */
-    public function setRole($role)
-    {
-        $this->role = $role;
     }
 
     /**
@@ -176,14 +108,6 @@ class ModelProjet extends Model
     }
 
     /**
-     * @param mixed $codeAAP
-     */
-    public function setCodeSourceFin($codeSourceFin)
-    {
-        $this->codeSourceFin = $codeSourceFin;
-    }
-
-    /**
      * @return mixed
      */
     public function getcodeProjet()
@@ -197,14 +121,6 @@ class ModelProjet extends Model
     public function getStatut()
     {
         return $this->statut;
-    }
-
-    /**
-     * @param mixed $statut
-     */
-    public function setStatut($statut)
-    {
-        $this->statut = $statut;
     }
 
     /**
@@ -224,27 +140,11 @@ class ModelProjet extends Model
     }
 
     /**
-     * @param mixed $etat
-     */
-    public function setEtat($etat)
-    {
-        $this->etat = $etat;
-    }
-
-    /**
      * @return mixed
      */
     public function getDateDepot()
     {
         return $this->dateDepot;
-    }
-
-    /**
-     * @param mixed $etat
-     */
-    public function setDateDepot($dateDepot)
-    {
-        $this->dateDepot = $dateDepot;
     }
 
     /**
@@ -256,14 +156,6 @@ class ModelProjet extends Model
     }
 
     /**
-     * @param mixed $etat
-     */
-    public function setDateReponse($dateReponse)
-    {
-        $this->dateReponse = $dateReponse;
-    }
-
-    /**
      * @return mixed
      */
     public static function getNbP()
@@ -272,7 +164,7 @@ class ModelProjet extends Model
     }
 
     /**
-     * Retourne le projet désigné par son code Projet, false s'il y a une erreur ou qu'il n'existe pas
+     * Retourne le projet désigné par son code projet, false s'il y a une erreur ou qu'il n'existe pas
      *
      * @param $primary_value
      * @return bool|ModelProjet
@@ -286,6 +178,15 @@ class ModelProjet extends Model
         return $retourne;
     }
 
+    /**
+     * Ajoute un nouvel élément dans la table Projet. Retourne le code du projet enregistré ou false s'il y une erreur
+     * Adds a new element in the Projet table. Returns le code of the saved project or false if there's an error
+     *
+     * @param $data array([column_name][value_column]) données du projet
+     * @return bool|codeProjet int
+     *
+     * @uses  Model::save()
+     */
     public static function save($data) {
         if (parent::save($data)) {
             return Model::$pdo->lastInsertId();
@@ -293,8 +194,8 @@ class ModelProjet extends Model
     }
 
     /**
-     * @deprecated
-     * Renvoie la liste des tous les Projets
+     * Renvoie la liste de tous les projets
+     * Returns all the projects
      *
      * @return bool|array(ModelProjet)
      *
@@ -307,11 +208,13 @@ class ModelProjet extends Model
     }
 
     /**
-     * @deprecated
-     * renvoie @see ModelProjet::$valeursParPage de la page donnée en paramètre
+     * Renvoie la liste des projets de la page demandée
+     * Returns the project list corresponding to the page number
      *
-     * @param $p int
+     * @param $p int numéro de la page
      * @return bool|array(ModelProjet)
+     *
+     * @see ModelProjet::$valeursParPage
      */
     public static function selectByPage($p)
     {
@@ -328,6 +231,13 @@ class ModelProjet extends Model
         }
     }
 
+    /**
+     * Renvoie la liste des tous les projets de la source de financement
+     * Returns all the projects of the funding program
+     *
+     * @param $codeSourceFin int code du programme
+     * @return bool|array(ModelProjet)
+     */
     public static function selectAllBySource($codeSourceFin)
     {
         try {
@@ -344,8 +254,8 @@ class ModelProjet extends Model
     }
 
     /**
-     * Retourne tous les projets dont les caractéristiques correspondent aux tableau de conditions dans la table Projet
-     * Return all the projects corresponding to the conditions in the table Projet
+     * Retourne tous les projets dont les caractéristiques correspondent aux conditions, dans la table Projet
+     * Return all the projects corresponding to the conditions, in the table Projet
      *
      * @param $conditions array string, SQL conditions
      * @param $data array of values of the conditions
@@ -371,8 +281,8 @@ class ModelProjet extends Model
     }
 
     /**
-     * Retourne tous les projets dont les caractéristiques correspondent aux tableau de conditions dans la view ProjetSearch
-     * Return all the projects corresponding to the conditions in the view ProjetSearch
+     * Retourne tous les projets dont les caractéristiques correspondent aux conditions, dans la view ProjetSearch
+     * Return all the projects corresponding to the conditions, in the view ProjetSearch
      *
      * @param $conditions array string, SQL conditions
      * @param $data array of values of the conditions
@@ -399,39 +309,11 @@ class ModelProjet extends Model
         }
     }
 
-
-    /**
-     * Retourne tous les Projets avec un nom/prenom proche de $npProjet
-     * TODO supprimer l'attribut prénom
-     *
-     * @param $npProjet string nom/prenom d'un Projet
-     * @return bool|array(ModelProjet)
-     */
-    public static function selectAllByMotCle($npProjet)
-    {
-        try {
-            $sql = 'SELECT * FROM ' . self::$object . ' WHERE nomProjet LIKE CONCAT(\'%\',:npProjet,\'%\')';
-            $rep = Model::$pdo->prepare($sql);
-            $values = array('npProjet' => $npProjet);
-            $rep->execute($values);
-            $rep->setFetchMode(PDO::FETCH_CLASS, 'ModelProjet');
-            $retourne = $rep->fetchAll();
-            foreach ($retourne as $cle => $item) {
-                $retourne->setCodeAAP(ModelAAP::select($retourne->getCodeAAP()));
-                //$retourne->setCodeConsortium(ModelConsortium::select($retourne->getCodeConsortium()));
-                $retourne->setCodeReporting(ModelReporting::select($retourne->getCodeReporting()));
-                $retourne->setCodeChef(ModelChef::select($retourne->getCodeChef()));
-                $retourne->setCodeConsultant(ModelConsultant::select($retourne->getCodeConsultant()));
-                $retourne->setCodeTheme(ModelImplication::select($retourne->getCodeTheme()));
-            }
-            return $retourne;
-        } catch (Exception $e) {
-            return false;
-        }
-    }
-
     /**
      * Retourne un tableau avec les statuts et le nombre de projets par statut
+     * Return a table with the status and the number of projects per status
+     *
+     * @return bool|array([prim][quantity])
      */
     public static function statStatutEtProjet()
     {
@@ -444,12 +326,16 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e->getMessage();
+            return false;
         }
     }
 
     /**
-     * Retourne un tableau avec les entités et le nombre de projets par entités dont le statut = @param statut
+     * Retourne un tableau avec les entités et le nombre de projets par entités avec le même statut
+     * Return a table with the entities and the number of projects per entity, with the same status
+     *
+     * @param $statut string statut des projets
+     * @return bool|array([prim][quantity])
      */
     public static function statEntiteEtProjet($statut)
     {
@@ -464,12 +350,16 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e->getMessage();
+            return false;
         }
     }
 
     /**
-     * Retourne un tableau avec les programmes de financement (tab['prim']) et le nombre de projets par programme (tab['quantity']) dont le statut = @param statut
+     * Retourne un tableau avec les programmes de financement et le nombre de projets par programme, avec le même statut
+     * Return a table with the funding programs and the number of projects per program, with the same status
+     *
+     * @param $statut string
+     * @return bool|array([prim][quantity])
      */
     public static function statProgrammeEtProjet($statut)
     {
@@ -484,11 +374,15 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e->getMessage();
+            return false;
         }
     }
     /**
-     * Retourne un tableau avec les entités (tab['prim']) et le total des montants de @param $montant de tous les projets par entité (tab['quantity']) dont le statut = @param statut
+     * Retourne un tableau avec les entités et le total du montant de tous les projets par entité, avec le même statut
+     * Return a table with the entities and the projects' amount per entity, with the same status
+     *
+     * @param $statut/$montant, string statut/montant des projets
+     * @return bool|array([prim][quantity])
      */
     public static function statEntiteEtMontant($montant,$statut)
     {
@@ -503,14 +397,18 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e;
+            return false;
         }
     }
 
     /**
-     * Retourne un tableau avec l'année de dépot (tab['prim']), le statut des projets (tab['bar']) déterminé par @param $statuts et du nombre de projets par statut et par année (tab['quantity']) dont la date de dépot est comprise entre @param $startG et @param $endG
+     * Retourne un tableau avec l'année de dépot, le statut des projets et le nombre de projets par statut et par année
+     * Return a table with the submission year, the projects' status and the number of projects per status and per year 
+     *
+     * @param $startG/$endG date début/fin, $statuts array(string) statuts des projets
+     * @return bool|array([prim][bar][quantity])
      */
-    public static function statNbProjet($startG,$endG,$statuts) //$sort = %Y pour année
+    public static function statNbProjet($startG,$endG,$statuts)
     {
         try {
             $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim, statut as bar, count(codeProjet) as quantity
@@ -532,15 +430,20 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $sql;
+            return false;
         }
     }
 
     /**
-     * Retourne un tableau avec l'année de dépot (tab['prim']) et le total de chaque montants des projets (tab['valueX']) déterminés par @param $montants par année de dépot. La date de dépot des projets est comprise entre @param $startG et @param $endG, le statut = @param $statut.
-     * @param $exceptionnel est un booléen qui permet d'inclure les montants des projets exceptionnels ou non.
+     * Retourne un tableau avec l'année de dépot et le total de chaque montants des projets avec le même statut par année de dépot
+     * @param exceptionnel est un booléen qui permet d'inclure les montants des projets exceptionnels ou non.
+     * Return a table with the submission year and the projects' amounts, with the same status per year.
+     * @param exceptionnel is a boolean which allows to include the exceptionnal projects.
+     *
+     * @param $startG/$endG date début/fin, $statut string statut des projets, $montants array(string) montants des projets
+     * @return bool|array([prim][valueX])
      */
-    public static function statMontantProjet($startG,$endG,$statut,$montants,$exceptionnel) //$sort = %Y pour année
+    public static function statMontantProjet($startG,$endG,$statut,$montants,$exceptionnel)
     {
         try {
             $sql = 'SELECT DATE_FORMAT(dateDepot, "%Y") as prim';
@@ -561,15 +464,20 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $e->getMessage();
+            return false;
         }
     }
 
     /**
-     * Retourne un tableau avec les statuts (tab['prim']) déterminés par @param $statuts, et le total de chaque montants des projets (tab['valueX']) déterminés par @param $montants répartis par statut. La date de dépot des projets est comprise entre @param $startG et @param $endG.
-     * @param $exceptionnel est un booléen qui permet d'inclure les montants des projets exceptionnels ou non.
+     * Retourne un tableau avec les statuts, et le total de chaque montants des projets répartis par statut.
+     * @param exceptionnel est un booléen qui permet d'inclure les montants des projets exceptionnels ou non.
+     * Return a table with the status, and the amounts per status.
+     * @param exceptionnel is a boolean which allows to include the exceptionnal projects.
+     *
+     * @param $startG/$endG date, $statuts array(string), $montants array(string), $exceptionnel boolean
+     * @return bool|array([prim][valueX])
      */
-    public static function statMontantStatutProjet($startG,$endG,$statuts,$montants,$exceptionnel) //$sort = %Y pour année
+    public static function statMontantStatutProjet($startG,$endG,$statuts,$montants,$exceptionnel)
     {
         try {
             $sql = 'SELECT statut as prim';
@@ -584,8 +492,6 @@ class ModelProjet extends Model
                 }else {
                     $sql .= ' (dateDepot<=:endG AND dateDepot>=:startG AND statut=:statut'.$key. ') OR';
                 }
-                
-                
             }
             $sql = rtrim($sql, ' OR');
             $sql .= ' GROUP BY statut';
@@ -599,7 +505,7 @@ class ModelProjet extends Model
             $retourne = $rep->fetchAll(PDO::FETCH_ASSOC);
             return $retourne;
         } catch (Exception $e) {
-            return $sql;
+            return false;
         }
     }
 }

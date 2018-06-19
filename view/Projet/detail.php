@@ -1,7 +1,7 @@
 <div class="detailProjet">
     <div class="demo-card-square mdl-card mdl-shadow--2dp projetPres">
     <div class="mdl-card__title mdl-card--expand">
-        <h3><?php echo $projet->getNomProjet() ?></h3>
+        <h3><?php echo htmlspecialchars($projet->getNomProjet()) ?></h3>
     </div>
     <div class="mdl-card__supporting-text">
         <b>Statut du projet :</b> <?php echo $projet->getStatut() ?><br>
@@ -12,10 +12,10 @@
         }else {
             echo '<a href="index.php?controller=sourceFin&action=read&codeSourceFin='.$sourceFin->getCodeSourceFin().'">'.$sourceFin->getNomSourceFin().'</a><br>';  
         }
-        ?>
+        if ($projet->getDateReponse() != null) { ?>
         <b>Date de dépôt du dossier :</b> <?php list($year, $month, $day) = explode('-', $projet->getDateDepot());
                         echo $day.'/'.$month.'/'.$year; ?> <br>
-        <?php if ($projet->getDateReponse() != null) { ?>
+        <?php } if ($projet->getDateReponse() != null) { ?>
             <b>Date de réponse :</b> <?php list($year, $month, $day) = explode('-', $projet->getDateReponse());
                         echo $day.'/'.$month.'/'.$year.'<br>';
         }
@@ -107,8 +107,7 @@
             </a>
         </div>
 
-    <h4><a href="index.php?controller=projet&action=updateContacts&codeProjet=<?php echo htmlspecialchars($projet->getCodeprojet()) ?>">Modifier les contacts</a></h4>
-<div class="list">
+<div class="horizontal">
     <div>
     <h3>Contact EDF</h3>
     <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp detailBatiment3">
@@ -179,7 +178,7 @@
                 <thead>
                 <tr>
                     <th class="mdl-data-table__cell--non-numeric">Nom</th>
-                    <th class="mdl-data-table__cell--non-numeric">Affiliation</th>
+                    <th class="mdl-data-table__cell--non-numeric">Mail</th>
                     <th class="mdl-data-table__cell--non-numeric">Nationalité</th>
                     <th class="mdl-data-table__cell--non-numeric">Budget</th>
                 </tr>
@@ -189,8 +188,8 @@
                     foreach ($tabParticipant as $participant) {
                     //$participant = ModelParticipant::select($IDParticipant);
                         echo '<tr>
-                            <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getNomParticipant().'</a></td>
-                            <td class="mdl-data-table__cell--non-numeric">'.$participant->getAffiliation().'</td>
+                            <td class="mdl-data-table__cell--non-numeric"><a href="index.php?controller=participant&action=read&codeParticipant='.$participant->getCodeParticipant().'">'.$participant->getAffiliation().'</a></td>
+                            <td class="mdl-data-table__cell--non-numeric">'.$participant->getMailParticipant().'</td>
                             <td class="mdl-data-table__cell--non-numeric">'.$participant->getNationalite().'</td>
                             <td class="mdl-data-table__cell--non-numeric">';
                         $participation = ModelParticipation::select($projet->getCodeProjet(),$participant->getCodeParticipant());
@@ -205,9 +204,6 @@
         <?php } ?>
 
 </div>
-
-<a href="index.php?controller=projet&action=create" class="new">
-    <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
-        <i class="material-icons">add</i>
-    </button>
+<a href="index.php?controller=projet&action=create" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored new">
+    <i class="material-icons">add</i>
 </a>

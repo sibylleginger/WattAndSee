@@ -6,7 +6,7 @@
     <title><?php echo $pagetitle; ?></title>
     <script src="./style/material.min.js"></script>
     <script src="./jQuery/jquery-3.3.1.min.js"></script>
-    <script src="https://www.amcharts.com/lib/3/plugins/export/export.js"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
     <link rel="stylesheet" href='https://www.amcharts.com/lib/3/plugins/export/export.css' type='text/css' media='all'/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
@@ -40,22 +40,29 @@
           <div class="android-navigation-container">
             <nav class="android-navigation mdl-navigation">
 
-              <a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php">Accueil</a>
                 <?php
                 if (isset($_SESSION['login'])) {
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=readAll&p=1">Projets</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=sourcefin&action=readAll">Programmes</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=projet&action=stats">Statistiques</a>';
                     echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=deadLine&action=readAll">Calendrier</a>';
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=contact&action=readAll">Contacts</a>';
                     
+                }else {
+                    echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller=user&action=connect">Se connecter</a>';
                 }
                 ?>
-
-                <?php
-                if (isset($_SESSION['login']) && $_SESSION['is_admin']) {
-                    echo '<a class="mdl-navigation__link" href="index.php?controller=user&action=readAll"><i class="material-icons" role="presentation">face</i></a>';
-                }
-                ?>
+                <button class="android-more-button mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect" id="contact-button">
+                    <i class="material-icons">face</i>
+                </button>
+                <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="contact-button">
+                    <li class="mdl-menu__item"><a href="index.php?controller=contact&action=readAll">Tous les contacts</a></li>
+                    <li class="mdl-menu__item"><a href="index.php?controller=participant&action=readAll">Tous les participants</a></li>
+                    <?php
+                    if (isset($_SESSION['login']) && $_SESSION['is_admin']) {
+                        echo '<li class="mdl-menu__item"><a href="index.php?controller=user&action=readAll">Tous les utilisateurs</a></li>';
+                    } ?>
+                </ul>';
             </nav>
           </div>
           <span class="android-mobile-title mdl-layout-title">
@@ -65,17 +72,14 @@
             <i class="material-icons">more_vert</i>
           </button>
           <ul class="mdl-menu mdl-js-menu mdl-menu--bottom-right mdl-js-ripple-effect" for="more-button">
-            <a href="index.php?controller=user&action=read"><li class="mdl-menu__item">Voir mon profil</li></a>
-            <a href="index.php?controller=user&action=deconnect"><li class="mdl-menu__item">Se déconnecter</li></a>
-                        <!--<li class="mdl-menu__item"><i class="material-icons">add</i>Add another account...</li>-->
-            <li class="mdl-menu__item">Contact</li>
-                <a href="https://github.com/sibylleginger/WattAndSee">
-                    <li class="mdl-menu__item">Github</li>
-                </a>
+            <li class="mdl-menu__item"><a href="index.php?controller=user&action=read">Voir mon profil</a></li>
+            <li class="mdl-menu__item"><a href="index.php?controller=user&action=deconnect">Se déconnecter</a></li>
+            <li class="mdl-menu__item"><a href="mailto:rouxsibylle@gmail.com">Contact</a></li>
+            <li class="mdl-menu__item"><a href="https://github.com/sibylleginger/WattAndSee">Github</a></li>
           </ul>
         </div>
         <?php if ($view=='detail') {
-            echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller='.self::$object.'&action=readAll"><i class="material-icons" style="color: black;">arrow_back</i>Retour liste</a>';
+            echo '<a class="mdl-navigation__link mdl-typography--text-uppercase" href="index.php?controller='.self::$object.'&action=readAll"><i class="material-icons" style="color: black;">arrow_back</i>Voir liste</a>';
         }
         ?>
       </div>
@@ -115,4 +119,4 @@
 </div>
 
 </body>
-</html>
+</html>	

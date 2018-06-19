@@ -24,13 +24,6 @@
                 </div>
             </div>
 
-            <div class="save">
-                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="switch-1">
-                    <input type="checkbox" id="switch-1" name="save" class="mdl-switch__input" checked>
-                    <span class="mdl-switch__label">Enregistrer son e-mail</span>
-                </label>
-            </div>
-
             <button class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect bouton" type="submits">
                 <i class="material-icons">send</i>
             </button>

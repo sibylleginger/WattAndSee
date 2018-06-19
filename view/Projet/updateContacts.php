@@ -3,13 +3,13 @@
         </div>
 <div class="detailProjet">
         <div >
-        <div class="updateContactBox">
+        <div class="addNewContactBox">
             <h5>Contacts EDF</h5>
-            <a href="index.php?controller=contact&action=create&codeProjet=<?php echo $projet->getCodeProjet()?>" class="addNew">
+            <a href="index.php?controller=contact&action=create&codeProjet=<?php echo $projet->getCodeProjet()?>" class="addNew mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
                 <i class="material-icons">add</i>
             </a>
         </div>
-        <div class="updateContactBox" id="<?php echo $projet->getCodeProjet()?>">
+        <div class="updateContactBox">
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp users scroll" id="tableEDF">
                 <thead>
                 <tr>
@@ -72,13 +72,13 @@
                 </tbody>
             </table>
         </div>
-        <div class="updateContactBox">
+        <div class="addNewContactBox">
             <h5>Contacts du programme de financement</h5>
-            <a href="index.php?controller=contact&action=create&codeSourceFin=<?php echo $projet->getCodeSourceFin() ?>" class="addNew">
+            <a href="index.php?controller=contact&action=create&codeSourceFin=<?php echo $projet->getCodeSourceFin() ?>" class="addNew mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
                 <i class="material-icons">add</i>
             </a>
         </div>
-        <div class="updateContactBox" id="<?php echo $projet->getCodeProjet()?>">
+        <div class="updateContactBox">
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp users scroll" id="tableHorsEDF">
                 <thead>
                 <tr>
@@ -129,9 +129,9 @@
             </table>
         </div>
 
-        <div class="updateContactBox">
+        <div class="addNewContactBox">
         <h5>Contacts Consortium</h5>
-        <a href="index.php?controller=participant&action=create&codeProjet=<?php echo $projet->getCodeProjet() ?>" class="addNew">
+        <a href="index.php?controller=participant&action=create&codeProjet=<?php echo $projet->getCodeProjet() ?>" class="addNew mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
             <i class="material-icons">add</i>
         </a>
         </div>

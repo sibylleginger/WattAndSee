@@ -1,5 +1,5 @@
 <?php
-
+//DONE
 require_once File::build_path(array('model', 'ModelProjet.php'));
 //require_once File::build_path(array('model', 'ModelSourceFin.php'));
 
@@ -8,14 +8,28 @@ class ControllerProjet
 
     protected static $object = 'Projet';
 
-    public static $introScript = '<script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
-    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    /*
+     * Bibliothèques JS à importer pour visualiser les statistiques
+     */
+    public static $introScript = '<script src="https://www.amcharts.com/lib/3/serial.js"></script>
     <script src="https://www.amcharts.com/lib/3/pie.js"></script>
-    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.js"></script>
     <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
     <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
     <script type="text/javascript">';
 
+    /**
+     * Retourne la fonction JS makeChart pour créer un graphique
+     *
+     * @var $idGraph int identifiant du graphique
+     * @var $type string type du graphique
+     * @var $tabCategorie array(string) valeurs de l'axe des abscisses
+     * @var $tabBar array(string) noms des différentes barres du graphique
+     * @var $tabValues array() tableau des données du graphique
+     * @var $title string titre du graphique
+     * @var $yAxis string titre de l'axe des ordonnées
+     * @return string
+     */
     public static function scriptAM($idGraph,$type,$tabCategorie,$tabBar,$tabValues,$title,$yAxis) {
         $function = '
         AmCharts.makeChart("graph'.$idGraph.'",
@@ -94,9 +108,9 @@ class ControllerProjet
                                         if ($value['bar']==$bar) {
                                             $data .= '"column-'.$id.'": "'.$value['quantity'].'",';
                                         }
-                                    }else {
-                                        $data .= '"column-'.$id.'": "'.$value['value'.$keyB].'",';
-                                    }
+                                    }elseif (isset($value['quantity'])) {
+                                        $data .= '"column-'.$id.'": "'.$value['quantity'].'",';
+                                    }else $data .= '"column-'.$id.'": "'.$value['value'.$keyB].'",';
                                 }
                             }
                         }
@@ -117,7 +131,10 @@ class ControllerProjet
     }
 
     /**
-     * Affiche la liste de tous les Projets
+     * Affiche la liste de tous les Projets de la page et les options du formulaire de recherche d'un projet
+     * 
+     * @uses ModelProjet::getNbP() int nombre de projets par page
+     * @uses ModelProjet::selectByPage(p)
      */
     public static function readAll()
     {
@@ -138,6 +155,28 @@ class ControllerProjet
         } else ControllerUser::connect();
     }
 
+    /**
+     * Retourne le tableau de tous les Projets
+     *
+     * @uses ModelProjet::selectAll()
+     */
+    public static function selectAll()
+    {
+        echo json_encode(ModelProjet::selectAll());
+    }
+
+    /**
+     * Créé et affiche les statistiques fixes sur la page statistiques avec le formulaire de création
+     *
+     * @uses ModelProjet::statStatutEtProjet()
+     * @uses ModelProjet::statMontantProjet()
+     * @uses ModelProjet::statEntiteEtProjet()
+     * @uses ModelProjet::statEntiteEtMontant()
+     * @uses ModelProjet::statProgrammeEtProjet()
+     * @uses ModelProjet::statNbProjet()
+     * @uses ModelProjet::statMontantStatutProjet()
+     * @uses ControllerProjet::scriptAM()
+     */
     public static function stats() {
         if (isset($_SESSION['login'])) {
             $tabTheme = ModelTheme::selectAll();
@@ -180,15 +219,16 @@ class ControllerProjet
     }
 
     /**
-     * Affiche le details d'un Projet identifié par son nomProjet @var $_GET ['nomProjet']
+     * Affiche le details d'un Projet
      *
-     * Il affiche aussi la liste des salles dans la Projet
-     * S'il n'y a pas de nomProjet, l'utilisateur sera redirigé vers une erreur
-     * Si le Projet n'existe pas, l'utilisateur sera redirigé vers une erreur
-     * S'il n'y a aucune salle dans le Projet, l'utilisateur sera redirigé vers une erreur
+     * Il affiche aussi les liste des contacts du projet, les échéances
      *
-     * @uses ModelProjet::select()
-     * @uses ModelSalle::selectAllByProjet()
+     * @var $_GET['codeProjet'] int code du projet
+     * @uses ModelProjet::select(codeProjet)
+     * @uses ModelImplication::selectAllByProjet(codeProjet)
+     * @uses ModelContact::selectAllBySource(codeSourceFin)
+     * @uses ModelParticipation::selectAllByProjet(codeProjet)
+     * @uses ModelDeadLin::selectAllByProjet(codeProjet)
      */
     public static function read()
     {
@@ -204,7 +244,6 @@ class ControllerProjet
                     $tabContact = ModelImplication::selectAllByProjet($_GET['codeProjet']);
                     $tabContactProgramme = ModelContact::selectAllBySource($projet->getCodeSourceFin());
                     $tabParticipant = ModelParticipation::selectAllByProjet($projet->getCodeProjet());
-                    $tabDoc = ModelDocument::selectAllByProjet($projet->getCodeProjet());
                     $pagetitle = 'Projet ' . $projet->getNomProjet();
                     $view = 'detail';
                     require_once File::build_path(array('view', 'view.php'));
@@ -213,6 +252,12 @@ class ControllerProjet
         } else ControllerUser::connect();
     }
 
+    /**
+     * Redirige vers le formulaire de mise à jour des informations d'un projet
+     *
+     * @var  $_GET['codeProjet'] int code du projet
+     * @uses ModelProjet::select();
+     */
     public static function update() {
         if (isset($_SESSION['login'])) {
             if ($_SESSION['is_admin']) {
@@ -235,11 +280,10 @@ class ControllerProjet
     }
 
     /**
-     * Affiche tous les contacts/participants d'un projet de code @var $_GET['codeProjet'] par catégorie, et tous les contacts/participants de la base de données.
-     * Displays all the project's contacts/participants of id @var $_GET['codeProjet'] and all the contacts/participants of the database
+     * Affiche tous les contacts/participants d'un projet par catégorie, et tous les contacts/participants de la base de données.
      * Si le Projet n'existe pas, l'utilisateur sera redirigé vers une erreur
-     * If the project doesn't exist, the user is redirected to an error.
      *
+     * @var $_GET['codeProjet'] int code du projet
      * @uses ModelProjet::select()
      * @uses ModelImplication::selectAllByProjet()
      * @uses ModelImplication::selectChef()
@@ -257,7 +301,7 @@ class ControllerProjet
                 else {
                     $chef = ModelImplication::selectChef($projet->getCodeProjet());
                     $tabContact = ModelImplication::selectAllByProjet($_GET['codeProjet']);
-                    $allContactEDF = ModelContact::selectAllEDF();
+                    $allContactEDF = ModelContact::selectAllHorsSF();
                     $allContactHorsEDF = ModelContact::selectAllHorsEDF();
                     $allContactSource = ModelContact::selectAllBySource($projet->getCodeSourceFin());
                     $allParticipant = ModelParticipant::selectAll();
@@ -271,6 +315,15 @@ class ControllerProjet
             
     }
 
+    /**
+     * Met à jour les informations d'un projet avec les informations fournies via la méthode POST
+     *
+     * S'il manque des information, l'utilisateur est redirigé vers une erreur
+     * Si la maj ne marche pas, l'utilisateur est redirigé vers une erreur
+     *
+     * @var $_POST['codeProjet'] int code du projet
+     * @uses ModelProjet::update()
+     */
     public static function updated()
     {
         if (isset($_SESSION['login'])) {
@@ -321,12 +374,18 @@ class ControllerProjet
                             $pagetitle = 'Projet : ' . $projet->getNomProjet();
                             require_once File::build_path(array('view', 'view.php'));
                         }
-                    } else ControllerMain::erreur("Cette unité n'existe pas");
+                    } else ControllerMain::erreur("Ce projet n'existe pas");
                 } else ControllerMain::erreur("Il manque des informations");
             }else ControllerMain::erreur('Vous n\'avez pas le droit de voir cette page');
         } else ControllerUser::connect();
     }
 
+    /**
+     * Redirige vers le formulaire de création d'un projet
+     *
+     * @uses ModelSourceFin::selectAll()
+     * @uses ModelTheme::selectAll()
+     */
     public static function create()
     {
         if (isset($_SESSION['login'])) {
@@ -346,9 +405,6 @@ class ControllerProjet
      * Crée un Projet à partir des informations du formulaire via la méthode POST
      *
      * @uses ModelProjet::save()
-     * @uses ControllerProjet::readAll()
-     *
-     * @see ControllerProjet::readAll()
      */
     public static function created()
     {
@@ -362,11 +418,22 @@ class ControllerProjet
                     isset($_POST['theme']) &&
                     isset($_POST['role'])) {
 
+                    if ($_POST['dateDepot'] == '') {
+                        $dateDepot = null;
+                    }else {
+                        $dateDepot = $_POST['dateDepot'];
+                    }
+                    if ($_POST['dateReponse'] == '') {
+                        $dateReponse = null;
+                    }else {
+                        $dateReponse = $_POST['dateReponse'];
+                    }
+
                     $data = array(
                             'nomProjet' => $_POST['nom'],
                             'description' => $_POST['description'],
-                            'dateDepot' => $_POST['dateDepot'],
-                            'dateReponse' => $_POST['dateReponse'],
+                            'dateDepot' => $dateDepot,
+                            'dateReponse' => $dateReponse,
                             'statut' => $_POST['statut'],
                             'role' => $_POST['role'],
                             'budgetTotal' => $_POST['budgetTotal'],
@@ -397,13 +464,13 @@ class ControllerProjet
     }
 
     /**
-     * Supprime un Projet grace à son nomProjet @var $_GET['nomProjet']
+     * Supprime un Projet
      *
-     * S'il n'y a pas de nomProjet, l'utilisateur sera redirigé vers une erreur
+     * S'il n'y a pas de projet, l'utilisateur sera redirigé vers une erreur
      * Si la suppression ne fonctionne pas, l'utilisateur sera redirigé vers une erreur
      *
      * @uses ModelProjet::delete()
-     * @uses ControllerProjet::readAll()
+     * @see ControllerProjet::readAll()
      */
     public static function delete()
     {
@@ -419,12 +486,9 @@ class ControllerProjet
 
     /**
      * Recherche les projets correspondants grâce aux conditions du formulaire par la methode POST
-     * Search for projects corresponding to the form request via POST method
      *
      * S'il n'y a pas de codeEntite, @uses ModelProjet::searchBy()
-     * If codeEntite is not defined, @uses ModelProjet::searchBy()
      * Sinon, @uses ModelProjet::searchByEntite()
-     * Else, @uses ModelProjet::searchByEntite()
      */
     public static function searchBy() {
         if (isset($_SESSION['login'])) {
@@ -481,7 +545,6 @@ class ControllerProjet
             }
             $tabTheme = ModelTheme::selectAll();
             $tabEntite = ModelEntite::selectAll();
-            $statuts = array('Accepté', 'Refusé', 'Déposé', 'En cours de montage');
             $tab = ModelProjet::searchBy($values, $conditions);
             $view = 'list';
             $pagetitle = 'Projet';
@@ -489,8 +552,17 @@ class ControllerProjet
         } else ControllerUser::connect();
     }
 
+    /**
+     * Créer le graphique correspondant grâce aux données du formulaire par la methode POST
+     *
+     * @uses ControllerProjet::scriptAM()
+     * @uses ControllerProjet::$introScript
+     */
     public static function createBarGraph() {
         $type = $_POST['type'];
+        if ($type == 'pie') {
+            $bar = null;
+        }
         $xAxis = $_POST['xAxis'];
         $title = $_POST['titre'];
         $yAxis = $_POST['yAxis'];
@@ -501,21 +573,27 @@ class ControllerProjet
         if ($_POST['data']==1) {
             switch ($xAxis) {
                 case 1:
-                        $bar = null;
-                        $tab = ModelProjet::statStatutEtProjet();
-                        foreach ($tab as $key => $value) {
-                            array_push($tabCategorie, $value['prim']);
-                        }
+                    if ($type == 'serial') {
+                        $bar = array('Statut');
+                    }
+                    $tab = ModelProjet::statStatutEtProjet();
+                    foreach ($tab as $key => $value) {
+                        array_push($tabCategorie, $value['prim']);
+                    }
                     break;
                 case 2:
-                    $bar = null;
+                    if ($type == 'serial') {
+                        $bar = array('Entité');
+                    }
                     $tab = ModelProjet::statEntiteEtProjet($statuts[0]);
                     foreach ($tab as $key => $value) {
                         array_push($tabCategorie, $value['prim']);
                     }
                     break;
                 case 3:
-                    $bar = null;
+                    if ($type == 'serial') {
+                        $bar = array('Programme de financement');
+                    }
                     $tab = ModelProjet::statProgrammeEtProjet($statuts[0]);
                     foreach ($tab as $key => $value) {
                         array_push($tabCategorie, $value['prim']);
